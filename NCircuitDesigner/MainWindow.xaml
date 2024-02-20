@@ -1,0 +1,52 @@
+﻿<Window x:Class="NCircuitDesigner.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NCircuitDesigner"
+        mc:Ignorable="d"
+        Title="SAPA Designer" Height="450" Width="800">
+    <ContentControl>
+        <DockPanel>
+            <Menu x:Name="TopMenu" Height="17" Width="794" DockPanel.Dock="Top" VerticalAlignment="Top">
+                <MenuItem Header="File">
+                    <MenuItem Header="New Network" x:Name="Menu_New"/>
+                    <MenuItem Header="Open" x:Name="Menu_Open"/>
+                    <MenuItem Header="Recent" x:Name="Menu_Recent"/>
+                    <MenuItem Header="Save" x:Name="Menu_Save"/>
+                    <MenuItem Header="Save As" x:Name="Menu_SaveAs"/>
+
+                    <Separator/>
+                    <MenuItem Header="Exit" x:Name="Menu_Exit"/>
+                    <Separator/>
+                </MenuItem>
+                <MenuItem Header="Tools"/>
+                <MenuItem Header="About"/>
+            </Menu>
+            <TabControl Width="188">
+                <TabItem Header="Properties">
+                    <Grid Background="#FFE5E5E5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="57*"/>
+                            <ColumnDefinition Width="34*"/>
+                        </Grid.ColumnDefinitions>
+                        <Canvas/>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+            <ContentControl DockPanel.Dock="Right">
+                <Button Content="Button" Margin="0,230,0,0" VerticalAlignment="Top" MaxWidth="50" MaxHeight="50" MinHeight="30" MinWidth="30" Width="50" Height="50">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="50"/>
+                        </Style>
+                    </Button.Resources>
+                    <!--<Style>
+                        <Setter Property="CornerRadius" Value="5"></Setter>
+                    </Style>-->
+                </Button>
+            </ContentControl>
+
+        </DockPanel>
+    </ContentControl>
+</Window>

@@ -24,6 +24,15 @@
     <ClInclude Include="sapi.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NrnStructures.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Prototypes.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="commondef.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -33,6 +42,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sapi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NrnStructures.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Prototypes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

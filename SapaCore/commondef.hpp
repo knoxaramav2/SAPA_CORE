@@ -1,0 +1,1 @@
+#define SAPICORE_API __declspec(dllexport)
