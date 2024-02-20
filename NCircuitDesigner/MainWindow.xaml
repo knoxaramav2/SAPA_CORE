@@ -5,11 +5,35 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NCircuitDesigner"
         mc:Ignorable="d"
-        Title="SAPA Designer" Height="450" Width="800">
+        Title="SAPA Designer" Height="450" Width="800" Foreground="LightGray">
+    <Window.Background>
+        <SolidColorBrush Color="#353535"/>
+    </Window.Background>
+    <Window.Resources>
+        <Style TargetType="TabItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#353535"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <ContentControl>
         <DockPanel>
-            <Menu x:Name="TopMenu" Height="17" Width="794" DockPanel.Dock="Top" VerticalAlignment="Top">
-                <MenuItem Header="File">
+            <Menu x:Name="TopMenu" Height="17" Width="794" DockPanel.Dock="Top" VerticalAlignment="Top" Background="#353535" Foreground="LightGray" HorizontalAlignment="Left">
+                <Menu.Resources>
+                    <Style TargetType="MenuItem">
+                        <Setter Property="Background" Value="#353535"/>
+                        <Setter Property="Foreground" Value="LightGray"/>
+                    </Style>
+                </Menu.Resources>
+                <MenuItem Header="File" Background="#353535">
                     <MenuItem Header="New Network" x:Name="Menu_New"/>
                     <MenuItem Header="Open" x:Name="Menu_Open"/>
                     <MenuItem Header="Recent" x:Name="Menu_Recent"/>
@@ -23,30 +47,49 @@
                 <MenuItem Header="Tools"/>
                 <MenuItem Header="About"/>
             </Menu>
-            <TabControl Width="188">
-                <TabItem Header="Properties">
-                    <Grid Background="#FFE5E5E5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="57*"/>
-                            <ColumnDefinition Width="34*"/>
-                        </Grid.ColumnDefinitions>
-                        <Canvas/>
-                    </Grid>
+            <StatusBar DockPanel.Dock="Bottom" Height="20" BorderBrush="#555555" Background="#353535" BorderThickness="1">
+
+            </StatusBar>
+            <TabControl Width="188" DockPanel.Dock="Left" Background="#353535">
+                <TabControl.Resources>
+                    <Style TargetType="TabItem">
+                        <Setter Property="Background" Value="Red"/>
+                        <Setter Property="Foreground" Value="Red"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Foreground" Value="Blue"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TabControl.Resources>
+                <TabItem Header="Properties" Background="Red">
+                    <ScrollViewer>
+                        <StackPanel>
+                            <DockPanel Margin="2">
+                                <Label Content="ID" DockPanel.Dock="Left" Width="50" Foreground="LightGray"/>
+                                <TextBox DockPanel.Dock="Right"/>
+                            </DockPanel>
+                            <DockPanel Margin="2">
+                                <Label Content="Bias" DockPanel.Dock="Left" Width="50" Foreground="LightGray"/>
+                                <TextBox DockPanel.Dock="Right"/>
+                            </DockPanel>
+                            <DockPanel Margin="2">
+                                <Label Content="Decay" DockPanel.Dock="Left" Width="50" Foreground="LightGray"/>
+                                <TextBox DockPanel.Dock="Right"/>
+                            </DockPanel>
+                            <Label Content="Transmitters" Foreground="LightGray"/>
+                            <ComboBox Name="Transm_Dropdown"></ComboBox>
+                            <Separator Margin="0,5"/>
+                            <Label Content="Connections" Foreground="LightGray"/>
+                            <ComboBox Name="Connections_Dropdown"></ComboBox>
+                        </StackPanel>
+                    </ScrollViewer>
                 </TabItem>
             </TabControl>
-            <ContentControl DockPanel.Dock="Right">
-                <Button Content="Button" Margin="0,230,0,0" VerticalAlignment="Top" MaxWidth="50" MaxHeight="50" MinHeight="30" MinWidth="30" Width="50" Height="50">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="50"/>
-                        </Style>
-                    </Button.Resources>
-                    <!--<Style>
-                        <Setter Property="CornerRadius" Value="5"></Setter>
-                    </Style>-->
-                </Button>
+            <ContentControl x:Name="CircuitEditor" DockPanel.Dock="Right" MouseMove="CircuitEditor_MouseMove" 
+                            MouseWheel="CircuitEditor_MouseWheel" MouseRightButtonUp="CircuitEditor_MouseRightButtonUp">
+                <local:NeuronNode Width="185" Height="185" Margin="0,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </ContentControl>
-
         </DockPanel>
     </ContentControl>
 </Window>

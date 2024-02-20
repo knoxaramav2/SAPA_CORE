@@ -9,6 +9,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using NCircuitDesigner.Models;
+
 namespace NCircuitDesigner
 {
     /// <summary>
@@ -19,6 +21,21 @@ namespace NCircuitDesigner
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void CircuitEditor_MouseMove(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void CircuitEditor_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+
+        }
+
+        private void CircuitEditor_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+
         }
     }
 }
