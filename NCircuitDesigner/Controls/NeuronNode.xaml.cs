@@ -6,6 +6,7 @@ using NCircuitDesigner.Controls;
 using System.Windows.Media;
 using System.Xml.Linq;
 using System.Diagnostics;
+using System.ComponentModel.Design;
 
 namespace NCircuitDesigner
 {
@@ -14,30 +15,30 @@ namespace NCircuitDesigner
     /// </summary>
     public partial class NeuronNode : UserControl
     {
+        public string ID { get; set; }
         public Neuron Data { get; set; }
         private Point _tOffset { get; set; }
-        private Canvas Canvas { get; set; }
+        private EditorControl Designer { get; set; }
 
-        public NeuronNode(Canvas canvas, Point pos, int scale = 1)
+        public NeuronNode(EditorControl designer, Point pos, int scale = 1)
         {
             InitializeComponent();
+            ID = Guid.NewGuid().ToString();
             Data = new Neuron(Guid.NewGuid().ToString(), pos, scale);
-            Canvas = canvas;
+            Designer = designer;
             DataContext = Data;
         }
 
         private void StackPanel_MouseLeave(object sender, 
             System.Windows.Input.MouseEventArgs e)
         {
-            var parent = Parent as EditorControl;
-            parent?.ReleaseSelected();
+            Designer?.ReleaseSelected();
         }
 
         private void StackPanel_MouseUp(object sender, 
             System.Windows.Input.MouseButtonEventArgs e)
         {
-            var parent = Parent as EditorControl;
-            parent?.ReleaseSelected();
+            Designer?.ReleaseSelected();
         }
 
         private void StackPanel_MouseMove(object sender, 
@@ -49,8 +50,7 @@ namespace NCircuitDesigner
         private void CircuitNode_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Debug.WriteLine("DOWN NODE");
-            var parent = Parent as EditorControl;
-            parent?.ApplySelected(this);
+            Designer?.ApplySelected(this);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace NCircuitDesigner.Controls
         public void NewNeuron(Point pos, int scale)
         {
             Debug.WriteLine("SCLICK");
-            NeuronNode neuronNode = new(EditorCanvas, pos, scale);
+            NeuronNode neuronNode = new(this, pos, scale);
 
             EditorCanvas.Children.Add(neuronNode);
             CircuitControls.Add(neuronNode);
@@ -44,6 +44,7 @@ namespace NCircuitDesigner.Controls
 
         private void EditorCanvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            ReleaseSelected();
             Point pos = Mouse.GetPosition(this);
             pos = new Point(pos.X+_center.X, pos.Y+_center.Y);
             if (Keyboard.IsKeyDown(Key.LeftShift))
@@ -178,14 +179,23 @@ namespace NCircuitDesigner.Controls
 
         public void ReleaseSelected()
         {
+            if (Selected == null) { return; }
             Debug.WriteLine("DE-SELECT");
+            ApplyLocalTransform(Selected, Mouse.GetPosition(this));
             Selected = null;
             _drag = false;
         }
 
-        public void ApplyLocalTransform(NeuronNode node)
+        public void ApplyLocalTransform(NeuronNode node, Point mpos)
         {
-            
+            if (Selected?.RenderTransform is not TranslateTransform trans)
+            {
+                trans = new TranslateTransform();
+                node.RenderTransform = trans;
+            }
+
+            trans.X = (mpos.X - _drag_offset.X) + node.Data.X - node.Width / 2;
+            trans.Y = (mpos.Y - _drag_offset.Y) + node.Data.Y + node.Height / 2;
         }
     }
 }
