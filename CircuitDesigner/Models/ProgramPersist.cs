@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 
 namespace CircuitDesigner.Models
 {
+    enum EditMode
+    {
+        RegionMode,
+        NeuronMode
+    }
 
     internal class ProgramPersist
     {
@@ -17,9 +22,13 @@ namespace CircuitDesigner.Models
         [JsonProperty]
         public List<(string, DateTime)> Saves { get; set; } = [];
 
+        [JsonProperty]
+        public EditMode Mode { get; set; }
+
         public ProgramPersist()
         {
             LastSaveDate = DateTime.Now;
+            Mode = EditMode.RegionMode;
         }
 
         public void UpdateProjectInfo(ProjectState projectState)

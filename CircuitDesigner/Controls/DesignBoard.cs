@@ -4,6 +4,7 @@ using CircuitDesigner.Util;
 
 namespace CircuitDesigner.Controls
 {
+
     public partial class DesignBoard : UserControl
     {
         private NodeControl? Selection = null;
@@ -67,6 +68,16 @@ namespace CircuitDesigner.Controls
             return ret;
         }
 
+        private void SelectRegion(RegionControl region)
+        {
+            
+        }
+
+        private void SelectNeuron(NeuronControl neuron)
+        {
+
+        }
+
         //Control Comms
         public void DesignContainer_MouseMove(object sender, MouseEventArgs e)
         {
@@ -78,11 +89,9 @@ namespace CircuitDesigner.Controls
             if (DragOrigin == null) { return; }
             var origin = (Point)DragOrigin;
             var deltaPos = pos.Sub(origin);
-            Debug.WriteLine($"ORG: {origin}");
 
             if (Selection == null)
             {
-                Debug.WriteLine($"MOVE GLBL: {deltaPos}");
                 GlobalOrigin = GlobalOrigin.Add(deltaPos);
 
                 foreach (NodeControl ctrl in NodeControls)
@@ -94,19 +103,39 @@ namespace CircuitDesigner.Controls
 
             } else
             {
-                Debug.WriteLine($"MOVE LCAL: {deltaPos}");
                 Selection.Location = Selection.Location.Add(deltaPos);
             }
         }
 
         private void SetSelection(NodeControl? control, Point pos)
         {
+            if (control != null)
+            {
+                control.BackColor = Color.Red;
+            }
+
             Selection = control;
             DragOrigin = pos;
+
+            if (control is NeuronControl nrn)
+            {
+                SelectNeuron(nrn);
+            }
+            else if (control is RegionControl reg)
+            {
+                SelectRegion(reg);
+            }
+            
         }
 
         private void ReleaseSelection()
         {
+
+            if (Selection != null)
+            {
+                Selection.BackColor = Color.White;
+            }
+
             DragOrigin = null;
             Selection = null;
         }

@@ -42,22 +42,11 @@ namespace CircuitDesigner
             aboutToolStripMenuItem = new ToolStripMenuItem();
             statusStrip1 = new StatusStrip();
             splitContainer1 = new SplitContainer();
-            TabProperties = new TabControl();
-            PropertiesTab = new TabPage();
-            RegionProperties = new Panel();
-            label2 = new Label();
-            RegionConnectionsInput = new ComboBox();
-            RegionNameInput = new TextBox();
-            label1 = new Label();
             designBoard1 = new Controls.DesignBoard();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
-            splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
-            TabProperties.SuspendLayout();
-            PropertiesTab.SuspendLayout();
-            RegionProperties.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
@@ -148,85 +137,12 @@ namespace CircuitDesigner
             splitContainer1.Location = new Point(0, 24);
             splitContainer1.Name = "splitContainer1";
             // 
-            // splitContainer1.Panel1
-            // 
-            splitContainer1.Panel1.Controls.Add(TabProperties);
-            // 
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(designBoard1);
             splitContainer1.Size = new Size(928, 429);
-            splitContainer1.SplitterDistance = 251;
+            splitContainer1.SplitterDistance = 223;
             splitContainer1.TabIndex = 2;
-            // 
-            // TabProperties
-            // 
-            TabProperties.Controls.Add(PropertiesTab);
-            TabProperties.Dock = DockStyle.Fill;
-            TabProperties.Location = new Point(0, 0);
-            TabProperties.Name = "TabProperties";
-            TabProperties.SelectedIndex = 0;
-            TabProperties.Size = new Size(251, 429);
-            TabProperties.TabIndex = 0;
-            // 
-            // PropertiesTab
-            // 
-            PropertiesTab.Controls.Add(RegionProperties);
-            PropertiesTab.Location = new Point(4, 24);
-            PropertiesTab.Name = "PropertiesTab";
-            PropertiesTab.Padding = new Padding(3);
-            PropertiesTab.Size = new Size(243, 401);
-            PropertiesTab.TabIndex = 0;
-            PropertiesTab.Text = "Properties";
-            PropertiesTab.UseVisualStyleBackColor = true;
-            // 
-            // RegionProperties
-            // 
-            RegionProperties.BackColor = Color.DimGray;
-            RegionProperties.Controls.Add(label2);
-            RegionProperties.Controls.Add(RegionConnectionsInput);
-            RegionProperties.Controls.Add(RegionNameInput);
-            RegionProperties.Controls.Add(label1);
-            RegionProperties.Dock = DockStyle.Fill;
-            RegionProperties.Location = new Point(3, 3);
-            RegionProperties.Name = "RegionProperties";
-            RegionProperties.Size = new Size(237, 395);
-            RegionProperties.TabIndex = 0;
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.ForeColor = SystemColors.Control;
-            label2.Location = new Point(5, 40);
-            label2.Name = "label2";
-            label2.Size = new Size(74, 15);
-            label2.TabIndex = 3;
-            label2.Text = "Connections";
-            // 
-            // RegionConnectionsInput
-            // 
-            RegionConnectionsInput.FormattingEnabled = true;
-            RegionConnectionsInput.Location = new Point(5, 58);
-            RegionConnectionsInput.Name = "RegionConnectionsInput";
-            RegionConnectionsInput.Size = new Size(229, 23);
-            RegionConnectionsInput.TabIndex = 2;
-            // 
-            // RegionNameInput
-            // 
-            RegionNameInput.Location = new Point(90, 3);
-            RegionNameInput.Name = "RegionNameInput";
-            RegionNameInput.Size = new Size(144, 23);
-            RegionNameInput.TabIndex = 1;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.ForeColor = SystemColors.Control;
-            label1.Location = new Point(5, 6);
-            label1.Name = "label1";
-            label1.Size = new Size(79, 15);
-            label1.TabIndex = 0;
-            label1.Text = "Region Name";
             // 
             // designBoard1
             // 
@@ -234,7 +150,7 @@ namespace CircuitDesigner
             designBoard1.Dock = DockStyle.Fill;
             designBoard1.Location = new Point(0, 0);
             designBoard1.Name = "designBoard1";
-            designBoard1.Size = new Size(673, 429);
+            designBoard1.Size = new Size(701, 429);
             designBoard1.TabIndex = 0;
             // 
             // Form1
@@ -251,14 +167,9 @@ namespace CircuitDesigner
             FormClosing += ExitApplication;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
-            splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
-            TabProperties.ResumeLayout(false);
-            PropertiesTab.ResumeLayout(false);
-            RegionProperties.ResumeLayout(false);
-            RegionProperties.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -278,13 +189,6 @@ namespace CircuitDesigner
         private ToolStripMenuItem aboutToolStripMenuItem;
         private StatusStrip statusStrip1;
         private SplitContainer splitContainer1;
-        private TabControl TabProperties;
-        private TabPage PropertiesTab;
-        private Panel RegionProperties;
-        private TextBox RegionNameInput;
-        private Label label1;
-        private Label label2;
-        private ComboBox RegionConnectionsInput;
         private Controls.DesignBoard designBoard1;
     }
 }

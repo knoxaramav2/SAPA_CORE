@@ -1,3 +1,4 @@
+using CircuitDesigner.Controls;
 using CircuitDesigner.Models;
 using CircuitDesigner.Util;
 using Microsoft.VisualBasic.Devices;
@@ -15,6 +16,7 @@ namespace CircuitDesigner
         {
             PersistState = ProgramPersist.FromFile() ?? new ProgramPersist();
             SetControlStates(ProjectState != null);
+            LoadAsMode(PersistState.Mode);
         }
 
         private void SaveAll()
@@ -86,7 +88,7 @@ namespace CircuitDesigner
 
         private void SetControlStates(bool enable = false)
         {
-            RegionProperties.Enabled = enable;
+            //RegionProperties.Enabled = enable;
             saveAsToolStripMenuItem.Enabled = enable;
             saveToolStripMenuItem.Enabled = enable;
             //DesignPanel.Enabled = enable;
@@ -135,6 +137,25 @@ namespace CircuitDesigner
         private void ExitApplication(object sender, EventArgs e)
         {
             SaveAll();
+        }
+
+        private void LoadAsMode(EditMode mode)
+        {
+            UserControl? content = null;
+            switch (mode)
+            {
+                case EditMode.RegionMode:
+                    content = new RegionTabs();
+                    break;
+                case EditMode.NeuronMode:
+                    content = new NeuronTabs();
+                    break;
+            }
+
+            if (content == null) { return; }
+            content.Dock = DockStyle.Fill;
+            splitContainer1.Panel1.Controls.Clear();
+            splitContainer1.Panel1.Controls.Add(content);
         }
 
         //Designer Control
