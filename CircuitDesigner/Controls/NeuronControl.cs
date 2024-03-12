@@ -1,15 +1,17 @@
-﻿namespace CircuitDesigner.Controls
+﻿using CircuitDesigner.Models;
+
+namespace CircuitDesigner.Controls
 {
     public partial class NeuronControl : NodeControl
     {
-        public Models.Neuron Model { get; set; }
+        //public new NeuronModel Model;
 
         public NeuronControl() : base()
         {
-            Model = new(Guid.NewGuid().ToString());
+            Model = new NeuronModel(this, Guid.NewGuid().ToString());
         }
 
-        public NeuronControl(DesignBoard designer, Models.Neuron model) : base(designer)
+        public NeuronControl(DesignBoard designer, NeuronModel model) : base(designer)
         {
             InitializeComponent();
             //Host = (DesignBoard)Parent;

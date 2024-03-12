@@ -1,18 +1,22 @@
-﻿namespace CircuitDesigner.Controls
+﻿using CircuitDesigner.Models;
+
+namespace CircuitDesigner.Controls
 {
     public partial class RegionControl : NodeControl
     {
-        public Models.Region Model { get; set; }
+        //public new RegionModel Model;
 
-        public RegionControl() : base()
+        public RegionControl(string? id = null) : base()
         {
-            Model = new();
+            Parent = this;
+            id ??= Guid.NewGuid().ToString();
+            Model = new RegionModel(this, id);
         }
 
-        public RegionControl(DesignBoard designer, Models.Region model) : base(designer)
+        public RegionControl(DesignBoard designer, string? id = null) : base(designer)
         {
             InitializeComponent();
-            Model = model;
+            Model = new RegionModel(this, id);
         }
     }
 }
