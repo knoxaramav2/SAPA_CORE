@@ -1,7 +1,6 @@
 using CircuitDesigner.Controls;
 using CircuitDesigner.Models;
 using CircuitDesigner.Util;
-using Microsoft.VisualBasic.Devices;
 using System.Diagnostics;
 
 namespace CircuitDesigner
@@ -10,6 +9,10 @@ namespace CircuitDesigner
     {
         private ProjectState? ProjectState = null;
         private ProgramPersist PersistState;
+
+        //Dynamic States
+        private RegionTabs? RegionTabs = null;
+        private NeuronTabs? NeuronTabs = null;
 
         //FILE MANAGEMENT
         private void InitOnLoad()
@@ -146,9 +149,11 @@ namespace CircuitDesigner
             {
                 case EditMode.RegionMode:
                     content = new RegionTabs();
+                    RegionTabs = (RegionTabs)content;
                     break;
                 case EditMode.NeuronMode:
                     content = new NeuronTabs();
+                    NeuronTabs = (NeuronTabs)content;
                     break;
             }
 
@@ -158,7 +163,25 @@ namespace CircuitDesigner
             splitContainer1.Panel1.Controls.Add(content);
         }
 
-        //Designer Control
+        //Data Update
+        public void UpdateRegionInfo()
+        {
+            if (RegionTabs == null)
+            {
+                Debug.WriteLine($"Region tabs empty");
+                return;
+            }
+        }
 
+        private void SplitContainer1_Panel1_ControlAdded(object sender, ControlEventArgs e)
+        {
+
+            
+        }
+
+        private void SplitContainer1_Panel2_ControlAdded(object sender, ControlEventArgs e)
+        {
+
+        }
     }
 }

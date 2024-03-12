@@ -137,9 +137,14 @@ namespace CircuitDesigner
             splitContainer1.Location = new Point(0, 24);
             splitContainer1.Name = "splitContainer1";
             // 
+            // splitContainer1.Panel1
+            // 
+            splitContainer1.Panel1.ControlAdded += SplitContainer1_Panel1_ControlAdded;
+            // 
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(designBoard1);
+            splitContainer1.Panel2.ControlAdded += SplitContainer1_Panel2_ControlAdded;
             splitContainer1.Size = new Size(928, 429);
             splitContainer1.SplitterDistance = 223;
             splitContainer1.TabIndex = 2;

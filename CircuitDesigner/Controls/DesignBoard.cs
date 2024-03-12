@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using CircuitDesigner.Models;
+using System.Diagnostics.Eventing.Reader;
 using CircuitDesigner.Util;
 
 namespace CircuitDesigner.Controls
@@ -11,11 +11,13 @@ namespace CircuitDesigner.Controls
         private Point? DragOrigin = null;
         private Point GlobalOrigin;
         private readonly List<NodeControl> NodeControls = [];
+        private int ScaleStep = 0;
 
         public DesignBoard()
         {
             InitializeComponent();
             GlobalOrigin = new Point(0, 0);
+            MouseWheel += new MouseEventHandler(OnMouseWheel);
         }
 
         private void DesignContainer_Click(object sender, MouseEventArgs e)
@@ -47,8 +49,11 @@ namespace CircuitDesigner.Controls
                 regCtrl.Location.Y - regCtrl.Height / 2
                 );
 
+            SetNodeScale(regCtrl, ScaleStep);
+
             DesignContainer.Controls.Add(regCtrl);
             NodeControls.Add(regCtrl);
+        
         }
 
         private void DesignBoard_KeyDown(object sender, KeyEventArgs e)
@@ -70,12 +75,17 @@ namespace CircuitDesigner.Controls
 
         private void SelectRegion(RegionControl region)
         {
-            
+
         }
 
         private void SelectNeuron(NeuronControl neuron)
         {
 
+        }
+
+        public void OnMouseWheel(object? sender, MouseEventArgs e)
+        {
+            Zoom(e.Delta > 0);
         }
 
         //Control Comms
@@ -101,10 +111,41 @@ namespace CircuitDesigner.Controls
 
                 DragOrigin = pos;
 
-            } else
+            }
+            else
             {
                 Selection.Location = Selection.Location.Add(deltaPos);
             }
+        }
+
+        private void SetNodeScale(NodeControl node, int steps)
+        {
+            //TODO Factor recursive scale results Fn(x0, s)=Fn(x0, Fn-1...)...
+            const float STEP_COEF = 0.05f;
+            var scale = 1 / (1+(-steps*STEP_COEF));
+            node.Scale(new SizeF(scale, scale));
+            Debug.WriteLine($"SCALE={scale} SCALE_STEP={ScaleStep} STEPS={steps}");
+        }
+
+        private void Zoom(bool zoomIn)
+        {
+            var steps = zoomIn ? 1 : -1;
+
+            const int MIN_SCALE = -15;
+            const int MAX_SCALE = 10;
+
+            if (ScaleStep + steps < MIN_SCALE || ScaleStep + steps > MAX_SCALE) { return; }
+
+            //Scale
+            foreach(var node in NodeControls)
+            {
+                SetNodeScale(node, steps);
+            }
+
+            ScaleStep += steps;
+            Debug.WriteLine($"STEP: {ScaleStep}, {steps}");
+
+            //Position
         }
 
         private void SetSelection(NodeControl? control, Point pos)
@@ -125,7 +166,7 @@ namespace CircuitDesigner.Controls
             {
                 SelectRegion(reg);
             }
-            
+
         }
 
         private void ReleaseSelection()
