@@ -21,9 +21,11 @@ namespace CircuitDesigner.Models
         public List<Dendrite> Dendrites { get; set; } = [];
 
         [JsonProperty]
-        float Charge { get; set; }
+        public float Charge { get; set; } = 0.0f;
         [JsonProperty]
-        float Bias { get; set; }
+        public float Bias { get; set; } = 1.0f;
+
+        public float Decay { get; set; } = 0.0f;
 
         public bool Attach(INodeModel node)
         {

@@ -3,12 +3,6 @@ using Newtonsoft.Json;
 
 namespace CircuitDesigner.Models
 {
-    enum EditMode
-    {
-        RegionMode,
-        NeuronMode
-    }
-
     internal class ProgramPersist
     {
         [JsonProperty]
@@ -18,12 +12,12 @@ namespace CircuitDesigner.Models
         public List<(string, DateTime)> Saves { get; set; } = [];
 
         [JsonProperty]
-        public EditMode Mode { get; set; }
+        public DesignMode Mode { get; set; }
 
         public ProgramPersist()
         {
             LastSaveDate = DateTime.Now;
-            Mode = EditMode.RegionMode;
+            Mode = DesignMode.RegionMode;
         }
 
         public void UpdateProjectInfo(ProjectState projectState)

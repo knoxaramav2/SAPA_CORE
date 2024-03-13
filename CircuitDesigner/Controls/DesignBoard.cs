@@ -2,116 +2,37 @@
 using CircuitDesigner.Util;
 using System.Drawing.Drawing2D;
 using CircuitDesigner.Models;
+using System.Diagnostics.Contracts;
 
 namespace CircuitDesigner.Controls
 {
 
-    enum DesignViewMode
-    {
-        RegionView,
-        NeuronView
-    }
-
-    class ViewData
-    {
-        public string ID { get; private set; }
-        public DesignViewMode ViewMode { get; private set; }
-        public List<NodeControl> Controls { get; } = [];
-        public NodeControl? SelectedControl { get; private set; }
-
-        public ViewData(string id, DesignViewMode viewMode)
-        {
-            ID = id;
-            ViewMode = viewMode;
-        }
-
-        public bool AddControl(NodeControl node)
-        {
-            if (Controls.Contains(node)) { return false; }
-            Controls.Add(node);
-            return true;
-        }
-
-        public bool RemoveControl(NodeControl node)
-        {
-            return Controls.Remove(node);
-        }
-    }
-
-    class ViewManager
-    {
-        private readonly Dictionary<string, ViewData> Views = [];
-        public ViewData CurrentView { get; private set; }
-
-        private const string ROOT_ID = "__ROOT__";
-
-        public ViewManager()
-        {
-            CreateView(ROOT_ID, DesignViewMode.RegionView, true);
-            if(CurrentView == null) { throw new Exception("Voodoo has occurred"); }
-        }
-
-        public ViewData? SwitchView(string id)
-        {
-            Views.TryGetValue(id, out ViewData? viewData);
-            return viewData;
-        }
-
-        public bool CreateView(string id, DesignViewMode mode, bool switchTo=false)
-        {
-            if (string.IsNullOrEmpty(id) || Views.ContainsKey(id.ToUpper())) { return false; }
-
-            var newView = new ViewData(id, mode);
-            Views.Add(id.ToUpper(), newView);
-
-            if (switchTo)
-            {
-                CurrentView = newView;
-            }
-
-            return true;
-        }
-
-        public bool DeleteView(string id)
-        {
-            return Views.Remove(id.ToUpper());
-        }
-    }
-
+    
     public partial class DesignBoard : UserControl
     {
-        private DesignViewMode ViewMode = DesignViewMode.RegionView;
-
-        private NodeControl? Selection = null;
+        //private NodeControl? Selection = null;
         private bool IsDragging = false;
         private Point? DragOrigin = null;
-        private Point GlobalOrigin;
-        private ViewManager ViewManager;
         
         private int ScaleStep = 0;
 
         //Graphics states
         private Bitmap BMBuffer;
         private Graphics GBuffer;
+        public ViewData View;
 
-        public delegate void NodeSelectEventHandler(object sender, INodeModel nodeControl);
-        public event NodeSelectEventHandler? NeuronUpdated = null;
-        public event NodeSelectEventHandler? RegionUpdated = null;
-
-        public delegate void FocusRegionViewEventHandler(object sender, RegionModel model);
-        public event FocusRegionViewEventHandler? RegionViewExpanded = null;
-
-        public delegate void FocusNeuronViewEventHandler(object sender, RegionModel model);
+        public event NodeSelectEventHandler? NodeSelected = null;
+        public event NodeCreatedEventHandler? NodeCreated = null;
+        public event NodeDeletedEventHandler? NodeDeleted = null;
 
         public DesignBoard()
         {
             InitializeComponent();
-            GlobalOrigin = new Point(0, 0);
             MouseWheel += new MouseEventHandler(OnMouseWheel);
             HandleCreated += new EventHandler(Init);
             BMBuffer = new(1, 1);
             GBuffer = Graphics.FromImage(BMBuffer);
-            ViewManager = new();
+            View = new ViewData("", Models.DesignMode.Disabled);
         }
 
         public void Init(object? sender, EventArgs e)
@@ -149,17 +70,32 @@ namespace CircuitDesigner.Controls
             };
 
             DesignContainer.Controls.Add(regCtrl);
-            ViewManager.CurrentView.AddControl(regCtrl);
+            View.AddControl(regCtrl);
+            OnCreateNode(regCtrl.Model);
 
             PaintNodes();
         }
 
         private void DesignBoard_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.N && ModifierKeys.HasFlag(Keys.Shift))
+            switch (e.KeyCode)
             {
-                NewNode(true);
+                case Keys.N:
+                    if (ModifierKeys.HasFlag(Keys.Shift))
+                    {
+                        NewNode(true);
+                    }
+                    break;
+                case Keys.Delete:
+                    if (View.Selected != null)
+                    {
+                        OnDeleteNode(View.Selected.Model);
+                        View.UnselectControl();
+                    }
+                    break;
             }
+
+            
         }
 
         public void OnMouseWheel(object? sender, MouseEventArgs e)
@@ -168,19 +104,12 @@ namespace CircuitDesigner.Controls
         }
 
         //State
-        private void SwitchViewMode(DesignViewMode mode, string? id)
+        public void SwitchContext(ViewData data)
         {
-            if (mode == DesignViewMode.RegionView)
-            {
-
-            } else if (mode == DesignViewMode.NeuronView)
-            {
-
-            }
-            // Other modes?
+            DesignContainer.Controls.Clear();
+            View = data;
+            DesignContainer.Controls.AddRange(data.Controls.ToArray());
         }
-
-        //Control Comms
 
         public void DesignContainer_MouseMove(object sender, MouseEventArgs e)
         {
@@ -207,15 +136,16 @@ namespace CircuitDesigner.Controls
 
         private void Drag(Point pos)
         {
+            Debug.WriteLine($"{!IsDragging} | {DragOrigin == null}");
             if (!IsDragging || DragOrigin == null) { return; }
             var origin = (Point)DragOrigin;
             var deltaPos = pos.Sub(origin);
 
-            if (Selection == null)
+            if (View.Selected == null)
             {
-                GlobalOrigin = GlobalOrigin.Add(deltaPos);
+                View.GlobalOrigin = View.GlobalOrigin.Add(deltaPos);
 
-                foreach (NodeControl ctrl in ViewManager.CurrentView.Controls)
+                foreach (NodeControl ctrl in View.Controls)
                 {
                     ctrl.Location = ctrl.Location.Add(deltaPos);
                 }
@@ -225,7 +155,7 @@ namespace CircuitDesigner.Controls
             }
             else
             {
-                Selection.Location = Selection.Location.Add(deltaPos);
+                View.Selected.Location = View.Selected.Location.Add(deltaPos);
             }
 
             PaintNodes();
@@ -248,7 +178,7 @@ namespace CircuitDesigner.Controls
             if (ScaleStep + steps < MIN_SCALE || ScaleStep + steps > MAX_SCALE) { return; }
 
             //Scale
-            foreach (var node in ViewManager.CurrentView.Controls)
+            foreach (var node in View.Controls)
             {
                 SetNodeScale(node, steps);
             }
@@ -262,35 +192,29 @@ namespace CircuitDesigner.Controls
 
         private void SetSelection(NodeControl? control, Point pos)
         {
-            if (control != null)
-            {
-                control.BackColor = Color.Red;
-            }
-
-            Selection = control;
             DragOrigin = pos;
 
-            if (control is NeuronControl nrn)
+            if (control == null) 
             {
-                OnUpdateNeuron(nrn);
-            }
-            else if (control is RegionControl reg)
+                View.UnselectControl();
+            } else
             {
-                OnUpdateRegion(reg);
+                control.BackColor = Color.Red;
+                View.SelectControl(control);
             }
 
+            OnUpdateNode();
         }
 
         private void ReleaseSelection()
         {
-
-            if (Selection != null)
+            if (View.Selected != null)
             {
-                Selection.BackColor = Color.White;
+                View.Selected.BackColor = Color.White;
             }
 
             DragOrigin = null;
-            Selection = null;
+            View.UnselectControl();
         }
 
         public void DesignContainer_MouseUp(object sender, MouseEventArgs e)
@@ -305,14 +229,14 @@ namespace CircuitDesigner.Controls
 
             if (ModifierKeys.HasFlag(Keys.Shift))
             {
-                if (obj != null && Selection != null && Selection != obj)
+                if (obj != null && View.Selected != null && View.Selected != obj)
                 {
-                    LinkNodes(Selection, obj);
+                    LinkNodes(View.Selected, obj);
                 }
             }
             else
             {
-                if (Selection != null) { ReleaseSelection(); }
+                ReleaseSelection();
                 SetSelection(obj, e.Location);
                 IsDragging = true;
             }
@@ -337,7 +261,7 @@ namespace CircuitDesigner.Controls
 
             GBuffer.Clear(Color.Transparent);
             
-            foreach(var node in ViewManager.CurrentView.Controls)
+            foreach(var node in View.Controls)
             {
                 var dests = node.Model?.Connections;
                 if (dests == null) { continue; }
@@ -365,25 +289,20 @@ namespace CircuitDesigner.Controls
             Refresh();
         }
 
-
         //Events
         private void OnUpdateNode()
         {
-            if (Selection == null) { return; }
-            if (Selection is RegionControl control) { OnUpdateRegion(control); }
-            else if (Selection is NeuronControl control1) { OnUpdateNeuron(control1); }
+            NodeSelected?.Invoke(this, View.Selected?.Model);
         }
 
-        private void OnUpdateRegion(RegionControl region)
+        private void OnCreateNode(INodeModel model)
         {
-            RegionUpdated?.Invoke(this, region.Model);
+            NodeCreated?.Invoke(this, model);
         }
 
-        private void OnUpdateNeuron(NeuronControl neuron)
+        private void OnDeleteNode(INodeModel model)
         {
-            NeuronUpdated?.Invoke(this, neuron.Model);
+            NodeDeleted?.Invoke(this, model);
         }
-
-
     }
 }

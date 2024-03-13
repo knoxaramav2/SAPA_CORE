@@ -2,6 +2,8 @@ using CircuitDesigner.Controls;
 using CircuitDesigner.Models;
 using CircuitDesigner.Util;
 using System.Diagnostics;
+using System.Reflection;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 
 namespace CircuitDesigner
 {
@@ -9,14 +11,15 @@ namespace CircuitDesigner
     {
         private ProjectState? ProjectState = null;
         private ProgramPersist PersistState;
-
-        //Dynamic States
-        private RegionTabs? RegionTabs = null;
-        private NeuronTabs? NeuronTabs = null;
+        public ViewManager ViewManager;
 
         //FILE MANAGEMENT
         private void InitOnLoad()
         {
+            ViewManager = new();
+            ViewsDropDown.Items.AddRange(ViewManager.ListViewIds());
+            ViewsDropDown.SelectedIndex = 0;
+
             PersistState = ProgramPersist.FromFile() ?? new ProgramPersist();
             SetControlStates(ProjectState != null);
             LoadAsMode(PersistState.Mode);
@@ -24,8 +27,7 @@ namespace CircuitDesigner
 
         private void SaveAll()
         {
-            PersistState.Save();
-            ProjectState?.Save();
+            SaveProject();
         }
 
         private void NewProject()
@@ -73,6 +75,10 @@ namespace CircuitDesigner
                 var filePath = dlg.FileName;
                 LoadProject(filePath);
             }
+
+            var title = ProjectState?.Name != null ? " - " + ProjectState?.Name : "";
+            Text = $"SAPA Circuit Designer {title}";
+            CurrentIDInput.Text = ProjectState?.Name ?? "";
         }
 
         private void LoadProject(string path)
@@ -89,12 +95,19 @@ namespace CircuitDesigner
             SetControlStates(true);
         }
 
+        private void SaveProject(string? path = null)
+        {
+            PersistState.Save();
+            ProjectState?.Save();
+
+            CurrentIDInput.Text = ProjectState?.Name ?? "";
+        }
+
         private void SetControlStates(bool enable = false)
         {
-            //RegionProperties.Enabled = enable;
             saveAsToolStripMenuItem.Enabled = enable;
             saveToolStripMenuItem.Enabled = enable;
-            //DesignPanel.Enabled = enable;
+            CurrentIDInput.Enabled = enable;
         }
 
         private void NewProjectToolStripItem_Click(object sender, EventArgs e)
@@ -129,6 +142,10 @@ namespace CircuitDesigner
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             InitializeComponent();
+
+            //InputsGroup.CollapseHeader.Text = "Inputs";
+            //OutputsGroup.CollapseHeader.Text = "Outputs";
+
             InitOnLoad();
         }
 
@@ -147,41 +164,69 @@ namespace CircuitDesigner
             SaveAll();
         }
 
-        private void LoadAsMode(EditMode mode)
+        private void LoadAsMode(DesignMode mode)
         {
-            UserControl? content = null;
             switch (mode)
             {
-                case EditMode.RegionMode:
-                    content = new RegionTabs();
-                    RegionTabs = (RegionTabs)content;
+                case Models.DesignMode.RegionMode:
+                    SetTabPage(PropertyTabs, RegionTab, true);
+                    SetTabPage(PropertyTabs, NeuronTab, false);
+                    UpdateRegionTab(null);
                     break;
-                case EditMode.NeuronMode:
-                    content = new NeuronTabs();
-                    NeuronTabs = (NeuronTabs)content;
+                case Models.DesignMode.NeuronMode:
+                    SetTabPage(PropertyTabs, RegionTab, true);
+                    SetTabPage(PropertyTabs, NeuronTab, true);
+                    UpdateNeuronTab(null);
+                    break;
+                default:
+                    SetTabPage(PropertyTabs, NeuronTab, false);
+                    SetTabPage(PropertyTabs, RegionTab, false);
                     break;
             }
 
-            if (content == null) { return; }
-            content.Dock = DockStyle.Fill;
-            splitContainer1.Panel1.Controls.Clear();
-            splitContainer1.Panel1.Controls.Add(content);
+            UpdateProjectTab();
+            designBoard.SwitchContext(ViewManager.CurrentView);
+        }
+
+        private void UpdateRegionTab(RegionModel? model)
+        {
+            UpdateToTextField(RegionIDInput, model?.ID ?? "");
+            UpdateToDropdown(RegionConnectionsDropdown,
+                model?.Connections.Select(x => x.ID).ToArray() ?? []
+                );
+            UpdateToListBox(InputsList, model?.Inputs.Select(x => x.ID).ToArray() ?? []);
+            UpdateToListBox(OutputsList, model?.Outputs.Select(x => x.ID).ToArray() ?? []);
+        }
+
+        private void UpdateNeuronTab(NeuronModel? model)
+        {
+            UpdateToTextField(NeuronIDInput, model?.ID ?? "");
+            UpdateToDropdown(NeuronConnectionsDropdown,
+                model?.Dendrites.Select(x => x.Target.ID).ToArray() ?? []
+                );
+            UpdateToTextField(NeuronChargeInput, model?.Charge.ToString() ?? "");
+            UpdateToTextField(NeuronDecayInput, model?.Decay.ToString() ?? "");
+            UpdateToTextField(NeuronBiasInput, model?.Bias.ToString() ?? "");
+        }
+
+        private void UpdateProjectTab()
+        {
+            var view = ViewManager.CurrentView;
+            CurrentIDInput.Text = view.ID;
+            CurrentViewNameLabel.Text = view.ViewMode.ToString();
         }
 
         //Data Update
-        public void UpdateRegionInfo()
+        private void SetTabPage(TabControl control, TabPage page, bool enabled)
         {
-            if (RegionTabs == null)
+            if (!enabled)
             {
-                Debug.WriteLine($"Region tabs empty");
-                return;
+                control.TabPages.Remove(page);
             }
-        }
-
-        private void SplitContainer1_Panel1_ControlAdded(object sender, ControlEventArgs e)
-        {
-
-
+            else if (!control.TabPages.Contains(page))
+            {
+                control.TabPages.Add(page);
+            }
         }
 
         private void SplitContainer1_Panel2_ControlAdded(object sender, ControlEventArgs e)
@@ -189,28 +234,186 @@ namespace CircuitDesigner
 
         }
 
+        private void UpdateToDropdown(ComboBox dropdown, string[] values)
+        {
+            dropdown.Items.Clear();
+
+            if (values.Length > 0)
+            {
+                dropdown.Items.AddRange(values);
+                var oldIdx = dropdown.SelectedIndex;
+                var numItems = dropdown.Items.Count;
+
+                if (numItems > 0 && numItems >= oldIdx)
+                {
+                    dropdown.SelectedIndex = numItems - 1;
+                }
+                else
+                {
+                    dropdown.SelectedIndex = oldIdx;
+                }
+            }
+        }
+
+        private void UpdateToLabel()
+        {
+
+        }
+
+        private void UpdateToNumeric(NumericUpDown updown, int value)
+        {
+            updown.Value = value;
+        }
+
+        private void UpdateToTextField(TextBox textfield, string value)
+        {
+            textfield.Text = value;
+        }
+
+        private void UpdateToListBox(ListBox list, string[] values)
+        {
+            list.Items.Clear();
+
+            if (values.Length > 0)
+            {
+                list.Items.AddRange(values);
+                var oldIdx = list.SelectedIndex;
+                var numItems = list.Items.Count;
+
+                if (numItems > 0 && numItems >= oldIdx)
+                {
+                    list.SelectedIndex = numItems - 1;
+                }
+                else
+                {
+                    list.SelectedIndex = oldIdx;
+                }
+            }
+        }
+
+        private void UpdateFromDowndown()
+        {
+
+        }
+
+        private void UpdateFromTextField()
+        {
+
+        }
+
+        private void UpdateFromNumeric(NumericUpDown updown, ref int value)
+        {
+            value = (int)updown.Value;
+        }
+
         //Callbacks
-
-        protected void NeuronUpdated(object sender, INodeModel model)
+        protected void OnNodeUpdated(object sender, INodeModel? model)
         {
-            NeuronTabs?.UpdateInfo((NeuronModel)model);
+            switch (ViewManager.CurrentView.ViewMode)
+            {
+                case Models.DesignMode.NeuronMode:
+                    UpdateNeuronTab((NeuronModel?)model);
+                    break;
+                case Models.DesignMode.RegionMode:
+                    if (model != null)
+                    {
+                        ViewManager.CreateView(model.ID, Models.DesignMode.RegionMode);
+                    }
+                    UpdateRegionTab((RegionModel?)model);
+                    break;
+                default: throw new Exception("Invalid update mode");
+            }
         }
 
-        protected void RegionUpdated(object sender, INodeModel model)
+        protected void OnNodeCreated(object sender, INodeModel model)
         {
-            RegionTabs?.UpdateInfo((RegionModel)model);
+            //System.Windows.Forms.MenuItem item;
+            switch (ViewManager.CurrentView.ViewMode)
+            {
+                case Models.DesignMode.NeuronMode:
+                    break;
+                case Models.DesignMode.RegionMode:
+                    ViewsDropDown.Items.Add(model.ID);
+                    break;
+                default: throw new Exception("Invalid create mode");
+            }
         }
 
-        protected void EnterRegion(object sender, RegionModel model)
+        protected void OnNodeRemoved(object sender, INodeModel model)
         {
-
+            switch (ViewManager.CurrentView.ViewMode)
+            {
+                case Models.DesignMode.NeuronMode: break;
+                case Models.DesignMode.RegionMode: break;
+                default: throw new Exception("Invalid delete mode");
+            }
         }
 
         private void InitCallback()
         {
-            designBoard.RegionUpdated += RegionUpdated;
-            designBoard.NeuronUpdated += NeuronUpdated;
+            designBoard.NodeSelected += OnNodeUpdated;
+            designBoard.NodeCreated += OnNodeCreated;
+            designBoard.NodeDeleted += OnNodeRemoved;
         }
 
+        private void ViewsDropDown_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var regionName = ViewsDropDown.SelectedItem?.ToString() ?? "";
+            var view = ViewManager.SwitchView(regionName);
+
+            if (view != null)
+            {
+                LoadAsMode(Models.DesignMode.NeuronMode);
+            }
+        }
+
+        private void CurrentIDInput_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (ProjectState == null || CurrentIDInput.Text == "") { e.Cancel = true; return; }
+            ProjectState.Name = CurrentIDInput.Text;
+        }
+
+        private void RegionIDInput_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (RegionIDInput.Text == "") { e.Cancel = true; return; }
+
+            var oldId = ViewManager.GetRegionID();
+            ViewManager.SetRegionID(RegionIDInput.Text);
+
+            var oldIdx = ViewsDropDown.SelectedIndex;
+            ViewsDropDown.Items.RemoveAt(oldIdx);
+            ViewsDropDown.Items.Insert(oldIdx, RegionIDInput.Text);
+        }
+
+        private void NeuronIDInput_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (NeuronIDInput.Text == ""
+                || ViewManager.CurrentView.Selected is not NeuronControl neuron) { e.Cancel = true; return; }
+        }
+
+        private void NeuronChargeInput_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (NeuronChargeInput.Text == "") { e.Cancel = true; return; }
+        }
+
+        private void NeuronDecayInput_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (NeuronDecayInput.Text == "") { e.Cancel = true; return; }
+        }
+
+        private void NeuronBiasInput_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (NeuronBiasInput.Text == "") { e.Cancel = true; return; }
+        }
+
+        private void collapseGroup1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void collapseGroup1_Load_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }
