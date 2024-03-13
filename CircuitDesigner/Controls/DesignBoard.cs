@@ -6,13 +6,88 @@ using CircuitDesigner.Models;
 namespace CircuitDesigner.Controls
 {
 
+    enum DesignViewMode
+    {
+        RegionView,
+        NeuronView
+    }
+
+    class ViewData
+    {
+        public string ID { get; private set; }
+        public DesignViewMode ViewMode { get; private set; }
+        public List<NodeControl> Controls { get; } = [];
+        public NodeControl? SelectedControl { get; private set; }
+
+        public ViewData(string id, DesignViewMode viewMode)
+        {
+            ID = id;
+            ViewMode = viewMode;
+        }
+
+        public bool AddControl(NodeControl node)
+        {
+            if (Controls.Contains(node)) { return false; }
+            Controls.Add(node);
+            return true;
+        }
+
+        public bool RemoveControl(NodeControl node)
+        {
+            return Controls.Remove(node);
+        }
+    }
+
+    class ViewManager
+    {
+        private readonly Dictionary<string, ViewData> Views = [];
+        public ViewData CurrentView { get; private set; }
+
+        private const string ROOT_ID = "__ROOT__";
+
+        public ViewManager()
+        {
+            CreateView(ROOT_ID, DesignViewMode.RegionView, true);
+            if(CurrentView == null) { throw new Exception("Voodoo has occurred"); }
+        }
+
+        public ViewData? SwitchView(string id)
+        {
+            Views.TryGetValue(id, out ViewData? viewData);
+            return viewData;
+        }
+
+        public bool CreateView(string id, DesignViewMode mode, bool switchTo=false)
+        {
+            if (string.IsNullOrEmpty(id) || Views.ContainsKey(id.ToUpper())) { return false; }
+
+            var newView = new ViewData(id, mode);
+            Views.Add(id.ToUpper(), newView);
+
+            if (switchTo)
+            {
+                CurrentView = newView;
+            }
+
+            return true;
+        }
+
+        public bool DeleteView(string id)
+        {
+            return Views.Remove(id.ToUpper());
+        }
+    }
+
     public partial class DesignBoard : UserControl
     {
+        private DesignViewMode ViewMode = DesignViewMode.RegionView;
+
         private NodeControl? Selection = null;
         private bool IsDragging = false;
         private Point? DragOrigin = null;
         private Point GlobalOrigin;
-        private readonly List<NodeControl> NodeControls = [];
+        private ViewManager ViewManager;
+        
         private int ScaleStep = 0;
 
         //Graphics states
@@ -23,6 +98,11 @@ namespace CircuitDesigner.Controls
         public event NodeSelectEventHandler? NeuronUpdated = null;
         public event NodeSelectEventHandler? RegionUpdated = null;
 
+        public delegate void FocusRegionViewEventHandler(object sender, RegionModel model);
+        public event FocusRegionViewEventHandler? RegionViewExpanded = null;
+
+        public delegate void FocusNeuronViewEventHandler(object sender, RegionModel model);
+
         public DesignBoard()
         {
             InitializeComponent();
@@ -31,6 +111,7 @@ namespace CircuitDesigner.Controls
             HandleCreated += new EventHandler(Init);
             BMBuffer = new(1, 1);
             GBuffer = Graphics.FromImage(BMBuffer);
+            ViewManager = new();
         }
 
         public void Init(object? sender, EventArgs e)
@@ -45,10 +126,7 @@ namespace CircuitDesigner.Controls
         {
             if (ModifierKeys.HasFlag(Keys.Shift))
             {
-                if (Selection == null)
-                {
-                    NewNode(e.Location);
-                }
+                NewNode(false);
             }
             else
             {
@@ -56,26 +134,22 @@ namespace CircuitDesigner.Controls
             }
         }
 
-        private void NewNode(Point? pos = null)
+        private void NewNode(bool center)
         {
-            Debug.WriteLine("NEW NODE");
+            var pos = center ?
+                new Point(Width / 2, Height / 2) :
+                PointToClient(MousePosition);
 
-            pos ??= new Point(Size.Width / 2, Size.Height / 2);
-
-            var regCtrl = new RegionControl(this)
+            var regCtrl = new RegionControl(this);
+            SetNodeScale(regCtrl, ScaleStep);
+            regCtrl.Location = new Point
             {
-                Location = (Point)pos
+                X = pos.X - regCtrl.Width/2,
+                Y = pos.Y - regCtrl.Height/2
             };
 
-            SetNodeScale(regCtrl, ScaleStep);
-
-            regCtrl.Location = new Point(
-                regCtrl.Location.X - regCtrl.Width / 2,
-                regCtrl.Location.Y - regCtrl.Height / 2
-                );
-
             DesignContainer.Controls.Add(regCtrl);
-            NodeControls.Add(regCtrl);
+            ViewManager.CurrentView.AddControl(regCtrl);
 
             PaintNodes();
         }
@@ -84,39 +158,26 @@ namespace CircuitDesigner.Controls
         {
             if (e.KeyCode == Keys.N && ModifierKeys.HasFlag(Keys.Shift))
             {
-                NewNode();
+                NewNode(true);
             }
-        }
-
-        //Queuery
-        private NodeControl? FirstAt(Point pos)
-        {
-            var ret = NodeControls.FirstOrDefault(
-                x => x.Bounds.Contains(pos));
-
-            return ret;
-        }
-
-        private void OnUpdateNode()
-        {
-            if (Selection == null) { return; }
-            if (Selection is RegionControl control) { OnUpdateRegion(control); }
-            else if (Selection is NeuronControl control1) { OnUpdateNeuron(control1); }
-        }
-
-        private void OnUpdateRegion(RegionControl region)
-        {
-            RegionUpdated?.Invoke(this, region.Model);
-        }
-
-        private void OnUpdateNeuron(NeuronControl neuron)
-        {
-            NeuronUpdated?.Invoke(this, neuron.Model);
         }
 
         public void OnMouseWheel(object? sender, MouseEventArgs e)
         {
             Zoom(e.Delta > 0);
+        }
+
+        //State
+        private void SwitchViewMode(DesignViewMode mode, string? id)
+        {
+            if (mode == DesignViewMode.RegionView)
+            {
+
+            } else if (mode == DesignViewMode.NeuronView)
+            {
+
+            }
+            // Other modes?
         }
 
         //Control Comms
@@ -154,7 +215,7 @@ namespace CircuitDesigner.Controls
             {
                 GlobalOrigin = GlobalOrigin.Add(deltaPos);
 
-                foreach (NodeControl ctrl in NodeControls)
+                foreach (NodeControl ctrl in ViewManager.CurrentView.Controls)
                 {
                     ctrl.Location = ctrl.Location.Add(deltaPos);
                 }
@@ -172,11 +233,9 @@ namespace CircuitDesigner.Controls
 
         private void SetNodeScale(NodeControl node, int steps)
         {
-            //TODO Factor recursive scale results Fn(x0, s)=Fn(x0, Fn-1...)...
-            const float STEP_COEF = 0.05f;
-            var scale = 1 / (1 + (-steps * STEP_COEF));
+            const float STEP_COEF = 0.95f;
+            var scale = (float)Math.Pow(1 / STEP_COEF, steps);
             node.Scale(new SizeF(scale, scale));
-            Debug.WriteLine($"SCALE={scale} SCALE_STEP={ScaleStep} STEPS={steps}");
         }
 
         private void Zoom(bool zoomIn)
@@ -189,13 +248,12 @@ namespace CircuitDesigner.Controls
             if (ScaleStep + steps < MIN_SCALE || ScaleStep + steps > MAX_SCALE) { return; }
 
             //Scale
-            foreach (var node in NodeControls)
+            foreach (var node in ViewManager.CurrentView.Controls)
             {
                 SetNodeScale(node, steps);
             }
 
             ScaleStep += steps;
-            Debug.WriteLine($"STEP: {ScaleStep}, {steps}");
 
             //Position
 
@@ -279,7 +337,7 @@ namespace CircuitDesigner.Controls
 
             GBuffer.Clear(Color.Transparent);
             
-            foreach(var node in NodeControls)
+            foreach(var node in ViewManager.CurrentView.Controls)
             {
                 var dests = node.Model?.Connections;
                 if (dests == null) { continue; }
@@ -309,6 +367,22 @@ namespace CircuitDesigner.Controls
 
 
         //Events
+        private void OnUpdateNode()
+        {
+            if (Selection == null) { return; }
+            if (Selection is RegionControl control) { OnUpdateRegion(control); }
+            else if (Selection is NeuronControl control1) { OnUpdateNeuron(control1); }
+        }
+
+        private void OnUpdateRegion(RegionControl region)
+        {
+            RegionUpdated?.Invoke(this, region.Model);
+        }
+
+        private void OnUpdateNeuron(NeuronControl neuron)
+        {
+            NeuronUpdated?.Invoke(this, neuron.Model);
+        }
 
 
     }

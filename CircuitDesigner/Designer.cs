@@ -201,6 +201,11 @@ namespace CircuitDesigner
             RegionTabs?.UpdateInfo((RegionModel)model);
         }
 
+        protected void EnterRegion(object sender, RegionModel model)
+        {
+
+        }
+
         private void InitCallback()
         {
             designBoard.RegionUpdated += RegionUpdated;
