@@ -14,6 +14,8 @@ namespace CircuitDesigner.Models
         public DateTime CreateDate { get; set; } = DateTime.Now;
         public DateTime LastSaveDate { get; set; }
 
+        public uint NodeCounter { get; set; } = 0;
+
         public void Save()
         {
             var path = Path.Combine(FilePath, $"{Name}.scd");

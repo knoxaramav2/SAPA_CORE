@@ -43,11 +43,40 @@ namespace CircuitDesigner.Controls
             DoubleBuffered = true;
         }
 
+        private NodeTypes? DetermineNewNodeType(DesignMode mode, bool secondary, bool altSecondary)
+        {
+            NodeTypes? ret = null;
+
+            switch (mode)
+            {
+                case Models.DesignMode.CircuitMode:
+                    if (secondary)
+                    {
+                        ret = altSecondary ? NodeTypes.OUTPUT : NodeTypes.INPUT;
+                    } else
+                    {
+                        ret = altSecondary ? NodeTypes.REGION : NodeTypes.NEURON;
+                    }
+                    break;
+                case Models.DesignMode.SystemMode:
+                    ret = NodeTypes.REGION;
+                    break;
+            }
+
+            return ret;
+        }
+
         private void DesignContainer_Click(object sender, MouseEventArgs e)
         {
             if (ModifierKeys.HasFlag(Keys.Shift))
             {
-                NewNode(false);
+                var newType = DetermineNewNodeType(
+                    View.ViewMode,
+                    ModifierKeys.HasFlag(Keys.ControlKey),
+                    ModifierKeys.HasFlag(Keys.Alt)
+                    );
+                if (newType == null) { return; }
+                NewNode((NodeTypes)newType, $"New {newType?.NodeTypeName()}", false);
             }
             else
             {
@@ -55,23 +84,33 @@ namespace CircuitDesigner.Controls
             }
         }
 
-        private void NewNode(bool center)
+        private void NewNode(NodeTypes type, string id, bool center)
         {
             var pos = center ?
                 new Point(Width / 2, Height / 2) :
                 PointToClient(MousePosition);
 
-            var regCtrl = new RegionControl(this);
-            SetNodeScale(regCtrl, ScaleStep);
-            regCtrl.Location = new Point
+            NodeControl node;
+
+            switch (type)
             {
-                X = pos.X - regCtrl.Width/2,
-                Y = pos.Y - regCtrl.Height/2
+                case NodeTypes.REGION: node = new RegionControl(this, id); break;
+                case NodeTypes.INPUT: node = new InputControl(this, id); break;
+                case NodeTypes.OUTPUT: node = new OutputControl(this, id); break;
+                case NodeTypes.NEURON: node = new NeuronControl(this, id); break;
+                default: throw new Exception($"Illegal node type: {type}");
+            }
+
+            SetNodeScale(node, ScaleStep);
+            node.Location = new Point
+            {
+                X = pos.X - node.Width/2,
+                Y = pos.Y - node.Height/2
             };
 
-            DesignContainer.Controls.Add(regCtrl);
-            View.AddControl(regCtrl);
-            OnCreateNode(regCtrl.Model);
+            DesignContainer.Controls.Add(node);
+            View.AddControl(node);
+            OnCreateNode(node.Model);
 
             PaintNodes();
         }
@@ -83,7 +122,13 @@ namespace CircuitDesigner.Controls
                 case Keys.N:
                     if (ModifierKeys.HasFlag(Keys.Shift))
                     {
-                        NewNode(true);
+                        var newType = DetermineNewNodeType(
+                            View.ViewMode,
+                            ModifierKeys.HasFlag(Keys.ControlKey),
+                            ModifierKeys.HasFlag(Keys.Alt)
+                            );
+                        if (newType == null) { return; }
+                        NewNode((NodeTypes)newType, $"New {newType?.NodeTypeName()}", true);
                     }
                     break;
                 case Keys.Delete:
@@ -118,7 +163,7 @@ namespace CircuitDesigner.Controls
 
         private void LinkNodes(NodeControl n0, NodeControl n1)
         {
-            Debug.WriteLine($"LINK {n0.Model?.ID} -> {n1.Model?.ID}");
+            Debug.WriteLine($"LINK {n0.Model?.Name} -> {n1.Model?.Name}");
 
             if (n0.Connections.Contains(n1) || n1.Connections.Contains(n0))
             {

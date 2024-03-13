@@ -50,6 +50,8 @@ namespace CircuitDesigner
             CurrentIDInput = new TextBox();
             label8 = new Label();
             RegionTab = new TabPage();
+            OutputsList = new ListBox();
+            label11 = new Label();
             InputsList = new ListBox();
             label10 = new Label();
             RegionConnectionsDropdown = new ComboBox();
@@ -68,8 +70,6 @@ namespace CircuitDesigner
             NeuronIDInput = new TextBox();
             label3 = new Label();
             designBoard = new Controls.DesignBoard();
-            OutputsList = new ListBox();
-            label11 = new Label();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)SplitContainer).BeginInit();
             SplitContainer.Panel1.SuspendLayout();
@@ -270,8 +270,28 @@ namespace CircuitDesigner
             RegionTab.Text = "Region";
             RegionTab.UseVisualStyleBackColor = true;
             // 
+            // OutputsList
+            // 
+            OutputsList.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            OutputsList.FormattingEnabled = true;
+            OutputsList.ItemHeight = 15;
+            OutputsList.Location = new Point(57, 167);
+            OutputsList.Name = "OutputsList";
+            OutputsList.Size = new Size(171, 64);
+            OutputsList.TabIndex = 7;
+            // 
+            // label11
+            // 
+            label11.AutoSize = true;
+            label11.Location = new Point(7, 167);
+            label11.Name = "label11";
+            label11.Size = new Size(50, 15);
+            label11.TabIndex = 6;
+            label11.Text = "Outputs";
+            // 
             // InputsList
             // 
+            InputsList.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             InputsList.FormattingEnabled = true;
             InputsList.ItemHeight = 15;
             InputsList.Location = new Point(58, 92);
@@ -440,24 +460,6 @@ namespace CircuitDesigner
             designBoard.Name = "designBoard";
             designBoard.Size = new Size(681, 426);
             designBoard.TabIndex = 0;
-            // 
-            // OutputsList
-            // 
-            OutputsList.FormattingEnabled = true;
-            OutputsList.ItemHeight = 15;
-            OutputsList.Location = new Point(57, 167);
-            OutputsList.Name = "OutputsList";
-            OutputsList.Size = new Size(171, 64);
-            OutputsList.TabIndex = 7;
-            // 
-            // label11
-            // 
-            label11.AutoSize = true;
-            label11.Location = new Point(7, 167);
-            label11.Name = "label11";
-            label11.Size = new Size(50, 15);
-            label11.TabIndex = 6;
-            label11.Text = "Outputs";
             // 
             // Form1
             // 

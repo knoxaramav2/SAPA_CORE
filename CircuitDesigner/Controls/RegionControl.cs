@@ -6,15 +6,25 @@ namespace CircuitDesigner.Controls
     {
         public RegionControl(string? id = null) : base()
         {
-            Parent = this;
-            id ??= Guid.NewGuid().ToString();
-            Model = new RegionModel(this, id);
         }
 
-        public RegionControl(DesignBoard designer, string? id = null) : base(designer)
+        public RegionControl(DesignBoard designer, string id) : base(designer)
         {
             InitializeComponent();
             Model = new RegionModel(this, id);
+        }
+
+        public bool AddNode(string id, NodeTypes type)
+        {
+
+
+            return true;
+        }
+
+        public bool RemoveNode(string id, NodeTypes type)
+        {
+
+            return true;
         }
     }
 }

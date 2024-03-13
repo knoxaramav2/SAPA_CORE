@@ -168,12 +168,12 @@ namespace CircuitDesigner
         {
             switch (mode)
             {
-                case Models.DesignMode.RegionMode:
+                case Models.DesignMode.SystemMode:
                     SetTabPage(PropertyTabs, RegionTab, true);
                     SetTabPage(PropertyTabs, NeuronTab, false);
                     UpdateRegionTab(null);
                     break;
-                case Models.DesignMode.NeuronMode:
+                case Models.DesignMode.CircuitMode:
                     SetTabPage(PropertyTabs, RegionTab, true);
                     SetTabPage(PropertyTabs, NeuronTab, true);
                     UpdateNeuronTab(null);
@@ -190,19 +190,19 @@ namespace CircuitDesigner
 
         private void UpdateRegionTab(RegionModel? model)
         {
-            UpdateToTextField(RegionIDInput, model?.ID ?? "");
+            UpdateToTextField(RegionIDInput, model?.Name ?? "");
             UpdateToDropdown(RegionConnectionsDropdown,
-                model?.Connections.Select(x => x.ID).ToArray() ?? []
+                model?.Connections.Select(x => x.Name).ToArray() ?? []
                 );
-            UpdateToListBox(InputsList, model?.Inputs.Select(x => x.ID).ToArray() ?? []);
-            UpdateToListBox(OutputsList, model?.Outputs.Select(x => x.ID).ToArray() ?? []);
+            UpdateToListBox(InputsList, model?.Inputs.Select(x => x.Name).ToArray() ?? []);
+            UpdateToListBox(OutputsList, model?.Outputs.Select(x => x.Name).ToArray() ?? []);
         }
 
         private void UpdateNeuronTab(NeuronModel? model)
         {
-            UpdateToTextField(NeuronIDInput, model?.ID ?? "");
+            UpdateToTextField(NeuronIDInput, model?.Name ?? "");
             UpdateToDropdown(NeuronConnectionsDropdown,
-                model?.Dendrites.Select(x => x.Target.ID).ToArray() ?? []
+                model?.Dendrites.Select(x => x.Target.Name).ToArray() ?? []
                 );
             UpdateToTextField(NeuronChargeInput, model?.Charge.ToString() ?? "");
             UpdateToTextField(NeuronDecayInput, model?.Decay.ToString() ?? "");
@@ -311,13 +311,13 @@ namespace CircuitDesigner
         {
             switch (ViewManager.CurrentView.ViewMode)
             {
-                case Models.DesignMode.NeuronMode:
+                case Models.DesignMode.CircuitMode:
                     UpdateNeuronTab((NeuronModel?)model);
                     break;
-                case Models.DesignMode.RegionMode:
+                case Models.DesignMode.SystemMode:
                     if (model != null)
                     {
-                        ViewManager.CreateView(model.ID, Models.DesignMode.RegionMode);
+                        ViewManager.CreateView(model.Name, Models.DesignMode.SystemMode);
                     }
                     UpdateRegionTab((RegionModel?)model);
                     break;
@@ -330,10 +330,10 @@ namespace CircuitDesigner
             //System.Windows.Forms.MenuItem item;
             switch (ViewManager.CurrentView.ViewMode)
             {
-                case Models.DesignMode.NeuronMode:
+                case Models.DesignMode.CircuitMode:
                     break;
-                case Models.DesignMode.RegionMode:
-                    ViewsDropDown.Items.Add(model.ID);
+                case Models.DesignMode.SystemMode:
+                    ViewsDropDown.Items.Add(model.Name);
                     break;
                 default: throw new Exception("Invalid create mode");
             }
@@ -343,8 +343,8 @@ namespace CircuitDesigner
         {
             switch (ViewManager.CurrentView.ViewMode)
             {
-                case Models.DesignMode.NeuronMode: break;
-                case Models.DesignMode.RegionMode: break;
+                case Models.DesignMode.CircuitMode: break;
+                case Models.DesignMode.SystemMode: break;
                 default: throw new Exception("Invalid delete mode");
             }
         }
@@ -363,7 +363,7 @@ namespace CircuitDesigner
 
             if (view != null)
             {
-                LoadAsMode(Models.DesignMode.NeuronMode);
+                LoadAsMode(Models.DesignMode.CircuitMode);
             }
         }
 

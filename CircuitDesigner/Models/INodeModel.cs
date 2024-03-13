@@ -10,7 +10,9 @@ namespace CircuitDesigner.Models
 {
     public interface INodeModel
     {
-        internal string ID { get; set; }
+        public NodeTypes Type { get; protected set; }
+        internal Guid ID { get; set; }
+        internal string Name { get; set; }
         public NodeControl Host { get; protected set; }
         public List<INodeModel> Connections { get; protected set; }
         public bool Attach(INodeModel node)

@@ -6,13 +6,13 @@ namespace CircuitDesigner.Controls
     {
         public NeuronControl() : base()
         {
-            Model = new NeuronModel(this, Guid.NewGuid().ToString());
+            
         }
 
-        public NeuronControl(DesignBoard designer, NeuronModel model) : base(designer)
+        public NeuronControl(DesignBoard designer, string id) : base(designer)
         {
             InitializeComponent();
-            Model = model;
+            Model = new NeuronModel(this, id);
         }
     }
 }

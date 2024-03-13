@@ -11,14 +11,14 @@ using System.Windows.Forms;
 
 namespace CircuitDesigner.Controls
 {
-    public partial class InputControl : NodeControl
+    public partial class OutputControl : NodeControl
     {
-        public InputControl(DesignBoard designer, string id) : base(designer)
+        public OutputControl(DesignBoard designer, string id): base(designer)
         {
-            Model = new InputModel(this, id);
+            Model = new OutputModel(this, id);
         }
 
-        public InputControl()
+        public OutputControl()
         {
             InitializeComponent();
         }

@@ -11,11 +11,13 @@ namespace CircuitDesigner.Models
 
     public class NeuronModel(NodeControl host, string? id = null) : INodeModel
     {
+        public Guid ID { get; set; } = Guid.NewGuid();
+        public NodeTypes Type { get; set; } = NodeTypes.NEURON;
         public NodeControl Host { get; set; } = host;
         List<INodeModel> INodeModel.Connections { get; set; } = [];
 
         [JsonProperty]
-        public string ID { get; set; } = id ?? Guid.NewGuid().ToString();
+        public string Name { get; set; } = id ?? Guid.NewGuid().ToString();
 
         [JsonProperty]
         public List<Dendrite> Dendrites { get; set; } = [];

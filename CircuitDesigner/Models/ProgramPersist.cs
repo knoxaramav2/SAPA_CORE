@@ -17,7 +17,7 @@ namespace CircuitDesigner.Models
         public ProgramPersist()
         {
             LastSaveDate = DateTime.Now;
-            Mode = DesignMode.RegionMode;
+            Mode = DesignMode.SystemMode;
         }
 
         public void UpdateProjectInfo(ProjectState projectState)

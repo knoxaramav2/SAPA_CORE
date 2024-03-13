@@ -3,55 +3,54 @@ using Newtonsoft.Json;
 
 namespace CircuitDesigner.Models
 {
-    public class RegionModel(NodeControl host, string? id = null) : INodeModel
+    public class RegionModel : INodeModel
     {
-        private const ushort DefaultInputsSize = 8;
-        private const ushort DefaultOutputSize = 8;
-
-        public NodeControl Host { get; set; } = host;
+        public Guid ID { get; set; } = Guid.NewGuid();
+        public NodeTypes Type { get; set; } = NodeTypes.REGION;
+        public NodeControl Host { get; set; }
         public List<INodeModel> Connections { get; set; } = [];
 
-        public List<INodeModel?> Inputs { get; private set;} = Enumerable.Repeat<INodeModel?>(null, DefaultInputsSize).ToList();
-        public List<INodeModel?> Outputs { get; private set; } = Enumerable.Repeat<INodeModel?>(null, DefaultOutputSize).ToList();
+        public List<INodeModel> Neurons { get; set; } = [];
+        public List<InputModel> Inputs { get; private set;} = [];
+        public List<OutputModel> Outputs { get; private set; } = [];
+
+        public RegionModel(NodeControl host, string id)
+        {
+            Name = id;
+            Host = host;
+        }
 
         [JsonProperty]
-        public string ID { get; set; } = id ?? Guid.NewGuid().ToString();
+        public string Name { get; set; }
 
-        private void ResizeList(List<INodeModel?> list, ushort size)
+        public bool AddNode(INodeModel model)
         {
-            if (list.Count == size) { return; }
-            if (list.Count > size)
+            if (model is NeuronModel neuron)
             {
-                list = list.GetRange(0, size);
-            }
-            else
+                if (Neurons.Any(x => x.Name.Equals(neuron.Name, StringComparison.OrdinalIgnoreCase))) { return false; }
+                Neurons.Add(neuron);
+            } else if (model is InputModel input)
             {
-                for (var i = list.Count; i < size; ++i) { list.Add(null); }
+                if (Inputs.Any(x => x.Name.Equals(input.Name, StringComparison.OrdinalIgnoreCase))) { return false; }
+                Inputs.Add(input);
+            } else if (model is  OutputModel output)
+            {
+                if (Outputs.Any(x => x.Name.Equals(output.Name, StringComparison.OrdinalIgnoreCase))) { return false; }
+                Outputs.Add(output);
+            } else
+            {
+                return false;
             }
-        }
 
-        public void ResizeInputs(ushort size)
-        {
-            ResizeList(Inputs, size);
-        }
-
-        public void ResizeOutputs(ushort size)
-        {
-            ResizeList(Outputs, size);
-        }
-
-        public bool SetInput(INodeModel input, ushort index)
-        {
-            if (index >= Inputs.Count) { return false; }
-            Inputs[index] = input;
             return true;
         }
 
-        public bool SetOutput(INodeModel output, ushort index)
+        public bool RemoveNode(INodeModel model)
         {
-            if (index >= Outputs.Count) { return false; }
-            Outputs[index] = output;
-            return true;
+            if (model is NeuronModel neuron) { return Neurons.Remove(neuron); }
+            else if (model is InputModel input) { return Inputs.Remove(input); }
+            else if (model is OutputModel output) { return Outputs.Remove(output); }
+            else { return false; }
         }
     }
 }

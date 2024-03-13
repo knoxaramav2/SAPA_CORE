@@ -10,8 +10,8 @@ namespace CircuitDesigner.Models
     public enum DesignMode
     {
         Disabled,
-        RegionMode,
-        NeuronMode
+        SystemMode,
+        CircuitMode
     }
 
     public class ViewData
@@ -77,7 +77,7 @@ namespace CircuitDesigner.Models
 
         public ViewManager()
         {
-            CreateView(ROOT_ID, DesignMode.RegionMode, true);
+            CreateView(ROOT_ID, DesignMode.SystemMode, true);
             if (CurrentView == null) { throw new Exception("Voodoo has occurred"); }
         }
 
@@ -90,9 +90,9 @@ namespace CircuitDesigner.Models
                 return null;
             }
 
-            if (viewData.ViewMode == DesignMode.RegionMode)
+            if (viewData.ViewMode == DesignMode.SystemMode)
             { RegionHost = null; }
-            else if (viewData.ViewMode == DesignMode.NeuronMode)
+            else if (viewData.ViewMode == DesignMode.CircuitMode)
             { RegionHost = (RegionModel?)viewData.Selected?.Model; }
 
             CurrentView = viewData;
@@ -143,10 +143,10 @@ namespace CircuitDesigner.Models
         {
             string? ret = null;
 
-            if (RegionHost != null) { ret = RegionHost.ID; }
+            if (RegionHost != null) { ret = RegionHost.Name; }
             else if (CurrentView.Selected is RegionControl region)
             {
-                ret = region.Model.ID;
+                ret = region.Model.Name;
             }
 
             return ret;
@@ -154,17 +154,17 @@ namespace CircuitDesigner.Models
 
         public void SetRegionID(string id)
         {
-            if (RegionHost != null) { RegionHost.ID = id; }
+            if (RegionHost != null) { RegionHost.Name = id; }
             else if (CurrentView.Selected is RegionControl region)
             {
-                region.Model.ID = id;
+                region.Model.Name = id;
             }
         }
     
         public string? GetNeuronID()
         {
             var model = GetFocused() as NeuronModel;
-            return model?.ID;
+            return model?.Name;
         }
 
         public bool SetNeuronID(string id)
