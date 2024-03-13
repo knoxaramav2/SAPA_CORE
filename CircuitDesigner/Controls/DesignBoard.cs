@@ -24,6 +24,8 @@ namespace CircuitDesigner.Controls
         public event NodeSelectEventHandler? NodeSelected = null;
         public event NodeCreatedEventHandler? NodeCreated = null;
         public event NodeDeletedEventHandler? NodeDeleted = null;
+        public event RegionEnterEventHandler? RegionEnter = null;
+        public event RegionExitEventHandler? RegionExit = null;
 
         public DesignBoard()
         {
@@ -139,8 +141,6 @@ namespace CircuitDesigner.Controls
                     }
                     break;
             }
-
-            
         }
 
         public void OnMouseWheel(object? sender, MouseEventArgs e)

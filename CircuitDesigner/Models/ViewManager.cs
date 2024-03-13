@@ -17,14 +17,16 @@ namespace CircuitDesigner.Models
     public class ViewData
     {
         public Point GlobalOrigin { get; set; }
-        public string ID { get; private set; }
+        public string Name { get; private set; }
+        public Guid ID { get; private set; }
         public DesignMode ViewMode { get; private set; }
         public List<NodeControl> Controls { get; } = [];
         public NodeControl? Selected { get; private set; }
 
-        public ViewData(string id, DesignMode viewMode)
+        public ViewData(string name, DesignMode viewMode)
         {
-            ID = id;
+            Name = name;
+            ID = Guid.NewGuid();
             ViewMode = viewMode;
             GlobalOrigin = new Point(0, 0);
         }
@@ -69,7 +71,7 @@ namespace CircuitDesigner.Models
     {
         public RegionModel? RegionHost = null;
 
-        private readonly Dictionary<string, ViewData> Views = [];
+        private readonly Dictionary<Guid, ViewData> Views = [];
         public ViewData CurrentView { get; private set; }
 
         private const string ROOT_ID = "Regions";
@@ -81,11 +83,9 @@ namespace CircuitDesigner.Models
             if (CurrentView == null) { throw new Exception("Voodoo has occurred"); }
         }
 
-        public ViewData? SwitchView(string id)
+        public ViewData? SwitchView(Guid id)
         {
-            if (string.IsNullOrEmpty(id)) { id = ROOT_ID; }
-
-            if (!Views.TryGetValue(id.ToUpper(), out ViewData? viewData))
+            if (!Views.TryGetValue(id, out ViewData? viewData))
             {
                 return null;
             }
@@ -94,17 +94,17 @@ namespace CircuitDesigner.Models
             { RegionHost = null; }
             else if (viewData.ViewMode == DesignMode.CircuitMode)
             { RegionHost = (RegionModel?)viewData.Selected?.Model; }
+            else { throw new NotImplementedException(); }
 
             CurrentView = viewData;
             return viewData;
         }
 
-        public bool CreateView(string id, DesignMode mode, bool switchTo = false)
+        public bool CreateView(string name, DesignMode mode, bool switchTo = false)
         {
-            if (string.IsNullOrEmpty(id) || Views.ContainsKey(id.ToUpper())) { return false; }
-
-            var newView = new ViewData(id, mode);
-            Views.Add(id.ToUpper(), newView);
+            var id = Guid.NewGuid();
+            var newView = new ViewData(name, mode);
+            Views.Add(id, newView);
 
             if (switchTo)
             {
@@ -114,14 +114,14 @@ namespace CircuitDesigner.Models
             return true;
         }
 
-        public bool DeleteView(string id)
+        public bool DeleteView(Guid id)
         {
-            return Views.Remove(id.ToUpper());
+            return Views.Remove(id);
         }
 
-        public string[] ListViewIds()
+        public ViewData[] ListViews()
         {
-            return Views.Values.Select(x => x.ID).ToArray();
+            return Views.Values.ToArray() ?? [];
         }
 
         public INodeModel? GetFocused()
@@ -129,9 +129,8 @@ namespace CircuitDesigner.Models
             return CurrentView.Selected?.Model ?? RegionHost;
         }
 
-        public ViewData? GetView(string id)
+        public ViewData? GetView(Guid id)
         {
-            id = id.ToUpper();
             if (!Views.TryGetValue(id, out var view)){
                 return null;
             }

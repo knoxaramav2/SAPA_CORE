@@ -17,7 +17,7 @@ namespace CircuitDesigner
         private void InitOnLoad()
         {
             ViewManager = new();
-            ViewsDropDown.Items.AddRange(ViewManager.ListViewIds());
+            ViewsDropDown.Items.AddRange(ViewManager.ListViews());
             ViewsDropDown.SelectedIndex = 0;
 
             PersistState = ProgramPersist.FromFile() ?? new ProgramPersist();
@@ -212,7 +212,7 @@ namespace CircuitDesigner
         private void UpdateProjectTab()
         {
             var view = ViewManager.CurrentView;
-            CurrentIDInput.Text = view.ID;
+            CurrentIDInput.Text = view.Name;
             CurrentViewNameLabel.Text = view.ViewMode.ToString();
         }
 
@@ -349,19 +349,29 @@ namespace CircuitDesigner
             }
         }
 
+        protected void OnRegionEnter(object sender, RegionModel model)
+        {
+            var view = ViewManager.GetView(model.ID);
+        }
+
+        protected void OnRegionExit(object sender, RegionModel model)
+        {
+
+        }
+
         private void InitCallback()
         {
             designBoard.NodeSelected += OnNodeUpdated;
             designBoard.NodeCreated += OnNodeCreated;
             designBoard.NodeDeleted += OnNodeRemoved;
+            designBoard.RegionEnter += OnRegionEnter;
+            designBoard.RegionExit += OnRegionExit;
         }
 
         private void ViewsDropDown_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var regionName = ViewsDropDown.SelectedItem?.ToString() ?? "";
-            var view = ViewManager.SwitchView(regionName);
-
-            if (view != null)
+            var view = ViewsDropDown.SelectedItem as ViewData;
+            if (view != null && ViewManager.SwitchView(view.ID) != null)
             {
                 LoadAsMode(Models.DesignMode.CircuitMode);
             }

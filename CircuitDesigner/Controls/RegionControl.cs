@@ -26,5 +26,10 @@ namespace CircuitDesigner.Controls
 
             return true;
         }
+
+        private void RegionControl_DoubleClick(object sender, EventArgs e)
+        {
+            
+        }
     }
 }

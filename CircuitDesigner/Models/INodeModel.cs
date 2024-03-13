@@ -11,7 +11,7 @@ namespace CircuitDesigner.Models
     public interface INodeModel
     {
         public NodeTypes Type { get; protected set; }
-        internal Guid ID { get; set; }
+        public Guid ID { get; internal set; }
         internal string Name { get; set; }
         public NodeControl Host { get; protected set; }
         public List<INodeModel> Connections { get; protected set; }

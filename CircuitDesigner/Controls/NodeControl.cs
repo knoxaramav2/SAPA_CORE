@@ -4,7 +4,7 @@ namespace CircuitDesigner.Controls
 {
     public partial class NodeControl : UserControl
     {
-        private readonly DesignBoard? Designer;
+        internal readonly DesignBoard? Designer;
 
         private INodeModel? _model { get; set; }
         public INodeModel Model
