@@ -42,7 +42,7 @@ namespace CircuitDesigner
             aboutToolStripMenuItem = new ToolStripMenuItem();
             statusStrip1 = new StatusStrip();
             splitContainer1 = new SplitContainer();
-            designBoard1 = new Controls.DesignBoard();
+            designBoard = new Controls.DesignBoard();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel2.SuspendLayout();
@@ -143,20 +143,20 @@ namespace CircuitDesigner
             // 
             // splitContainer1.Panel2
             // 
-            splitContainer1.Panel2.Controls.Add(designBoard1);
+            splitContainer1.Panel2.Controls.Add(designBoard);
             splitContainer1.Panel2.ControlAdded += SplitContainer1_Panel2_ControlAdded;
             splitContainer1.Size = new Size(928, 429);
             splitContainer1.SplitterDistance = 223;
             splitContainer1.TabIndex = 2;
             // 
-            // designBoard1
+            // designBoard
             // 
-            designBoard1.BackColor = Color.Black;
-            designBoard1.Dock = DockStyle.Fill;
-            designBoard1.Location = new Point(0, 0);
-            designBoard1.Name = "designBoard1";
-            designBoard1.Size = new Size(701, 429);
-            designBoard1.TabIndex = 0;
+            designBoard.BackColor = Color.Black;
+            designBoard.Dock = DockStyle.Fill;
+            designBoard.Location = new Point(0, 0);
+            designBoard.Name = "designBoard";
+            designBoard.Size = new Size(701, 429);
+            designBoard.TabIndex = 0;
             // 
             // Form1
             // 
@@ -170,6 +170,7 @@ namespace CircuitDesigner
             Name = "Form1";
             Text = "SAPA Circuit Designer";
             FormClosing += ExitApplication;
+            Load += Form1_Load;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             splitContainer1.Panel2.ResumeLayout(false);
@@ -194,6 +195,6 @@ namespace CircuitDesigner
         private ToolStripMenuItem aboutToolStripMenuItem;
         private StatusStrip statusStrip1;
         private SplitContainer splitContainer1;
-        private Controls.DesignBoard designBoard1;
+        private Controls.DesignBoard designBoard;
     }
 }

@@ -5,7 +5,21 @@ namespace CircuitDesigner.Controls
     public partial class NodeControl : UserControl
     {
         private readonly DesignBoard? Designer;
-        public INodeModel? Model;
+
+        private INodeModel? _model { get; set; }
+        public INodeModel Model
+        {
+            get
+            {
+                if (_model == null) { throw new Exception("Model not set"); }
+                return _model;
+            }
+
+            set
+            {
+                _model = value;
+            }
+        }
         public List<NodeControl> Connections { get; set; } = [];
 
         public NodeControl()

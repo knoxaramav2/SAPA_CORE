@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using CircuitDesigner.Util;
 using System.Drawing.Drawing2D;
+using CircuitDesigner.Models;
 
 namespace CircuitDesigner.Controls
 {
@@ -18,6 +19,9 @@ namespace CircuitDesigner.Controls
         private Bitmap BMBuffer;
         private Graphics GBuffer;
 
+        public delegate void NodeSelectEventHandler(object sender, INodeModel nodeControl);
+        public event NodeSelectEventHandler? NeuronUpdated = null;
+        public event NodeSelectEventHandler? RegionUpdated = null;
 
         public DesignBoard()
         {
@@ -93,14 +97,21 @@ namespace CircuitDesigner.Controls
             return ret;
         }
 
-        private void SelectRegion(RegionControl region)
+        private void OnUpdateNode()
         {
-
+            if (Selection == null) { return; }
+            if (Selection is RegionControl control) { OnUpdateRegion(control); }
+            else if (Selection is NeuronControl control1) { OnUpdateNeuron(control1); }
         }
 
-        private void SelectNeuron(NeuronControl neuron)
+        private void OnUpdateRegion(RegionControl region)
         {
+            RegionUpdated?.Invoke(this, region.Model);
+        }
 
+        private void OnUpdateNeuron(NeuronControl neuron)
+        {
+            NeuronUpdated?.Invoke(this, neuron.Model);
         }
 
         public void OnMouseWheel(object? sender, MouseEventArgs e)
@@ -129,6 +140,7 @@ namespace CircuitDesigner.Controls
                 n0.AttachNode(n1);
             }
 
+            OnUpdateNode();
             PaintNodes();
         }
 
@@ -202,11 +214,11 @@ namespace CircuitDesigner.Controls
 
             if (control is NeuronControl nrn)
             {
-                SelectNeuron(nrn);
+                OnUpdateNeuron(nrn);
             }
             else if (control is RegionControl reg)
             {
-                SelectRegion(reg);
+                OnUpdateRegion(reg);
             }
 
         }
@@ -294,5 +306,10 @@ namespace CircuitDesigner.Controls
 
             Refresh();
         }
+
+
+        //Events
+
+
     }
 }

@@ -132,6 +132,11 @@ namespace CircuitDesigner
             InitOnLoad();
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            InitCallback();
+        }
+
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
@@ -176,12 +181,31 @@ namespace CircuitDesigner
         private void SplitContainer1_Panel1_ControlAdded(object sender, ControlEventArgs e)
         {
 
-            
+
         }
 
         private void SplitContainer1_Panel2_ControlAdded(object sender, ControlEventArgs e)
         {
 
         }
+
+        //Callbacks
+
+        protected void NeuronUpdated(object sender, INodeModel model)
+        {
+            NeuronTabs?.UpdateInfo((NeuronModel)model);
+        }
+
+        protected void RegionUpdated(object sender, INodeModel model)
+        {
+            RegionTabs?.UpdateInfo((RegionModel)model);
+        }
+
+        private void InitCallback()
+        {
+            designBoard.RegionUpdated += RegionUpdated;
+            designBoard.NeuronUpdated += NeuronUpdated;
+        }
+
     }
 }

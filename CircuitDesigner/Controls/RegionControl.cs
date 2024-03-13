@@ -4,8 +4,6 @@ namespace CircuitDesigner.Controls
 {
     public partial class RegionControl : NodeControl
     {
-        //public new RegionModel Model;
-
         public RegionControl(string? id = null) : base()
         {
             Parent = this;
