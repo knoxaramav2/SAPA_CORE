@@ -181,7 +181,6 @@ namespace CircuitDesigner.Controls
 
         private void Drag(Point pos)
         {
-            Debug.WriteLine($"{!IsDragging} | {DragOrigin == null}");
             if (!IsDragging || DragOrigin == null) { return; }
             var origin = (Point)DragOrigin;
             var deltaPos = pos.Sub(origin);
@@ -348,6 +347,16 @@ namespace CircuitDesigner.Controls
         private void OnDeleteNode(INodeModel model)
         {
             NodeDeleted?.Invoke(this, model);
+        }
+
+        public void OnRegionEnter(RegionModel model)
+        {
+            RegionEnter?.Invoke(this, model);
+        }
+
+        public void OnRegionExit(RegionModel model)
+        {
+            RegionExit?.Invoke(this, model);
         }
     }
 }

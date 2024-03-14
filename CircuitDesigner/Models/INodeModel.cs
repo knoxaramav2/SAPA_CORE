@@ -1,6 +1,7 @@
 ﻿using CircuitDesigner.Controls;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CircuitDesigner.Models
 {
-    public interface INodeModel
+    public interface INodeModel : INotifyPropertyChanged
     {
         public NodeTypes Type { get; protected set; }
         public Guid ID { get; internal set; }

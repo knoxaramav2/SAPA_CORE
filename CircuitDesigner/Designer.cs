@@ -1,8 +1,12 @@
 using CircuitDesigner.Controls;
 using CircuitDesigner.Models;
 using CircuitDesigner.Util;
+using System.ComponentModel;
+using System.Data;
 using System.Diagnostics;
+using System.Numerics;
 using System.Reflection;
+using System.Security.Cryptography.Xml;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 
 namespace CircuitDesigner
@@ -17,12 +21,54 @@ namespace CircuitDesigner
         private void InitOnLoad()
         {
             ViewManager = new();
-            ViewsDropDown.Items.AddRange(ViewManager.ListViews());
-            ViewsDropDown.SelectedIndex = 0;
-
+            //ViewsDropDown.Items.AddRange(ViewManager.ListViews());
+            //ViewsDropDown.SelectedIndex = 0;
             PersistState = ProgramPersist.FromFile() ?? new ProgramPersist();
             SetControlStates(ProjectState != null);
             LoadAsMode(PersistState.Mode);
+            SetBindings();
+        }
+
+        private void SetBindings()
+        {
+            UpdateViewsBinding();
+            UpdateRegionBindings();
+        }
+
+        private void UpdateRegionBindings()
+        {
+            if (ViewManager.GetFocused() is RegionModel model)
+            {
+                InputsList.DisplayMember = nameof(model.Name);
+                InputsList.ValueMember = nameof(model.ID);
+                InputsList.DataSource = model.Inputs;
+
+                OutputsList.DisplayMember = nameof(model.Name);
+                OutputsList.ValueMember = nameof(model.ID);
+                OutputsList.DataSource = model.Inputs;
+
+                var nameBinding = new Binding("Text", model, nameof(model.Name), true, DataSourceUpdateMode.OnPropertyChanged);
+                RegionNameInput.DataBindings.Clear();
+                RegionNameInput.DataBindings.Add(nameBinding);
+            }
+
+            if (ViewManager.CurrentView.Selected is RegionControl view)
+            {
+                RegionConnectionsDropdown.DisplayMember = nameof(view.ModelName);
+                RegionConnectionsDropdown.ValueMember = nameof(view.ModelID);
+                RegionConnectionsDropdown.DataSource = view.Connections;
+
+                RegionConnectionsDropdown.Text = string.Empty;
+                var idx = RegionConnectionsDropdown.Items.Count-1;
+                RegionConnectionsDropdown.SelectedIndex = idx;
+            }
+        }
+
+        private void UpdateViewsBinding()
+        {
+            ViewsDropDown.ComboBox.DisplayMember = nameof(NodeControl.ModelName);
+            ViewsDropDown.ComboBox.ValueMember = nameof(NodeControl.ModelID);
+            ViewsDropDown.ComboBox.DataSource = ViewManager.CurrentView.Controls;
         }
 
         private void SaveAll()
@@ -142,11 +188,8 @@ namespace CircuitDesigner
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             InitializeComponent();
-
-            //InputsGroup.CollapseHeader.Text = "Inputs";
-            //OutputsGroup.CollapseHeader.Text = "Outputs";
-
             InitOnLoad();
+            
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -190,12 +233,7 @@ namespace CircuitDesigner
 
         private void UpdateRegionTab(RegionModel? model)
         {
-            UpdateToTextField(RegionIDInput, model?.Name ?? "");
-            UpdateToDropdown(RegionConnectionsDropdown,
-                model?.Connections.Select(x => x.Name).ToArray() ?? []
-                );
-            UpdateToListBox(InputsList, model?.Inputs.Select(x => x.Name).ToArray() ?? []);
-            UpdateToListBox(OutputsList, model?.Outputs.Select(x => x.Name).ToArray() ?? []);
+            UpdateRegionBindings();
         }
 
         private void UpdateNeuronTab(NeuronModel? model)
@@ -333,7 +371,7 @@ namespace CircuitDesigner
                 case Models.DesignMode.CircuitMode:
                     break;
                 case Models.DesignMode.SystemMode:
-                    ViewsDropDown.Items.Add(model.Name);
+                    //ViewsDropDown.Items.Add(model.Name);
                     break;
                 default: throw new Exception("Invalid create mode");
             }
@@ -352,6 +390,7 @@ namespace CircuitDesigner
         protected void OnRegionEnter(object sender, RegionModel model)
         {
             var view = ViewManager.GetView(model.ID);
+            
         }
 
         protected void OnRegionExit(object sender, RegionModel model)
@@ -370,7 +409,7 @@ namespace CircuitDesigner
 
         private void ViewsDropDown_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var view = ViewsDropDown.SelectedItem as ViewData;
+            ViewData? view = ViewsDropDown.SelectedItem as ViewData;
             if (view != null && ViewManager.SwitchView(view.ID) != null)
             {
                 LoadAsMode(Models.DesignMode.CircuitMode);
@@ -385,14 +424,8 @@ namespace CircuitDesigner
 
         private void RegionIDInput_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (RegionIDInput.Text == "") { e.Cancel = true; return; }
-
-            var oldId = ViewManager.GetRegionID();
-            ViewManager.SetRegionID(RegionIDInput.Text);
-
-            var oldIdx = ViewsDropDown.SelectedIndex;
-            ViewsDropDown.Items.RemoveAt(oldIdx);
-            ViewsDropDown.Items.Insert(oldIdx, RegionIDInput.Text);
+            if (RegionNameInput.Text == "") { e.Cancel = true; return; }
+            ViewManager.SetRegionName(RegionNameInput.Text);
         }
 
         private void NeuronIDInput_Validating(object sender, System.ComponentModel.CancelEventArgs e)
@@ -416,14 +449,7 @@ namespace CircuitDesigner
             if (NeuronBiasInput.Text == "") { e.Cancel = true; return; }
         }
 
-        private void collapseGroup1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void collapseGroup1_Load_1(object sender, EventArgs e)
-        {
-
-        }
+        
     }
+
 }

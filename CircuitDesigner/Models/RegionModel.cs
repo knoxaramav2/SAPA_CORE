@@ -1,27 +1,27 @@
 ﻿using CircuitDesigner.Controls;
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace CircuitDesigner.Models
 {
-    public class RegionModel : INodeModel
+    public class RegionModel(NodeControl host, string name) : INodeModel
     {
+        #region Model Definitions
         public Guid ID { get; set; } = Guid.NewGuid();
         public NodeTypes Type { get; set; } = NodeTypes.REGION;
-        public NodeControl Host { get; set; }
+        public NodeControl Host { get; set; } = host;
         public List<INodeModel> Connections { get; set; } = [];
 
         public List<INodeModel> Neurons { get; set; } = [];
         public List<InputModel> Inputs { get; private set;} = [];
         public List<OutputModel> Outputs { get; private set; } = [];
 
-        public RegionModel(NodeControl host, string id)
-        {
-            Name = id;
-            Host = host;
-        }
-
+        private string _name = name;
         [JsonProperty]
-        public string Name { get; set; }
+        public string Name { 
+            get { return _name; }
+            set { _name = value; NotifyPropertyChanged(nameof(Name)); } 
+        }
 
         public bool AddNode(INodeModel model)
         {
@@ -52,5 +52,12 @@ namespace CircuitDesigner.Models
             else if (model is OutputModel output) { return Outputs.Remove(output); }
             else { return false; }
         }
+
+        #endregion
+
+        #region INotifedPropertyChanged
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void NotifyPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        #endregion
     }
 }

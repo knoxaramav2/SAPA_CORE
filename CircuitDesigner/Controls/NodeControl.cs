@@ -4,8 +4,10 @@ namespace CircuitDesigner.Controls
 {
     public partial class NodeControl : UserControl
     {
-        internal readonly DesignBoard? Designer;
+        public string ModelName { get { return Model.Name; } set { Model.Name = value; } }
+        public Guid ModelID { get { return Model.ID; } }
 
+        internal readonly DesignBoard? Designer;
         private INodeModel? _model { get; set; }
         public INodeModel Model
         {

@@ -29,6 +29,7 @@ namespace CircuitDesigner
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             menuStrip1 = new MenuStrip();
             FileMenuItem = new ToolStripMenuItem();
             newProjectToolStripMenuItem = new ToolStripMenuItem();
@@ -41,6 +42,8 @@ namespace CircuitDesigner
             SettingsMenuItem = new ToolStripMenuItem();
             AboutMenuItem = new ToolStripMenuItem();
             ViewsDropDown = new ToolStripComboBox();
+            viewDataBindingSource1 = new BindingSource(components);
+            viewDataBindingSource = new BindingSource(components);
             statusStrip1 = new StatusStrip();
             SplitContainer = new SplitContainer();
             PropertyTabs = new TabControl();
@@ -56,7 +59,7 @@ namespace CircuitDesigner
             label10 = new Label();
             RegionConnectionsDropdown = new ComboBox();
             label2 = new Label();
-            RegionIDInput = new TextBox();
+            RegionNameInput = new TextBox();
             label1 = new Label();
             NeuronTab = new TabPage();
             NeuronBiasInput = new TextBox();
@@ -70,7 +73,10 @@ namespace CircuitDesigner
             NeuronIDInput = new TextBox();
             label3 = new Label();
             designBoard = new Controls.DesignBoard();
+            regionModelBindingSource = new BindingSource(components);
             menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)viewDataBindingSource1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)viewDataBindingSource).BeginInit();
             ((System.ComponentModel.ISupportInitialize)SplitContainer).BeginInit();
             SplitContainer.Panel1.SuspendLayout();
             SplitContainer.Panel2.SuspendLayout();
@@ -79,6 +85,7 @@ namespace CircuitDesigner
             ProjectTab.SuspendLayout();
             RegionTab.SuspendLayout();
             NeuronTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)regionModelBindingSource).BeginInit();
             SuspendLayout();
             // 
             // menuStrip1
@@ -157,9 +164,14 @@ namespace CircuitDesigner
             // 
             // ViewsDropDown
             // 
+            ViewsDropDown.DataBindings.Add(new Binding("SelectedItem", viewDataBindingSource1, "Name", true));
             ViewsDropDown.Name = "ViewsDropDown";
             ViewsDropDown.Size = new Size(121, 23);
             ViewsDropDown.SelectedIndexChanged += ViewsDropDown_SelectedIndexChanged;
+            // 
+            // viewDataBindingSource1
+            // 
+            viewDataBindingSource1.DataSource = typeof(Models.ViewData);
             // 
             // statusStrip1
             // 
@@ -260,7 +272,7 @@ namespace CircuitDesigner
             RegionTab.Controls.Add(label10);
             RegionTab.Controls.Add(RegionConnectionsDropdown);
             RegionTab.Controls.Add(label2);
-            RegionTab.Controls.Add(RegionIDInput);
+            RegionTab.Controls.Add(RegionNameInput);
             RegionTab.Controls.Add(label1);
             RegionTab.Location = new Point(4, 24);
             RegionTab.Name = "RegionTab";
@@ -310,6 +322,9 @@ namespace CircuitDesigner
             // 
             // RegionConnectionsDropdown
             // 
+            RegionConnectionsDropdown.DataBindings.Add(new Binding("DataContext", regionModelBindingSource, "Name", true));
+            RegionConnectionsDropdown.DataBindings.Add(new Binding("SelectedItem", regionModelBindingSource, "Name", true));
+            RegionConnectionsDropdown.DataBindings.Add(new Binding("SelectedValue", regionModelBindingSource, "ID", true));
             RegionConnectionsDropdown.FormattingEnabled = true;
             RegionConnectionsDropdown.Location = new Point(8, 50);
             RegionConnectionsDropdown.Name = "RegionConnectionsDropdown";
@@ -325,13 +340,15 @@ namespace CircuitDesigner
             label2.TabIndex = 2;
             label2.Text = "Connections";
             // 
-            // RegionIDInput
+            // RegionNameInput
             // 
-            RegionIDInput.Location = new Point(53, 6);
-            RegionIDInput.Name = "RegionIDInput";
-            RegionIDInput.Size = new Size(176, 23);
-            RegionIDInput.TabIndex = 1;
-            RegionIDInput.Validating += RegionIDInput_Validating;
+            RegionNameInput.DataBindings.Add(new Binding("DataContext", regionModelBindingSource, "Name", true));
+            RegionNameInput.DataBindings.Add(new Binding("Text", regionModelBindingSource, "Name", true));
+            RegionNameInput.Location = new Point(53, 6);
+            RegionNameInput.Name = "RegionNameInput";
+            RegionNameInput.Size = new Size(176, 23);
+            RegionNameInput.TabIndex = 1;
+            RegionNameInput.Validating += RegionIDInput_Validating;
             // 
             // label1
             // 
@@ -461,6 +478,10 @@ namespace CircuitDesigner
             designBoard.Size = new Size(681, 426);
             designBoard.TabIndex = 0;
             // 
+            // regionModelBindingSource
+            // 
+            regionModelBindingSource.DataSource = typeof(Models.RegionModel);
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -476,6 +497,8 @@ namespace CircuitDesigner
             Load += Form1_Load;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)viewDataBindingSource1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)viewDataBindingSource).EndInit();
             SplitContainer.Panel1.ResumeLayout(false);
             SplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)SplitContainer).EndInit();
@@ -487,6 +510,7 @@ namespace CircuitDesigner
             RegionTab.PerformLayout();
             NeuronTab.ResumeLayout(false);
             NeuronTab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)regionModelBindingSource).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -512,7 +536,7 @@ namespace CircuitDesigner
         private TabPage ProjectTab;
         private TabPage RegionTab;
         private TabPage NeuronTab;
-        private TextBox RegionIDInput;
+        private TextBox RegionNameInput;
         private Label label1;
         private ComboBox RegionConnectionsDropdown;
         private Label label2;
@@ -534,5 +558,8 @@ namespace CircuitDesigner
         private Label label10;
         private ListBox OutputsList;
         private Label label11;
+        private BindingSource viewDataBindingSource;
+        private BindingSource viewDataBindingSource1;
+        private BindingSource regionModelBindingSource;
     }
 }

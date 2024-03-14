@@ -1,6 +1,7 @@
 ﻿using CircuitDesigner.Controls;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,17 +17,18 @@ namespace CircuitDesigner.Models
 
     public class ViewData
     {
+        public string Test { get; set; } = (new Random()).Next().ToString();
         public Point GlobalOrigin { get; set; }
-        public string Name { get; private set; }
-        public Guid ID { get; private set; }
+        public string Name { get; set; }
+        public string ID { get; set; }
         public DesignMode ViewMode { get; private set; }
-        public List<NodeControl> Controls { get; } = [];
+        public BindingList<NodeControl> Controls { get; } = [];
         public NodeControl? Selected { get; private set; }
 
         public ViewData(string name, DesignMode viewMode)
         {
             Name = name;
-            ID = Guid.NewGuid();
+            ID = Guid.NewGuid().ToString();
             ViewMode = viewMode;
             GlobalOrigin = new Point(0, 0);
         }
@@ -83,9 +85,9 @@ namespace CircuitDesigner.Models
             if (CurrentView == null) { throw new Exception("Voodoo has occurred"); }
         }
 
-        public ViewData? SwitchView(Guid id)
+        public ViewData? SwitchView(string id)
         {
-            if (!Views.TryGetValue(id, out ViewData? viewData))
+            if (!Views.TryGetValue(new Guid(id), out ViewData? viewData))
             {
                 return null;
             }
@@ -138,7 +140,7 @@ namespace CircuitDesigner.Models
             return view;
         }
     
-        public string? GetRegionID()
+        public string? GetRegionName()
         {
             string? ret = null;
 
@@ -151,28 +153,30 @@ namespace CircuitDesigner.Models
             return ret;
         }
 
-        public void SetRegionID(string id)
+        public bool SetRegionName(string name)
         {
-            if (RegionHost != null) { RegionHost.Name = id; }
+            if (RegionHost != null) { RegionHost.Name = name; }
             else if (CurrentView.Selected is RegionControl region)
             {
-                region.Model.Name = id;
+                region.Model.Name = name;
             }
+            else { return false; }
+
+            return true;
         }
     
-        public string? GetNeuronID()
+        public string? GetNeuronName()
         {
             var model = GetFocused() as NeuronModel;
             return model?.Name;
         }
 
-        public bool SetNeuronID(string id)
+        public bool SetNeuronName(string name)
         {
-            var model = GetFocused() as NeuronModel;
+            NeuronModel? model = GetFocused() as NeuronModel;
             if (RegionHost == null || model == null) { return false; }
 
-            
-
+            model.Name = name;
             return true;
         }
     }
