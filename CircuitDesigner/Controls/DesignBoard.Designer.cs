@@ -40,6 +40,7 @@
             DesignContainer.Size = new Size(535, 479);
             DesignContainer.TabIndex = 0;
             DesignContainer.Paint += OnPaint;
+            DesignContainer.DoubleClick += DesignContainer_DoubleClick;
             DesignContainer.MouseClick += DesignContainer_Click;
             DesignContainer.MouseDown += DesignContainer_MouseDown;
             DesignContainer.MouseLeave += DesignContainer_MouseLeave;

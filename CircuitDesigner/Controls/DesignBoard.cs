@@ -7,19 +7,29 @@ using System.Diagnostics.Contracts;
 namespace CircuitDesigner.Controls
 {
 
-    
+
     public partial class DesignBoard : UserControl
     {
-        //private NodeControl? Selection = null;
+        private ViewData? _view = null;
+        public ViewData View
+        {
+            get 
+            {
+                return _view ?? new ViewData();
+            }
+            set
+            {
+                _view = value;
+            }
+        }
         private bool IsDragging = false;
         private Point? DragOrigin = null;
-        
+
         private int ScaleStep = 0;
 
         //Graphics states
         private Bitmap BMBuffer;
         private Graphics GBuffer;
-        public ViewData View;
 
         public event NodeSelectEventHandler? NodeSelected = null;
         public event NodeCreatedEventHandler? NodeCreated = null;
@@ -34,7 +44,6 @@ namespace CircuitDesigner.Controls
             HandleCreated += new EventHandler(Init);
             BMBuffer = new(1, 1);
             GBuffer = Graphics.FromImage(BMBuffer);
-            View = new ViewData("", Models.DesignMode.Disabled);
         }
 
         public void Init(object? sender, EventArgs e)
@@ -55,7 +64,8 @@ namespace CircuitDesigner.Controls
                     if (secondary)
                     {
                         ret = altSecondary ? NodeTypes.OUTPUT : NodeTypes.INPUT;
-                    } else
+                    }
+                    else
                     {
                         ret = altSecondary ? NodeTypes.REGION : NodeTypes.NEURON;
                     }
@@ -86,33 +96,41 @@ namespace CircuitDesigner.Controls
             }
         }
 
-        private void NewNode(NodeTypes type, string id, bool center)
+        private void NewNode(NodeTypes type, string name, bool center)
         {
             var pos = center ?
                 new Point(Width / 2, Height / 2) :
                 PointToClient(MousePosition);
 
             NodeControl node;
+            var container = View.Node as RegionControl;
 
             switch (type)
             {
-                case NodeTypes.REGION: node = new RegionControl(this, id); break;
-                case NodeTypes.INPUT: node = new InputControl(this, id); break;
-                case NodeTypes.OUTPUT: node = new OutputControl(this, id); break;
-                case NodeTypes.NEURON: node = new NeuronControl(this, id); break;
+                case NodeTypes.REGION:
+                    node = new RegionControl(this, container, name);
+                    ((RegionControl)node).EnterRegion += OnRegionEnter;
+                    ((RegionControl)node).ExitRegion += OnRegionExit;
+                    break;
+                case NodeTypes.INPUT: 
+                    node = new InputControl(this, name); break;
+                case NodeTypes.OUTPUT: 
+                    node = new OutputControl(this, name); break;
+                case NodeTypes.NEURON: 
+                    node = new NeuronControl(this, name); break;
                 default: throw new Exception($"Illegal node type: {type}");
             }
 
             SetNodeScale(node, ScaleStep);
             node.Location = new Point
             {
-                X = pos.X - node.Width/2,
-                Y = pos.Y - node.Height/2
+                X = pos.X - node.Width / 2,
+                Y = pos.Y - node.Height / 2
             };
 
             DesignContainer.Controls.Add(node);
             View.AddControl(node);
-            OnCreateNode(node.Model);
+            OnCreateNode(node);
 
             PaintNodes();
         }
@@ -238,10 +256,11 @@ namespace CircuitDesigner.Controls
         {
             DragOrigin = pos;
 
-            if (control == null) 
+            if (control == null)
             {
                 View.UnselectControl();
-            } else
+            }
+            else
             {
                 control.BackColor = Color.Red;
                 View.SelectControl(control);
@@ -304,8 +323,8 @@ namespace CircuitDesigner.Controls
             var curve = .15f;
 
             GBuffer.Clear(Color.Transparent);
-            
-            foreach(var node in View.Controls)
+
+            foreach (var node in View.Controls)
             {
                 var dests = node.Model?.Connections;
                 if (dests == null) { continue; }
@@ -316,7 +335,7 @@ namespace CircuitDesigner.Controls
                     Y = node.Location.Y + node.Height / 2
                 };
 
-                foreach(var dest in dests)
+                foreach (var dest in dests)
                 {
                     var destP = new Point
                     {
@@ -339,9 +358,9 @@ namespace CircuitDesigner.Controls
             NodeSelected?.Invoke(this, View.Selected?.Model);
         }
 
-        private void OnCreateNode(INodeModel model)
+        private void OnCreateNode(NodeControl node)
         {
-            NodeCreated?.Invoke(this, model);
+            NodeCreated?.Invoke(this, node);
         }
 
         private void OnDeleteNode(INodeModel model)
@@ -349,14 +368,19 @@ namespace CircuitDesigner.Controls
             NodeDeleted?.Invoke(this, model);
         }
 
-        public void OnRegionEnter(RegionModel model)
+        public void OnRegionEnter(object sender, RegionModel model)
         {
-            RegionEnter?.Invoke(this, model);
+            RegionEnter?.Invoke(sender, model);
         }
 
-        public void OnRegionExit(RegionModel model)
+        public void OnRegionExit(object sender, RegionModel model)
         {
             RegionExit?.Invoke(this, model);
+        }
+
+        private void DesignContainer_DoubleClick(object sender, EventArgs e)
+        {
+            Debug.WriteLine("DCLICK");
         }
     }
 }

@@ -56,6 +56,6 @@
 
         #endregion
 
-        private Label NodeLabel;
+        public Label NodeLabel;
     }
 }

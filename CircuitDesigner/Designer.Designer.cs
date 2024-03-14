@@ -58,6 +58,7 @@ namespace CircuitDesigner
             InputsList = new ListBox();
             label10 = new Label();
             RegionConnectionsDropdown = new ComboBox();
+            regionModelBindingSource = new BindingSource(components);
             label2 = new Label();
             RegionNameInput = new TextBox();
             label1 = new Label();
@@ -73,7 +74,6 @@ namespace CircuitDesigner
             NeuronIDInput = new TextBox();
             label3 = new Label();
             designBoard = new Controls.DesignBoard();
-            regionModelBindingSource = new BindingSource(components);
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)viewDataBindingSource1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)viewDataBindingSource).BeginInit();
@@ -84,8 +84,8 @@ namespace CircuitDesigner
             PropertyTabs.SuspendLayout();
             ProjectTab.SuspendLayout();
             RegionTab.SuspendLayout();
-            NeuronTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)regionModelBindingSource).BeginInit();
+            NeuronTab.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
@@ -331,6 +331,10 @@ namespace CircuitDesigner
             RegionConnectionsDropdown.Size = new Size(221, 23);
             RegionConnectionsDropdown.TabIndex = 3;
             // 
+            // regionModelBindingSource
+            // 
+            regionModelBindingSource.DataSource = typeof(Models.RegionModel);
+            // 
             // label2
             // 
             label2.AutoSize = true;
@@ -478,10 +482,6 @@ namespace CircuitDesigner
             designBoard.Size = new Size(681, 426);
             designBoard.TabIndex = 0;
             // 
-            // regionModelBindingSource
-            // 
-            regionModelBindingSource.DataSource = typeof(Models.RegionModel);
-            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -508,9 +508,9 @@ namespace CircuitDesigner
             ProjectTab.PerformLayout();
             RegionTab.ResumeLayout(false);
             RegionTab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)regionModelBindingSource).EndInit();
             NeuronTab.ResumeLayout(false);
             NeuronTab.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)regionModelBindingSource).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }

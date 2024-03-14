@@ -1,35 +1,32 @@
 ﻿using CircuitDesigner.Models;
+using System.Diagnostics;
+using System.Windows.Forms.Design;
 
 namespace CircuitDesigner.Controls
 {
     public partial class RegionControl : NodeControl
     {
-        public RegionControl(string? id = null) : base()
+        public RegionControl() : base()
         {
         }
 
-        public RegionControl(DesignBoard designer, string id) : base(designer)
+        public RegionControl(DesignBoard designer, RegionControl? parent, string name) : base(designer)
         {
             InitializeComponent();
-            Model = new RegionModel(this, id);
+            Model = new RegionModel(this, name);
+            ParentRegion = parent;
         }
 
-        public bool AddNode(string id, NodeTypes type)
+        public event RegionEnterEventHandler? EnterRegion = null;
+        private void NodeLabel_DoubleClick(object sender, EventArgs e)
         {
-
-
-            return true;
+            EnterRegion?.Invoke(this, (RegionModel)Model);
         }
 
-        public bool RemoveNode(string id, NodeTypes type)
+        public event RegionExitEventHandler? ExitRegion = null;
+        private void NodeLabel_Esc(object sender, EventArgs e)
         {
-
-            return true;
-        }
-
-        private void RegionControl_DoubleClick(object sender, EventArgs e)
-        {
-            
+            ExitRegion?.Invoke(this, (RegionModel)Model);
         }
     }
 }

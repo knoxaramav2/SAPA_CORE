@@ -4,6 +4,7 @@ namespace CircuitDesigner.Controls
 {
     public partial class NodeControl : UserControl
     {
+        public RegionControl? ParentRegion = null;
         public string ModelName 
         { 
             get { return Model.Name; }

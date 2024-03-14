@@ -2,7 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,20 +20,33 @@ namespace CircuitDesigner.Models
 
     public class ViewData
     {
-        public string Test { get; set; } = (new Random()).Next().ToString();
+        public ViewData? ParentView = null;
+        private NodeControl? _view = null;
+        public NodeControl Node 
+        { 
+            get { return _view ?? new NodeControl(); } 
+            set {  _view = value; }
+        }
         public Point GlobalOrigin { get; set; }
-        public string Name { get; set; }
-        public string ID { get; set; }
-        public DesignMode ViewMode { get; private set; }
+        public string Name { get; set; } = string.Empty;
+        public Guid ID { get; set; }
+        public DesignMode ViewMode { get; private set; } = DesignMode.Disabled;
         public BindingList<NodeControl> Controls { get; } = [];
-        public NodeControl? Selected { get; private set; }
+        public NodeControl? Selected { get; private set; } = null;
 
-        public ViewData(string name, DesignMode viewMode)
+        public ViewData(){}
+
+        public ViewData(
+            NodeControl view,
+            ViewData? parent,
+            DesignMode viewMode)
         {
-            Name = name;
-            ID = Guid.NewGuid().ToString();
+            Name = view.ModelName;
+            ID = view.ModelID;
             ViewMode = viewMode;
             GlobalOrigin = new Point(0, 0);
+            Node = view;
+            ParentView = parent;
         }
 
         public bool AddControl(NodeControl node)
@@ -76,18 +92,19 @@ namespace CircuitDesigner.Models
         private readonly Dictionary<Guid, ViewData> Views = [];
         public ViewData CurrentView { get; private set; }
 
-        private const string ROOT_ID = "Regions";
+        private const string ROOT_ID = "ROOT";
         private const string EMTPY_ID = "None";
 
-        public ViewManager()
+        public ViewManager(DesignBoard designer)
         {
-            CreateView(ROOT_ID, DesignMode.SystemMode, true);
+            var root = new RegionControl(designer, null, ROOT_ID);
+            CreateView(root, null, DesignMode.SystemMode, true);
             if (CurrentView == null) { throw new Exception("Voodoo has occurred"); }
         }
 
-        public ViewData? SwitchView(string id)
+        public ViewData? SwitchView(Guid id)
         {
-            if (!Views.TryGetValue(new Guid(id), out ViewData? viewData))
+            if (!Views.TryGetValue(id, out ViewData? viewData))
             {
                 return null;
             }
@@ -102,18 +119,29 @@ namespace CircuitDesigner.Models
             return viewData;
         }
 
-        public bool CreateView(string name, DesignMode mode, bool switchTo = false)
+        public bool CreateView( 
+            NodeControl view,
+            ViewData? parent,
+            DesignMode mode,
+            bool switchTo = false)
         {
-            var id = Guid.NewGuid();
-            var newView = new ViewData(name, mode);
-            Views.Add(id, newView);
+            var newView = new ViewData(view, parent, mode);
+            Views.Add(view.ModelID, newView);
 
             if (switchTo)
             {
                 CurrentView = newView;
             }
-
+            PrintLineage();
             return true;
+        }
+
+        private void PrintLineage()
+        {
+            foreach (var item in Views.Values)
+            {
+                Debug.WriteLine($"{item.Name}({item.ID})");
+            }
         }
 
         public bool DeleteView(Guid id)

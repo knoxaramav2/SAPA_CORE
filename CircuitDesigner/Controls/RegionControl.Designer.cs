@@ -30,12 +30,15 @@
         {
             SuspendLayout();
             // 
+            // NodeLabel
+            // 
+            NodeLabel.DoubleClick += NodeLabel_DoubleClick;
+            // 
             // RegionControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             Name = "RegionControl";
-            DoubleClick += RegionControl_DoubleClick;
             ResumeLayout(false);
         }
 
