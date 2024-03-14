@@ -4,7 +4,11 @@ namespace CircuitDesigner.Controls
 {
     public partial class NodeControl : UserControl
     {
-        public string ModelName { get { return Model.Name; } set { Model.Name = value; } }
+        public string ModelName 
+        { 
+            get { return Model.Name; }
+            set { Model.Name = value; } 
+        }
         public Guid ModelID { get { return Model.ID; } }
 
         internal readonly DesignBoard? Designer;
@@ -63,5 +67,6 @@ namespace CircuitDesigner.Controls
         {
             Designer?.DesignContainer_MouseDown(this, e);
         }
+    
     }
 }

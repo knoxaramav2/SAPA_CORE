@@ -4,23 +4,31 @@ using System.ComponentModel;
 
 namespace CircuitDesigner.Models
 {
-    public class RegionModel(NodeControl host, string name) : INodeModel
+    public class RegionModel : INodeModel
     {
+        public RegionModel(NodeControl host, string name)
+        {
+            Host = host;
+            Name = name;
+        }
+
         #region Model Definitions
         public Guid ID { get; set; } = Guid.NewGuid();
         public NodeTypes Type { get; set; } = NodeTypes.REGION;
-        public NodeControl Host { get; set; } = host;
+        public NodeControl Host { get; set; }
         public List<INodeModel> Connections { get; set; } = [];
 
         public List<INodeModel> Neurons { get; set; } = [];
         public List<InputModel> Inputs { get; private set;} = [];
         public List<OutputModel> Outputs { get; private set; } = [];
 
-        private string _name = name;
-        [JsonProperty]
+        private string _name = string.Empty;
         public string Name { 
             get { return _name; }
-            set { _name = value; NotifyPropertyChanged(nameof(Name)); } 
+            set { 
+                _name = value;
+                Host.NodeLabel.Text = _name;
+                NotifyPropertyChanged(nameof(Name)); } 
         }
 
         public bool AddNode(INodeModel model)
