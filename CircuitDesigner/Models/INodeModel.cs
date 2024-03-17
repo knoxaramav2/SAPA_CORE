@@ -13,7 +13,7 @@ namespace CircuitDesigner.Models
     {
         public NodeTypes Type { get; protected set; }
         public Guid ID { get; internal set; }
-        internal string Name { get; set; }
+        public string Name { get; set; }
         public NodeControl Host { get; protected set; }
         public List<INodeModel> Connections { get; protected set; }
         public bool Attach(INodeModel node)

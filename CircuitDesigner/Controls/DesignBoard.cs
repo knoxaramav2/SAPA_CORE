@@ -317,9 +317,10 @@ namespace CircuitDesigner.Controls
             base.OnPaint(e);
         }
 
-        private void PaintNodes()
+        private void DrawConnectionLines()
         {
-            var pen = new Pen(Color.Red, 3f);
+            using var gradBrush = new LinearGradientBrush(new RectangleF(0, 0, 5, 5), Color.Red, Color.Yellow, 0f);
+            using var pen = new Pen(gradBrush);
             var curve = .15f;
 
             GBuffer.Clear(Color.Transparent);
@@ -348,7 +349,11 @@ namespace CircuitDesigner.Controls
                     GBuffer.DrawBezier(pen, srcP, lp1, lp2, destP);
                 }
             }
+        }
 
+        private void PaintNodes()
+        {
+            DrawConnectionLines();
             Refresh();
         }
 

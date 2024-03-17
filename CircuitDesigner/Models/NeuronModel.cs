@@ -1,11 +1,32 @@
 ﻿using CircuitDesigner.Controls;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using System.Security.Permissions;
+using System.Xml.Linq;
 
 namespace CircuitDesigner.Models
 {
     public struct Dendrite
     {
+        public readonly string Name
+        {
+            get
+            {
+                return Target.Name;
+            }
+
+            set
+            {
+                Target.Name = value;
+            }
+        }
+
+        public readonly Guid ID
+        {
+            get { return Target.ID; }
+            set { Target.ID = value; }
+        }
+
         public NeuronModel Target { get; set; }
         public float Weight { get; set; }
     }
@@ -18,10 +39,11 @@ namespace CircuitDesigner.Models
             Host = host;
             Name = name;
         }
+        
         public Guid ID { get; set; } = Guid.NewGuid();
         public NodeTypes Type { get; set; } = NodeTypes.NEURON;
         public NodeControl Host { get; set; }
-        List<INodeModel> INodeModel.Connections { get; set; } = [];
+        public List<INodeModel> Connections { get; set; } = [];
 
         private string _name = string.Empty;
         public string Name
@@ -34,6 +56,7 @@ namespace CircuitDesigner.Models
             }
         }
 
+        //Input connections
         public List<Dendrite> Dendrites { get; set; } = [];
 
         private float _charge = 0.0f;
@@ -59,28 +82,43 @@ namespace CircuitDesigner.Models
 
         public bool Attach(INodeModel node)
         {
-            if (((INodeModel)this).Attach(node))
+            if (Connections.Contains(node)) { return false; }
+            Connections.Add(node);
+            
+            if (node is NeuronModel neuron)
             {
-                var dendrite = new Dendrite
-                {
-                    Target = (NeuronModel)node,
-                    Weight = 1.0f
-                };
-                Dendrites.Add(dendrite);
-                return true;
+                neuron.SetPreDendrite(this);
             }
-            return false;
+
+            return true;            
         }
 
+        public bool SetPreDendrite(INodeModel model)
+        {
+            var dendrite = new Dendrite
+            {
+                Target = (NeuronModel)model,
+                Weight = 1.0f
+            };
+
+            if (Dendrites.Any(x => x.Target == model)) { return false; }
+            Dendrites.Add(dendrite);
+            return true;
+        }
+        
         public bool Detach(INodeModel node)
         {
-            if (((INodeModel)this).Detach(node))
+            if (Connections.Contains(node))
             {
-                var dendrite = Dendrites.FirstOrDefault(x => x.Target == node);
-                return Dendrites.Remove(dendrite);
+                Connections.Remove(node);
+                node.Detach(this);
+            } else
+            {
+                var rem = Dendrites.FirstOrDefault(x => x.Target == node);
+                Dendrites.Remove(rem);
             }
-
-            return false;
+            
+            return true;
         }
 
         #endregion

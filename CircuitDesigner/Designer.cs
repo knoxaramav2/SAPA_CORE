@@ -31,6 +31,7 @@ namespace CircuitDesigner
         {
             UpdateViewsBinding();
             UpdateRegionBindings();
+            UpdateNeuronBindings();
         }
 
         private void UpdateRegionBindings()
@@ -44,23 +45,20 @@ namespace CircuitDesigner
                 RegionConnectionsDropdown.Text = string.Empty;
                 var idx = RegionConnectionsDropdown.Items.Count - 1;
                 RegionConnectionsDropdown.SelectedIndex = idx;
-                
+
             }
 
             if (ViewManager.GetFocused() is RegionModel model)
             {
-                InputsList.DisplayMember = nameof(model.Name);
-                InputsList.ValueMember = nameof(model.ID);
-                InputsList.DataSource = model.Inputs;
+                RegionInputsList.DisplayMember = nameof(model.Name);
+                RegionInputsList.ValueMember = nameof(model.ID);
+                RegionInputsList.DataSource = model.Inputs;
 
-                OutputsList.DisplayMember = nameof(model.Name);
-                OutputsList.ValueMember = nameof(model.ID);
-                OutputsList.DataSource = model.Inputs;
+                RegionOutputsList.DisplayMember = nameof(model.Name);
+                RegionOutputsList.ValueMember = nameof(model.ID);
+                RegionOutputsList.DataSource = model.Inputs;
 
-                var nameBinding = new Binding("Text", model, nameof(model.Name), true, 
-                    DataSourceUpdateMode.OnValidation);
-                RegionNameInput.DataBindings.Clear();
-                RegionNameInput.DataBindings.Add(nameBinding);
+                SetBinding(RegionNameInput, model, nameof(model.Name));
             }
         }
 
@@ -69,6 +67,34 @@ namespace CircuitDesigner
             ViewsDropDown.ComboBox.DisplayMember = nameof(NodeControl.ModelName);
             ViewsDropDown.ComboBox.ValueMember = nameof(NodeControl.ModelID);
             ViewsDropDown.ComboBox.DataSource = ViewManager.CurrentView.Controls;
+        }
+
+        private void SetBinding(Control control, INodeModel model, string memberName, DataSourceUpdateMode mode=DataSourceUpdateMode.OnValidation)
+        {
+            var nameBinding = new Binding("Text", model, memberName, true, mode);
+            control.DataBindings.Clear();
+            control.DataBindings.Add(nameBinding);
+        }
+
+        private static void SetListBinding<T>(ListBox control, string dspName, string valName, List<T>dataSource)
+        {
+            control.DisplayMember = "Name";//dspName;
+            control.ValueMember = "ID";// valName;
+            control.DataSource = dataSource;
+        }
+
+        private void UpdateNeuronBindings()
+        {
+            if (ViewManager.GetFocused() is NeuronModel model)
+            {
+                SetListBinding(NeuronInputsList, nameof(Dendrite.Name), nameof(Dendrite.ID), model.Dendrites);
+                SetListBinding(NeuronOutputsList, nameof(INodeModel.Name), nameof(INodeModel.ID), model.Connections);
+
+                SetBinding(NeuronNameInput, model, nameof(model.Name));
+                SetBinding(NeuronChargeInput, model, nameof(model.Charge));
+                SetBinding(NeuronDecayInput, model, nameof(model.Decay));
+                SetBinding(NeuronBiasInput, model, nameof(model.Bias));
+            }
         }
 
         private void SaveAll()
@@ -123,12 +149,12 @@ namespace CircuitDesigner
             }
 
             var title = ProjectState?.Name != null ? " - " + ProjectState?.Name : "";
-            SetTitle(ProjectState?.Name??"");
+            SetTitle(ProjectState?.Name ?? "");
 
             CurrentIDInput.Text = ProjectState?.Name ?? "";
         }
 
-        private void SetTitle(string projectName = "", string currentView="")
+        private void SetTitle(string projectName = "", string currentView = "")
         {
             projectName = ProjectState?.Name != null ? " - " + ProjectState?.Name : "";
             currentView = string.IsNullOrEmpty(currentView) ? "" : $"({currentView})";
@@ -189,7 +215,7 @@ namespace CircuitDesigner
 
         }
 
-        
+
         //Form Control
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public Form1()
@@ -217,7 +243,8 @@ namespace CircuitDesigner
         private bool SwitchToView(Guid viewId)
         {
             var current = ViewManager.SwitchView(viewId);
-            if (current == null){
+            if (current == null)
+            {
 
                 Debug.WriteLine($"View for ID={viewId} not found");
                 return false;
@@ -249,7 +276,7 @@ namespace CircuitDesigner
 
             UpdateProjectTab();
             designBoard.SwitchContext(ViewManager.CurrentView);
-            SetTitle(ProjectState?.Name??"", ViewManager.CurrentView.Name);
+            SetTitle(ProjectState?.Name ?? "", ViewManager.CurrentView.Name);
         }
 
         private void UpdateRegionTab(RegionModel? model)
@@ -259,13 +286,7 @@ namespace CircuitDesigner
 
         private void UpdateNeuronTab(NeuronModel? model)
         {
-            UpdateToTextField(NeuronIDInput, model?.Name ?? "");
-            UpdateToDropdown(NeuronConnectionsDropdown,
-                model?.Dendrites.Select(x => x.Target.Name).ToArray() ?? []
-                );
-            UpdateToTextField(NeuronChargeInput, model?.Charge.ToString() ?? "");
-            UpdateToTextField(NeuronDecayInput, model?.Decay.ToString() ?? "");
-            UpdateToTextField(NeuronBiasInput, model?.Bias.ToString() ?? "");
+            UpdateNeuronBindings();
         }
 
         private void UpdateProjectTab()
@@ -376,7 +397,7 @@ namespace CircuitDesigner
                 case Models.DesignMode.SystemMode:
                     if (model != null)
                     {
-                        
+
                     }
                     UpdateRegionTab((RegionModel?)model);
                     break;
@@ -387,8 +408,8 @@ namespace CircuitDesigner
         protected void OnNodeCreated(object sender, NodeControl node)
         {
             var current = ViewManager.CurrentView;
-            if (node is RegionControl region) 
-            { 
+            if (node is RegionControl region)
+            {
                 ViewManager.CreateView(region, current, Models.DesignMode.CircuitMode, false);
             }
         }
@@ -451,7 +472,7 @@ namespace CircuitDesigner
 
         private void NeuronIDInput_Validating(object sender, CancelEventArgs e)
         {
-            if (NeuronIDInput.Text == ""
+            if (NeuronNameInput.Text == ""
                 || ViewManager.CurrentView.Selected is not NeuronControl neuron) { e.Cancel = true; return; }
         }
 

@@ -30,6 +30,7 @@ namespace CircuitDesigner
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            Models.ViewData viewData1 = new Models.ViewData();
             menuStrip1 = new MenuStrip();
             FileMenuItem = new ToolStripMenuItem();
             newProjectToolStripMenuItem = new ToolStripMenuItem();
@@ -53,9 +54,9 @@ namespace CircuitDesigner
             CurrentIDInput = new TextBox();
             label8 = new Label();
             RegionTab = new TabPage();
-            OutputsList = new ListBox();
+            RegionOutputsList = new ListBox();
             label11 = new Label();
-            InputsList = new ListBox();
+            RegionInputsList = new ListBox();
             label10 = new Label();
             RegionConnectionsDropdown = new ComboBox();
             regionModelBindingSource = new BindingSource(components);
@@ -63,15 +64,17 @@ namespace CircuitDesigner
             RegionNameInput = new TextBox();
             label1 = new Label();
             NeuronTab = new TabPage();
+            NeuronOutputsList = new ListBox();
+            label12 = new Label();
+            NeuronInputsList = new ListBox();
+            label13 = new Label();
             NeuronBiasInput = new TextBox();
             label7 = new Label();
             NeuronDecayInput = new TextBox();
             label6 = new Label();
             NeuronChargeInput = new TextBox();
             label5 = new Label();
-            NeuronConnectionsDropdown = new ComboBox();
-            label4 = new Label();
-            NeuronIDInput = new TextBox();
+            NeuronNameInput = new TextBox();
             label3 = new Label();
             designBoard = new Controls.DesignBoard();
             menuStrip1.SuspendLayout();
@@ -266,9 +269,9 @@ namespace CircuitDesigner
             // 
             // RegionTab
             // 
-            RegionTab.Controls.Add(OutputsList);
+            RegionTab.Controls.Add(RegionOutputsList);
             RegionTab.Controls.Add(label11);
-            RegionTab.Controls.Add(InputsList);
+            RegionTab.Controls.Add(RegionInputsList);
             RegionTab.Controls.Add(label10);
             RegionTab.Controls.Add(RegionConnectionsDropdown);
             RegionTab.Controls.Add(label2);
@@ -282,15 +285,15 @@ namespace CircuitDesigner
             RegionTab.Text = "Region";
             RegionTab.UseVisualStyleBackColor = true;
             // 
-            // OutputsList
+            // RegionOutputsList
             // 
-            OutputsList.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            OutputsList.FormattingEnabled = true;
-            OutputsList.ItemHeight = 15;
-            OutputsList.Location = new Point(57, 167);
-            OutputsList.Name = "OutputsList";
-            OutputsList.Size = new Size(171, 64);
-            OutputsList.TabIndex = 7;
+            RegionOutputsList.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            RegionOutputsList.FormattingEnabled = true;
+            RegionOutputsList.ItemHeight = 15;
+            RegionOutputsList.Location = new Point(57, 167);
+            RegionOutputsList.Name = "RegionOutputsList";
+            RegionOutputsList.Size = new Size(171, 64);
+            RegionOutputsList.TabIndex = 7;
             // 
             // label11
             // 
@@ -301,15 +304,15 @@ namespace CircuitDesigner
             label11.TabIndex = 6;
             label11.Text = "Outputs";
             // 
-            // InputsList
+            // RegionInputsList
             // 
-            InputsList.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            InputsList.FormattingEnabled = true;
-            InputsList.ItemHeight = 15;
-            InputsList.Location = new Point(58, 92);
-            InputsList.Name = "InputsList";
-            InputsList.Size = new Size(171, 64);
-            InputsList.TabIndex = 5;
+            RegionInputsList.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            RegionInputsList.FormattingEnabled = true;
+            RegionInputsList.ItemHeight = 15;
+            RegionInputsList.Location = new Point(58, 92);
+            RegionInputsList.Name = "RegionInputsList";
+            RegionInputsList.Size = new Size(171, 64);
+            RegionInputsList.TabIndex = 5;
             // 
             // label10
             // 
@@ -322,6 +325,7 @@ namespace CircuitDesigner
             // 
             // RegionConnectionsDropdown
             // 
+            RegionConnectionsDropdown.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             RegionConnectionsDropdown.DataBindings.Add(new Binding("DataContext", regionModelBindingSource, "Name", true));
             RegionConnectionsDropdown.DataBindings.Add(new Binding("SelectedItem", regionModelBindingSource, "Name", true));
             RegionConnectionsDropdown.DataBindings.Add(new Binding("SelectedValue", regionModelBindingSource, "ID", true));
@@ -346,6 +350,7 @@ namespace CircuitDesigner
             // 
             // RegionNameInput
             // 
+            RegionNameInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             RegionNameInput.DataBindings.Add(new Binding("DataContext", regionModelBindingSource, "Name", true));
             RegionNameInput.DataBindings.Add(new Binding("Text", regionModelBindingSource, "Name", true));
             RegionNameInput.Location = new Point(53, 6);
@@ -365,15 +370,17 @@ namespace CircuitDesigner
             // 
             // NeuronTab
             // 
+            NeuronTab.Controls.Add(NeuronOutputsList);
+            NeuronTab.Controls.Add(label12);
+            NeuronTab.Controls.Add(NeuronInputsList);
+            NeuronTab.Controls.Add(label13);
             NeuronTab.Controls.Add(NeuronBiasInput);
             NeuronTab.Controls.Add(label7);
             NeuronTab.Controls.Add(NeuronDecayInput);
             NeuronTab.Controls.Add(label6);
             NeuronTab.Controls.Add(NeuronChargeInput);
             NeuronTab.Controls.Add(label5);
-            NeuronTab.Controls.Add(NeuronConnectionsDropdown);
-            NeuronTab.Controls.Add(label4);
-            NeuronTab.Controls.Add(NeuronIDInput);
+            NeuronTab.Controls.Add(NeuronNameInput);
             NeuronTab.Controls.Add(label3);
             NeuronTab.Location = new Point(4, 24);
             NeuronTab.Name = "NeuronTab";
@@ -382,10 +389,48 @@ namespace CircuitDesigner
             NeuronTab.Text = "Neuron";
             NeuronTab.UseVisualStyleBackColor = true;
             // 
+            // NeuronOutputsList
+            // 
+            NeuronOutputsList.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            NeuronOutputsList.FormattingEnabled = true;
+            NeuronOutputsList.ItemHeight = 15;
+            NeuronOutputsList.Location = new Point(51, 198);
+            NeuronOutputsList.Name = "NeuronOutputsList";
+            NeuronOutputsList.Size = new Size(181, 64);
+            NeuronOutputsList.TabIndex = 15;
+            // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new Point(1, 198);
+            label12.Name = "label12";
+            label12.Size = new Size(50, 15);
+            label12.TabIndex = 14;
+            label12.Text = "Outputs";
+            // 
+            // NeuronInputsList
+            // 
+            NeuronInputsList.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            NeuronInputsList.FormattingEnabled = true;
+            NeuronInputsList.ItemHeight = 15;
+            NeuronInputsList.Location = new Point(52, 123);
+            NeuronInputsList.Name = "NeuronInputsList";
+            NeuronInputsList.Size = new Size(180, 64);
+            NeuronInputsList.TabIndex = 13;
+            // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new Point(2, 123);
+            label13.Name = "label13";
+            label13.Size = new Size(40, 15);
+            label13.TabIndex = 12;
+            label13.Text = "Inputs";
+            // 
             // NeuronBiasInput
             // 
             NeuronBiasInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            NeuronBiasInput.Location = new Point(52, 163);
+            NeuronBiasInput.Location = new Point(52, 94);
             NeuronBiasInput.Name = "NeuronBiasInput";
             NeuronBiasInput.Size = new Size(180, 23);
             NeuronBiasInput.TabIndex = 11;
@@ -394,7 +439,7 @@ namespace CircuitDesigner
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(8, 166);
+            label7.Location = new Point(8, 97);
             label7.Name = "label7";
             label7.Size = new Size(28, 15);
             label7.TabIndex = 10;
@@ -403,7 +448,7 @@ namespace CircuitDesigner
             // NeuronDecayInput
             // 
             NeuronDecayInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            NeuronDecayInput.Location = new Point(52, 134);
+            NeuronDecayInput.Location = new Point(52, 65);
             NeuronDecayInput.Name = "NeuronDecayInput";
             NeuronDecayInput.Size = new Size(180, 23);
             NeuronDecayInput.TabIndex = 9;
@@ -412,7 +457,7 @@ namespace CircuitDesigner
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(8, 137);
+            label6.Location = new Point(8, 68);
             label6.Name = "label6";
             label6.Size = new Size(39, 15);
             label6.TabIndex = 8;
@@ -421,7 +466,7 @@ namespace CircuitDesigner
             // NeuronChargeInput
             // 
             NeuronChargeInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            NeuronChargeInput.Location = new Point(52, 105);
+            NeuronChargeInput.Location = new Point(52, 36);
             NeuronChargeInput.Name = "NeuronChargeInput";
             NeuronChargeInput.Size = new Size(180, 23);
             NeuronChargeInput.TabIndex = 7;
@@ -430,39 +475,20 @@ namespace CircuitDesigner
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(8, 108);
+            label5.Location = new Point(8, 39);
             label5.Name = "label5";
             label5.Size = new Size(45, 15);
             label5.TabIndex = 6;
             label5.Text = "Charge";
             // 
-            // NeuronConnectionsDropdown
+            // NeuronNameInput
             // 
-            NeuronConnectionsDropdown.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            NeuronConnectionsDropdown.FormattingEnabled = true;
-            NeuronConnectionsDropdown.Location = new Point(8, 59);
-            NeuronConnectionsDropdown.Name = "NeuronConnectionsDropdown";
-            NeuronConnectionsDropdown.Size = new Size(224, 23);
-            NeuronConnectionsDropdown.TabIndex = 5;
-            // 
-            // label4
-            // 
-            label4.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            label4.AutoSize = true;
-            label4.Location = new Point(78, 41);
-            label4.Name = "label4";
-            label4.Size = new Size(74, 15);
-            label4.TabIndex = 4;
-            label4.Text = "Connections";
-            // 
-            // NeuronIDInput
-            // 
-            NeuronIDInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            NeuronIDInput.Location = new Point(52, 7);
-            NeuronIDInput.Name = "NeuronIDInput";
-            NeuronIDInput.Size = new Size(180, 23);
-            NeuronIDInput.TabIndex = 1;
-            NeuronIDInput.Validating += NeuronIDInput_Validating;
+            NeuronNameInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            NeuronNameInput.Location = new Point(52, 7);
+            NeuronNameInput.Name = "NeuronNameInput";
+            NeuronNameInput.Size = new Size(180, 23);
+            NeuronNameInput.TabIndex = 1;
+            NeuronNameInput.Validating += NeuronIDInput_Validating;
             // 
             // label3
             // 
@@ -481,6 +507,10 @@ namespace CircuitDesigner
             designBoard.Name = "designBoard";
             designBoard.Size = new Size(681, 426);
             designBoard.TabIndex = 0;
+            viewData1.GlobalOrigin = new Point(0, 0);
+            viewData1.ID = new Guid("00000000-0000-0000-0000-000000000000");
+            viewData1.Name = "";
+            designBoard.View = viewData1;
             // 
             // Form1
             // 
@@ -540,7 +570,7 @@ namespace CircuitDesigner
         private Label label1;
         private ComboBox RegionConnectionsDropdown;
         private Label label2;
-        private TextBox NeuronIDInput;
+        private TextBox NeuronNameInput;
         private Label label3;
         private TextBox NeuronBiasInput;
         private Label label7;
@@ -548,18 +578,20 @@ namespace CircuitDesigner
         private Label label6;
         private TextBox NeuronChargeInput;
         private Label label5;
-        private ComboBox NeuronConnectionsDropdown;
-        private Label label4;
         private Label label8;
         private Label CurrentViewNameLabel;
         private Label label9;
         private TextBox CurrentIDInput;
-        private ListBox InputsList;
+        private ListBox RegionInputsList;
         private Label label10;
-        private ListBox OutputsList;
+        private ListBox RegionOutputsList;
         private Label label11;
         private BindingSource viewDataBindingSource;
         private BindingSource viewDataBindingSource1;
         private BindingSource regionModelBindingSource;
+        private ListBox NeuronOutputsList;
+        private Label label12;
+        private ListBox NeuronInputsList;
+        private Label label13;
     }
 }
