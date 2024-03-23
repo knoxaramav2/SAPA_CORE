@@ -11,13 +11,6 @@ using System.Threading.Tasks;
 
 namespace CircuitDesigner.Models
 {
-    public enum DesignMode
-    {
-        Disabled,
-        SystemMode,
-        CircuitMode
-    }
-
     public class ViewData
     {
         public ViewData? ParentView = null;
@@ -30,7 +23,6 @@ namespace CircuitDesigner.Models
         public Point GlobalOrigin { get; set; }
         public string Name { get; set; } = string.Empty;
         public Guid ID { get; set; }
-        public DesignMode ViewMode { get; private set; } = DesignMode.Disabled;
         public BindingList<NodeControl> Controls { get; } = [];
         public NodeControl? Selected { get; private set; } = null;
 
@@ -38,12 +30,10 @@ namespace CircuitDesigner.Models
 
         public ViewData(
             NodeControl view,
-            ViewData? parent,
-            DesignMode viewMode)
+            ViewData? parent)
         {
             Name = view.ModelName;
             ID = view.ModelID;
-            ViewMode = viewMode;
             GlobalOrigin = new Point(0, 0);
             Node = view;
             ParentView = parent;
@@ -51,10 +41,6 @@ namespace CircuitDesigner.Models
 
         public bool AddControl(NodeControl node)
         {
-            if (ViewMode == DesignMode.Disabled)
-            {
-                throw new Exception("Unable to add control to disabled view.");
-            }
             if (Controls.Contains(node)) { return false; }
             Controls.Add(node);
             return true;
@@ -62,10 +48,6 @@ namespace CircuitDesigner.Models
 
         public bool RemoveControl(NodeControl node)
         {
-            if (ViewMode == DesignMode.Disabled)
-            {
-                throw new Exception("Unable to remove control from disabled view.");
-            }
             return Controls.Remove(node);
         }
 
@@ -91,15 +73,17 @@ namespace CircuitDesigner.Models
 
         private readonly Dictionary<Guid, ViewData> Views = [];
         public ViewData CurrentView { get; private set; }
+        public ViewData RootView { get; private set; }
 
         private const string ROOT_ID = "ROOT";
         private const string EMTPY_ID = "None";
 
         public ViewManager(DesignBoard designer)
         {
-            var root = new RegionControl(designer, null, ROOT_ID);
-            CreateView(root, null, DesignMode.SystemMode, true);
-            if (CurrentView == null) { throw new Exception("Voodoo has occurred"); }
+            var rootCtrl = new RegionControl(designer, null, ROOT_ID);
+            var root = CreateView(rootCtrl, null, true);
+            RootView = root;
+            CurrentView = root;
         }
 
         public ViewData? SwitchView(Guid id)
@@ -109,23 +93,21 @@ namespace CircuitDesigner.Models
                 return null;
             }
 
-            if (viewData.ViewMode == DesignMode.SystemMode)
-            { RegionHost = null; }
-            else if (viewData.ViewMode == DesignMode.CircuitMode)
-            { RegionHost = (RegionModel?)viewData.Selected?.Model; }
-            else { throw new NotImplementedException(); }
+            if (viewData.Node.Model is RegionModel regionModel)
+            {
+                RegionHost = regionModel;
+            }
 
             CurrentView = viewData;
             return viewData;
         }
 
-        public bool CreateView( 
+        public ViewData CreateView( 
             NodeControl view,
             ViewData? parent,
-            DesignMode mode,
             bool switchTo = false)
         {
-            var newView = new ViewData(view, parent, mode);
+            var newView = new ViewData(view, parent);
             Views.Add(view.ModelID, newView);
 
             if (switchTo)
@@ -133,7 +115,7 @@ namespace CircuitDesigner.Models
                 CurrentView = newView;
             }
             PrintLineage();
-            return true;
+            return newView;
         }
 
         private void PrintLineage()

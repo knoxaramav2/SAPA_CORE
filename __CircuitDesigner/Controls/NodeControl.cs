@@ -4,6 +4,8 @@ namespace CircuitDesigner.Controls
 {
     public partial class NodeControl : UserControl
     {
+        public event NodeDeletedEventHandler? DeleteNode = null;
+
         public RegionControl? ParentRegion = null;
         public string ModelName 
         { 
@@ -68,6 +70,16 @@ namespace CircuitDesigner.Controls
         {
             Designer?.DesignContainer_MouseDown(this, e);
         }
-    
+
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                DeleteNode?.Invoke(this, Model);
+            }
+
+            base.OnKeyUp(e);
+        }
+
     }
 }

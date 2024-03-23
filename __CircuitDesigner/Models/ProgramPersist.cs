@@ -11,13 +11,9 @@ namespace CircuitDesigner.Models
         [JsonProperty]
         public List<(string, DateTime)> Saves { get; set; } = [];
 
-        [JsonProperty]
-        public DesignMode Mode { get; set; }
-
         public ProgramPersist()
         {
             LastSaveDate = DateTime.Now;
-            Mode = DesignMode.SystemMode;
         }
 
         public void UpdateProjectInfo(ProjectState projectState)

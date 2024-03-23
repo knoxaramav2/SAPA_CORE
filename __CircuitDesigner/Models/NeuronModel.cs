@@ -41,7 +41,6 @@ namespace CircuitDesigner.Models
         }
         
         public Guid ID { get; set; } = Guid.NewGuid();
-        public NodeTypes Type { get; set; } = NodeTypes.NEURON;
         public NodeControl Host { get; set; }
         public List<INodeModel> Connections { get; set; } = [];
 
@@ -119,6 +118,18 @@ namespace CircuitDesigner.Models
             }
             
             return true;
+        }
+
+        public void Invalidate()
+        {
+            foreach (var conn in Connections) { conn.Detach(this); }
+            Connections.Clear();
+
+            foreach (var ddr in Dendrites)
+            {
+                ddr.Target.Detach(this);
+            }
+            Dendrites.Clear();
         }
 
         #endregion

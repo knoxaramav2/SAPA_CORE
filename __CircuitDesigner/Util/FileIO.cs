@@ -7,6 +7,7 @@ namespace CircuitDesigner.Util
         internal static string BasePath = AppDomain.CurrentDomain.BaseDirectory;
         internal static string ProjectPath = Path.Join(BasePath, "Projects");
         internal static string ProgramPath = Path.Join(BasePath, "Program");
+        internal static string BuildPath = Path.Join(BasePath, "Circuits");
 
         internal static void AssurePath(string path)
         {
@@ -34,6 +35,15 @@ namespace CircuitDesigner.Util
             var sj = JsonConvert.SerializeObject(obj, Formatting.Indented);
             using StreamWriter wr = new(path);
             wr.WriteLine(sj);
+            wr.Close();
+            return true;
+        }
+    
+        internal static bool SaveAs(string path, string data)
+        {
+            AssurePath(path);
+            using StreamWriter wr = new(path);
+            wr.Write(data);
             wr.Close();
             return true;
         }

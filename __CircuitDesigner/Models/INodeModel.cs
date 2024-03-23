@@ -11,7 +11,6 @@ namespace CircuitDesigner.Models
 {
     public interface INodeModel : INotifyPropertyChanged
     {
-        public NodeTypes Type { get; protected set; }
         public Guid ID { get; internal set; }
         public string Name { get; set; }
         public NodeControl Host { get; protected set; }
@@ -27,5 +26,7 @@ namespace CircuitDesigner.Models
         {
             return Connections.Remove(node);
         }
+
+        public void Invalidate();
     }
 }

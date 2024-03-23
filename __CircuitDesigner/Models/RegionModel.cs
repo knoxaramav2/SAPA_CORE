@@ -14,7 +14,6 @@ namespace CircuitDesigner.Models
 
         #region Model Definitions
         public Guid ID { get; set; } = Guid.NewGuid();
-        public NodeTypes Type { get; set; } = NodeTypes.REGION;
         public NodeControl Host { get; set; }
         public List<INodeModel> Connections { get; set; } = [];
 
@@ -59,6 +58,22 @@ namespace CircuitDesigner.Models
             else if (model is InputModel input) { return Inputs.Remove(input); }
             else if (model is OutputModel output) { return Outputs.Remove(output); }
             else { return false; }
+        }
+
+        public void Invalidate()
+        {
+            foreach (var conn in Connections) { conn.Detach(this); }
+            Connections.Clear();
+
+            foreach(var conn in Neurons) { conn.Detach(this); }
+            Neurons.Clear();
+
+            foreach (var conn in Inputs) { conn.Detach(this); }
+            Inputs.Clear();
+
+            foreach (var conn in Outputs) { conn.Detach(this); }
+            Outputs.Clear();
+
         }
 
         #endregion

@@ -1,6 +1,6 @@
 ﻿namespace CircuitDesigner.Controls
 {
-    partial class RegionControl
+    partial class DesignBoard
     {
         /// <summary> 
         /// Required designer variable.
@@ -28,20 +28,38 @@
         /// </summary>
         private void InitializeComponent()
         {
+            DesignContainer = new Panel();
             SuspendLayout();
             // 
-            // NodeLabel
+            // DesignContainer
             // 
-            NodeLabel.DoubleClick += NodeLabel_DoubleClick;
+            DesignContainer.BackColor = Color.Silver;
+            DesignContainer.Dock = DockStyle.Fill;
+            DesignContainer.Location = new Point(0, 0);
+            DesignContainer.Name = "DesignContainer";
+            DesignContainer.Size = new Size(535, 479);
+            DesignContainer.TabIndex = 0;
+            DesignContainer.Click += DesignContainer_Click;
+            DesignContainer.Paint += OnPaint;
+            DesignContainer.MouseClick += DesignContainer_Click;
+            DesignContainer.MouseDown += DesignContainer_MouseDown;
+            DesignContainer.MouseLeave += DesignContainer_MouseLeave;
+            DesignContainer.MouseMove += DesignContainer_MouseMove;
+            DesignContainer.MouseUp += DesignContainer_MouseUp;
             // 
-            // RegionControl
+            // DesignBoard
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            Name = "RegionControl";
+            BackColor = Color.Black;
+            Controls.Add(DesignContainer);
+            Name = "DesignBoard";
+            Size = new Size(535, 479);
             ResumeLayout(false);
         }
 
         #endregion
+
+        private Panel DesignContainer;
     }
 }

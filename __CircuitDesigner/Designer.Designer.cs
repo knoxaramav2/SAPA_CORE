@@ -42,18 +42,25 @@ namespace CircuitDesigner
             exitToolStripMenuItem = new ToolStripMenuItem();
             SettingsMenuItem = new ToolStripMenuItem();
             AboutMenuItem = new ToolStripMenuItem();
-            ViewsDropDown = new ToolStripComboBox();
+            buildToolStripMenuItem = new ToolStripMenuItem();
+            VerifyMenuButton = new ToolStripMenuItem();
+            BuildMenuButton = new ToolStripMenuItem();
             viewDataBindingSource1 = new BindingSource(components);
             viewDataBindingSource = new BindingSource(components);
             statusStrip1 = new StatusStrip();
             SplitContainer = new SplitContainer();
             PropertyTabs = new TabControl();
             ProjectTab = new TabPage();
+            ViewTree = new TreeView();
             CurrentViewNameLabel = new Label();
             label9 = new Label();
             CurrentIDInput = new TextBox();
             label8 = new Label();
             RegionTab = new TabPage();
+            RemoveOutputButton = new Button();
+            AddOutputButton = new Button();
+            RemoveInputButton = new Button();
+            AddInputButton = new Button();
             RegionOutputsList = new ListBox();
             label11 = new Label();
             RegionInputsList = new ListBox();
@@ -93,10 +100,10 @@ namespace CircuitDesigner
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { FileMenuItem, SettingsMenuItem, AboutMenuItem, ViewsDropDown });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { FileMenuItem, SettingsMenuItem, AboutMenuItem, buildToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(928, 27);
+            menuStrip1.Size = new Size(928, 24);
             menuStrip1.TabIndex = 0;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -104,7 +111,7 @@ namespace CircuitDesigner
             // 
             FileMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newProjectToolStripMenuItem, openToolStripMenuItem, RecentSavesDropdown, saveToolStripMenuItem, saveAsToolStripMenuItem, toolStripSeparator1, exitToolStripMenuItem });
             FileMenuItem.Name = "FileMenuItem";
-            FileMenuItem.Size = new Size(37, 23);
+            FileMenuItem.Size = new Size(37, 20);
             FileMenuItem.Text = "File";
             // 
             // newProjectToolStripMenuItem
@@ -156,21 +163,35 @@ namespace CircuitDesigner
             // SettingsMenuItem
             // 
             SettingsMenuItem.Name = "SettingsMenuItem";
-            SettingsMenuItem.Size = new Size(61, 23);
+            SettingsMenuItem.Size = new Size(61, 20);
             SettingsMenuItem.Text = "Settings";
             // 
             // AboutMenuItem
             // 
             AboutMenuItem.Name = "AboutMenuItem";
-            AboutMenuItem.Size = new Size(52, 23);
+            AboutMenuItem.Size = new Size(52, 20);
             AboutMenuItem.Text = "About";
             // 
-            // ViewsDropDown
+            // buildToolStripMenuItem
             // 
-            ViewsDropDown.DataBindings.Add(new Binding("SelectedItem", viewDataBindingSource1, "Name", true));
-            ViewsDropDown.Name = "ViewsDropDown";
-            ViewsDropDown.Size = new Size(121, 23);
-            ViewsDropDown.SelectedIndexChanged += ViewsDropDown_SelectedIndexChanged;
+            buildToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { VerifyMenuButton, BuildMenuButton });
+            buildToolStripMenuItem.Name = "buildToolStripMenuItem";
+            buildToolStripMenuItem.Size = new Size(46, 20);
+            buildToolStripMenuItem.Text = "Build";
+            // 
+            // VerifyMenuButton
+            // 
+            VerifyMenuButton.Name = "VerifyMenuButton";
+            VerifyMenuButton.Size = new Size(103, 22);
+            VerifyMenuButton.Text = "Verify";
+            VerifyMenuButton.Click += VerifyMenuButton_Click;
+            // 
+            // BuildMenuButton
+            // 
+            BuildMenuButton.Name = "BuildMenuButton";
+            BuildMenuButton.Size = new Size(103, 22);
+            BuildMenuButton.Text = "Build";
+            BuildMenuButton.Click += BuildMenuButton_Click;
             // 
             // viewDataBindingSource1
             // 
@@ -187,7 +208,7 @@ namespace CircuitDesigner
             // SplitContainer
             // 
             SplitContainer.Dock = DockStyle.Fill;
-            SplitContainer.Location = new Point(0, 27);
+            SplitContainer.Location = new Point(0, 24);
             SplitContainer.Name = "SplitContainer";
             // 
             // SplitContainer.Panel1
@@ -198,7 +219,7 @@ namespace CircuitDesigner
             // 
             SplitContainer.Panel2.Controls.Add(designBoard);
             SplitContainer.Panel2.ControlAdded += SplitContainer1_Panel2_ControlAdded;
-            SplitContainer.Size = new Size(928, 426);
+            SplitContainer.Size = new Size(928, 429);
             SplitContainer.SplitterDistance = 243;
             SplitContainer.TabIndex = 2;
             // 
@@ -211,11 +232,12 @@ namespace CircuitDesigner
             PropertyTabs.Location = new Point(0, 0);
             PropertyTabs.Name = "PropertyTabs";
             PropertyTabs.SelectedIndex = 0;
-            PropertyTabs.Size = new Size(243, 426);
+            PropertyTabs.Size = new Size(243, 429);
             PropertyTabs.TabIndex = 0;
             // 
             // ProjectTab
             // 
+            ProjectTab.Controls.Add(ViewTree);
             ProjectTab.Controls.Add(CurrentViewNameLabel);
             ProjectTab.Controls.Add(label9);
             ProjectTab.Controls.Add(CurrentIDInput);
@@ -224,10 +246,19 @@ namespace CircuitDesigner
             ProjectTab.Name = "ProjectTab";
             ProjectTab.Padding = new Padding(3);
             ProjectTab.RightToLeft = RightToLeft.No;
-            ProjectTab.Size = new Size(235, 398);
+            ProjectTab.Size = new Size(235, 401);
             ProjectTab.TabIndex = 0;
             ProjectTab.Text = "Project";
             ProjectTab.UseVisualStyleBackColor = true;
+            // 
+            // ViewTree
+            // 
+            ViewTree.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ViewTree.Location = new Point(8, 71);
+            ViewTree.Name = "ViewTree";
+            ViewTree.Size = new Size(221, 324);
+            ViewTree.TabIndex = 4;
+            ViewTree.AfterSelect += ViewTree_AfterSelect;
             // 
             // CurrentViewNameLabel
             // 
@@ -269,6 +300,10 @@ namespace CircuitDesigner
             // 
             // RegionTab
             // 
+            RegionTab.Controls.Add(RemoveOutputButton);
+            RegionTab.Controls.Add(AddOutputButton);
+            RegionTab.Controls.Add(RemoveInputButton);
+            RegionTab.Controls.Add(AddInputButton);
             RegionTab.Controls.Add(RegionOutputsList);
             RegionTab.Controls.Add(label11);
             RegionTab.Controls.Add(RegionInputsList);
@@ -280,10 +315,54 @@ namespace CircuitDesigner
             RegionTab.Location = new Point(4, 24);
             RegionTab.Name = "RegionTab";
             RegionTab.Padding = new Padding(3);
-            RegionTab.Size = new Size(235, 398);
+            RegionTab.Size = new Size(235, 401);
             RegionTab.TabIndex = 1;
             RegionTab.Text = "Region";
             RegionTab.UseVisualStyleBackColor = true;
+            // 
+            // RemoveOutputButton
+            // 
+            RemoveOutputButton.FlatStyle = FlatStyle.Flat;
+            RemoveOutputButton.ForeColor = Color.Red;
+            RemoveOutputButton.Location = new Point(35, 185);
+            RemoveOutputButton.Name = "RemoveOutputButton";
+            RemoveOutputButton.Size = new Size(17, 24);
+            RemoveOutputButton.TabIndex = 11;
+            RemoveOutputButton.Text = "-";
+            RemoveOutputButton.UseVisualStyleBackColor = true;
+            // 
+            // AddOutputButton
+            // 
+            AddOutputButton.FlatStyle = FlatStyle.Flat;
+            AddOutputButton.ForeColor = Color.ForestGreen;
+            AddOutputButton.Location = new Point(12, 185);
+            AddOutputButton.Name = "AddOutputButton";
+            AddOutputButton.Size = new Size(17, 24);
+            AddOutputButton.TabIndex = 10;
+            AddOutputButton.Text = "+";
+            AddOutputButton.UseVisualStyleBackColor = true;
+            // 
+            // RemoveInputButton
+            // 
+            RemoveInputButton.FlatStyle = FlatStyle.Flat;
+            RemoveInputButton.ForeColor = Color.Red;
+            RemoveInputButton.Location = new Point(35, 110);
+            RemoveInputButton.Name = "RemoveInputButton";
+            RemoveInputButton.Size = new Size(17, 24);
+            RemoveInputButton.TabIndex = 9;
+            RemoveInputButton.Text = "-";
+            RemoveInputButton.UseVisualStyleBackColor = true;
+            // 
+            // AddInputButton
+            // 
+            AddInputButton.FlatStyle = FlatStyle.Flat;
+            AddInputButton.ForeColor = Color.ForestGreen;
+            AddInputButton.Location = new Point(12, 110);
+            AddInputButton.Name = "AddInputButton";
+            AddInputButton.Size = new Size(17, 24);
+            AddInputButton.TabIndex = 8;
+            AddInputButton.Text = "+";
+            AddInputButton.UseVisualStyleBackColor = true;
             // 
             // RegionOutputsList
             // 
@@ -384,7 +463,7 @@ namespace CircuitDesigner
             NeuronTab.Controls.Add(label3);
             NeuronTab.Location = new Point(4, 24);
             NeuronTab.Name = "NeuronTab";
-            NeuronTab.Size = new Size(235, 398);
+            NeuronTab.Size = new Size(235, 401);
             NeuronTab.TabIndex = 2;
             NeuronTab.Text = "Neuron";
             NeuronTab.UseVisualStyleBackColor = true;
@@ -505,7 +584,7 @@ namespace CircuitDesigner
             designBoard.Dock = DockStyle.Fill;
             designBoard.Location = new Point(0, 0);
             designBoard.Name = "designBoard";
-            designBoard.Size = new Size(681, 426);
+            designBoard.Size = new Size(681, 429);
             designBoard.TabIndex = 0;
             viewData1.GlobalOrigin = new Point(0, 0);
             viewData1.ID = new Guid("00000000-0000-0000-0000-000000000000");
@@ -520,6 +599,7 @@ namespace CircuitDesigner
             Controls.Add(SplitContainer);
             Controls.Add(statusStrip1);
             Controls.Add(menuStrip1);
+            KeyPreview = true;
             MainMenuStrip = menuStrip1;
             Name = "Form1";
             Text = "SAPA Circuit Designer";
@@ -561,7 +641,6 @@ namespace CircuitDesigner
         private StatusStrip statusStrip1;
         private SplitContainer SplitContainer;
         private Controls.DesignBoard designBoard;
-        private ToolStripComboBox ViewsDropDown;
         private TabControl PropertyTabs;
         private TabPage ProjectTab;
         private TabPage RegionTab;
@@ -593,5 +672,13 @@ namespace CircuitDesigner
         private Label label12;
         private ListBox NeuronInputsList;
         private Label label13;
+        private TreeView ViewTree;
+        private ToolStripMenuItem buildToolStripMenuItem;
+        private ToolStripMenuItem VerifyMenuButton;
+        private ToolStripMenuItem BuildMenuButton;
+        private Button AddInputButton;
+        private Button RemoveInputButton;
+        private Button AddOutputButton;
+        private Button RemoveOutputButton;
     }
 }

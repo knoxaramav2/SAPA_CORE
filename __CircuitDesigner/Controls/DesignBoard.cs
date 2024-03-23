@@ -6,14 +6,12 @@ using System.Diagnostics.Contracts;
 
 namespace CircuitDesigner.Controls
 {
-
-
     public partial class DesignBoard : UserControl
     {
         private ViewData? _view = null;
         public ViewData View
         {
-            get 
+            get
             {
                 return _view ?? new ViewData();
             }
@@ -54,41 +52,29 @@ namespace CircuitDesigner.Controls
             DoubleBuffered = true;
         }
 
-        private NodeTypes? DetermineNewNodeType(DesignMode mode, bool secondary, bool altSecondary)
+        //CTRL, ALT
+        private static NodeTypes DetermineNewNodeType(bool secondary, bool altSecondary)
         {
-            NodeTypes? ret = null;
+            var ret = NodeTypes.NEURON;
 
-            switch (mode)
-            {
-                case Models.DesignMode.CircuitMode:
-                    if (secondary)
-                    {
-                        ret = altSecondary ? NodeTypes.OUTPUT : NodeTypes.INPUT;
-                    }
-                    else
-                    {
-                        ret = altSecondary ? NodeTypes.REGION : NodeTypes.NEURON;
-                    }
-                    break;
-                case Models.DesignMode.SystemMode:
-                    ret = NodeTypes.REGION;
-                    break;
-            }
+            if (secondary && !altSecondary) { ret = NodeTypes.REGION; }
+            else if (!secondary && altSecondary) { ret = NodeTypes.INPUT; }
+            else if (secondary && altSecondary) { ret = NodeTypes.OUTPUT; }
 
             return ret;
         }
 
         private void DesignContainer_Click(object sender, MouseEventArgs e)
         {
-            if (ModifierKeys.HasFlag(Keys.Shift))
+            Focus();
+            var shift = ModifierKeys.HasFlag(Keys.Shift);
+            var ctrl = ModifierKeys.HasFlag(Keys.Control);
+            var alt = ModifierKeys.HasFlag(Keys.Alt);
+
+            if (shift)
             {
-                var newType = DetermineNewNodeType(
-                    View.ViewMode,
-                    ModifierKeys.HasFlag(Keys.ControlKey),
-                    ModifierKeys.HasFlag(Keys.Alt)
-                    );
-                if (newType == null) { return; }
-                NewNode((NodeTypes)newType, $"New {newType?.NodeTypeName()}", false);
+                var newType = DetermineNewNodeType(ctrl, alt);
+                NewNode(newType, $"New {newType.NodeTypeName()}", false);
             }
             else
             {
@@ -112,11 +98,11 @@ namespace CircuitDesigner.Controls
                     ((RegionControl)node).EnterRegion += OnRegionEnter;
                     ((RegionControl)node).ExitRegion += OnRegionExit;
                     break;
-                case NodeTypes.INPUT: 
+                case NodeTypes.INPUT:
                     node = new InputControl(this, name); break;
-                case NodeTypes.OUTPUT: 
+                case NodeTypes.OUTPUT:
                     node = new OutputControl(this, name); break;
-                case NodeTypes.NEURON: 
+                case NodeTypes.NEURON:
                     node = new NeuronControl(this, name); break;
                 default: throw new Exception($"Illegal node type: {type}");
             }
@@ -128,6 +114,8 @@ namespace CircuitDesigner.Controls
                 Y = pos.Y - node.Height / 2
             };
 
+            node.DeleteNode += OnDeleteNode;
+
             DesignContainer.Controls.Add(node);
             View.AddControl(node);
             OnCreateNode(node);
@@ -135,30 +123,32 @@ namespace CircuitDesigner.Controls
             PaintNodes();
         }
 
-        private void DesignBoard_KeyDown(object sender, KeyEventArgs e)
+        protected override void OnKeyUp(KeyEventArgs e)
         {
+            Debug.WriteLine($"KU: {e.KeyCode}");
+            var shift = ModifierKeys.HasFlag(Keys.Shift);
+            var ctrl = ModifierKeys.HasFlag(Keys.Control);
+            var alt = ModifierKeys.HasFlag(Keys.Alt);
+
             switch (e.KeyCode)
             {
                 case Keys.N:
-                    if (ModifierKeys.HasFlag(Keys.Shift))
+                    if (shift)
                     {
-                        var newType = DetermineNewNodeType(
-                            View.ViewMode,
-                            ModifierKeys.HasFlag(Keys.ControlKey),
-                            ModifierKeys.HasFlag(Keys.Alt)
-                            );
-                        if (newType == null) { return; }
-                        NewNode((NodeTypes)newType, $"New {newType?.NodeTypeName()}", true);
+                        var newType = DetermineNewNodeType(ctrl, alt);
+                        NewNode(newType, $"New {newType.NodeTypeName()}", true);
                     }
                     break;
                 case Keys.Delete:
                     if (View.Selected != null)
                     {
-                        OnDeleteNode(View.Selected.Model);
+                        OnDeleteNode(this, View.Selected.Model);
                         View.UnselectControl();
                     }
                     break;
             }
+
+            base.OnKeyUp(e);
         }
 
         public void OnMouseWheel(object? sender, MouseEventArgs e)
@@ -223,7 +213,7 @@ namespace CircuitDesigner.Controls
             PaintNodes();
         }
 
-        private void SetNodeScale(NodeControl node, int steps)
+        private static void SetNodeScale(NodeControl node, int steps)
         {
             const float STEP_COEF = 0.95f;
             var scale = (float)Math.Pow(1 / STEP_COEF, steps);
@@ -266,7 +256,7 @@ namespace CircuitDesigner.Controls
                 View.SelectControl(control);
             }
 
-            OnUpdateNode();
+            //OnUpdateNode();
         }
 
         private void ReleaseSelection()
@@ -368,9 +358,12 @@ namespace CircuitDesigner.Controls
             NodeCreated?.Invoke(this, node);
         }
 
-        private void OnDeleteNode(INodeModel model)
+        public void OnDeleteNode(object sender, INodeModel model)
         {
+            var ctrl = View.Selected;
             NodeDeleted?.Invoke(this, model);
+            DesignContainer.Controls.Remove(ctrl);
+            ctrl?.Invalidate();
         }
 
         public void OnRegionEnter(object sender, RegionModel model)
@@ -383,9 +376,9 @@ namespace CircuitDesigner.Controls
             RegionExit?.Invoke(this, model);
         }
 
-        private void DesignContainer_DoubleClick(object sender, EventArgs e)
+        private void DesignContainer_Click(object sender, EventArgs e)
         {
-            Debug.WriteLine("DCLICK");
+            Focus();
         }
     }
 }

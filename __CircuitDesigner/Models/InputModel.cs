@@ -5,20 +5,21 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace CircuitDesigner.Models
 {
-    public class OutputModel : INodeModel
+    public class InputModel : INodeModel
     {
         #region Model definitions
-        public OutputModel(NodeControl host, string name)
+        public InputModel(NodeControl host, string name)
         {
             Host = host;
             Name = name;
         }
 
         public Guid ID { get; set; } = Guid.NewGuid();
-        public NodeTypes Type { get; set; } = NodeTypes.OUTPUT;
+        public NodeTypes Type { get; set; } = NodeTypes.INPUT;
 
         private string _name = string.Empty;
         public string Name
@@ -33,12 +34,22 @@ namespace CircuitDesigner.Models
         }
         public NodeControl Host { get; set; }
         public List<INodeModel> Connections { get; set; } = [];
+
+        public void Invalidate()
+        {
+            foreach (var conn in Connections) { conn.Detach(this); }
+            Connections.Clear();
+        }
+
         #endregion
+        public bool Detach(INodeModel model) { return Connections.Remove(model); }
 
         #region INotifedPropertyChanged
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void NotifyPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
         #endregion
+
 
     }
 }
