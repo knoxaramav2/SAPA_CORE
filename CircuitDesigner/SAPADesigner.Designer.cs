@@ -34,35 +34,45 @@
             ToolStripStatusText = new ToolStripStatusLabel();
             ToolStripProjectName = new ToolStripStatusLabel();
             menuStrip1 = new MenuStrip();
-            fileToolStripMenuItem = new ToolStripMenuItem();
-            saveToolStripMenuItem = new ToolStripMenuItem();
-            saveAsToolStripMenuItem = new ToolStripMenuItem();
+            MenuStripFile = new ToolStripMenuItem();
+            ToolStripNew = new ToolStripMenuItem();
+            toolStripSeparator3 = new ToolStripSeparator();
+            ToolStripSave = new ToolStripMenuItem();
+            ToolStripSaveAs = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
-            openToolStripMenuItem = new ToolStripMenuItem();
-            recentToolStripMenuItem = new ToolStripMenuItem();
+            ToolStripOpen = new ToolStripMenuItem();
+            ToolStripRecent = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
-            exitToolStripMenuItem = new ToolStripMenuItem();
-            settingsToolStripMenuItem = new ToolStripMenuItem();
-            projectSettingsToolStripMenuItem = new ToolStripMenuItem();
-            programSettingsToolStripMenuItem = new ToolStripMenuItem();
-            buildToolStripMenuItem = new ToolStripMenuItem();
-            verifyToolStripMenuItem = new ToolStripMenuItem();
-            buildToolStripMenuItem1 = new ToolStripMenuItem();
-            aboutToolStripMenuItem = new ToolStripMenuItem();
-            aboutToolStripMenuItem1 = new ToolStripMenuItem();
+            ToolStripExit = new ToolStripMenuItem();
+            MenuStripSettings = new ToolStripMenuItem();
+            ToolStripProperties = new ToolStripMenuItem();
+            ToolStripProgramSettings = new ToolStripMenuItem();
+            MenuStripBuild = new ToolStripMenuItem();
+            ToolStripVerify = new ToolStripMenuItem();
+            ToolStripBuild = new ToolStripMenuItem();
+            ToolStripAbout = new ToolStripMenuItem();
+            AboutMenuItem = new ToolStripMenuItem();
             SplitContainer1 = new SplitContainer();
+            ProjectNameLabel = new TextBox();
+            label1 = new Label();
             SplitContainer2 = new SplitContainer();
             SplitContainer3 = new SplitContainer();
+            tabControl1 = new TabControl();
+            RegionProperties = new TabPage();
+            NeuronProperties = new TabPage();
             statusStrip1.SuspendLayout();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)SplitContainer1).BeginInit();
+            SplitContainer1.Panel1.SuspendLayout();
             SplitContainer1.Panel2.SuspendLayout();
             SplitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)SplitContainer2).BeginInit();
             SplitContainer2.Panel2.SuspendLayout();
             SplitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)SplitContainer3).BeginInit();
+            SplitContainer3.Panel2.SuspendLayout();
             SplitContainer3.SuspendLayout();
+            tabControl1.SuspendLayout();
             SuspendLayout();
             // 
             // statusStrip1
@@ -96,124 +106,144 @@
             ToolStripProjectName.RightToLeft = RightToLeft.No;
             ToolStripProjectName.Size = new Size(1064, 17);
             ToolStripProjectName.Spring = true;
-            ToolStripProjectName.Text = "Unamed Project";
+            ToolStripProjectName.Text = "Unnamed Project";
             ToolStripProjectName.TextAlign = ContentAlignment.MiddleRight;
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, settingsToolStripMenuItem, buildToolStripMenuItem, aboutToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { MenuStripFile, MenuStripSettings, MenuStripBuild, ToolStripAbout });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(1198, 24);
             menuStrip1.TabIndex = 1;
-            menuStrip1.Text = "menuStrip1";
+            menuStrip1.Text = "MenuStrip";
             // 
-            // fileToolStripMenuItem
+            // MenuStripFile
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { saveToolStripMenuItem, saveAsToolStripMenuItem, toolStripSeparator2, openToolStripMenuItem, recentToolStripMenuItem, toolStripSeparator1, exitToolStripMenuItem });
-            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            fileToolStripMenuItem.Size = new Size(37, 20);
-            fileToolStripMenuItem.Text = "File";
+            MenuStripFile.DropDownItems.AddRange(new ToolStripItem[] { ToolStripNew, toolStripSeparator3, ToolStripSave, ToolStripSaveAs, toolStripSeparator2, ToolStripOpen, ToolStripRecent, toolStripSeparator1, ToolStripExit });
+            MenuStripFile.Name = "MenuStripFile";
+            MenuStripFile.Size = new Size(37, 20);
+            MenuStripFile.Text = "File";
             // 
-            // saveToolStripMenuItem
+            // ToolStripNew
             // 
-            saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(114, 22);
-            saveToolStripMenuItem.Text = "Save";
+            ToolStripNew.Name = "ToolStripNew";
+            ToolStripNew.Size = new Size(180, 22);
+            ToolStripNew.Text = "New";
+            ToolStripNew.Click += ToolStripNew_Click;
             // 
-            // saveAsToolStripMenuItem
+            // toolStripSeparator3
             // 
-            saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(114, 22);
-            saveAsToolStripMenuItem.Text = "Save As";
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new Size(177, 6);
+            // 
+            // ToolStripSave
+            // 
+            ToolStripSave.Name = "ToolStripSave";
+            ToolStripSave.Size = new Size(180, 22);
+            ToolStripSave.Text = "Save";
+            ToolStripSave.Click += ToolStripSave_Click;
+            // 
+            // ToolStripSaveAs
+            // 
+            ToolStripSaveAs.Name = "ToolStripSaveAs";
+            ToolStripSaveAs.Size = new Size(180, 22);
+            ToolStripSaveAs.Text = "Save As";
+            ToolStripSaveAs.Click += ToolStripSaveAs_Click;
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(111, 6);
+            toolStripSeparator2.Size = new Size(177, 6);
             // 
-            // openToolStripMenuItem
+            // ToolStripOpen
             // 
-            openToolStripMenuItem.Name = "openToolStripMenuItem";
-            openToolStripMenuItem.Size = new Size(114, 22);
-            openToolStripMenuItem.Text = "Open";
+            ToolStripOpen.Name = "ToolStripOpen";
+            ToolStripOpen.Size = new Size(180, 22);
+            ToolStripOpen.Text = "Open";
+            ToolStripOpen.Click += ToolStripOpen_Click;
             // 
-            // recentToolStripMenuItem
+            // ToolStripRecent
             // 
-            recentToolStripMenuItem.Name = "recentToolStripMenuItem";
-            recentToolStripMenuItem.Size = new Size(114, 22);
-            recentToolStripMenuItem.Text = "Recent";
+            ToolStripRecent.Name = "ToolStripRecent";
+            ToolStripRecent.Size = new Size(180, 22);
+            ToolStripRecent.Text = "Recent";
+            ToolStripRecent.Click += ToolStripRecent_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(111, 6);
+            toolStripSeparator1.Size = new Size(177, 6);
             // 
-            // exitToolStripMenuItem
+            // ToolStripExit
             // 
-            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(114, 22);
-            exitToolStripMenuItem.Text = "Exit";
+            ToolStripExit.Name = "ToolStripExit";
+            ToolStripExit.Size = new Size(180, 22);
+            ToolStripExit.Text = "Exit";
+            ToolStripExit.Click += ToolStripExit_Click;
             // 
-            // settingsToolStripMenuItem
+            // MenuStripSettings
             // 
-            settingsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { projectSettingsToolStripMenuItem, programSettingsToolStripMenuItem });
-            settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            settingsToolStripMenuItem.Size = new Size(61, 20);
-            settingsToolStripMenuItem.Text = "Settings";
+            MenuStripSettings.DropDownItems.AddRange(new ToolStripItem[] { ToolStripProperties, ToolStripProgramSettings });
+            MenuStripSettings.Name = "MenuStripSettings";
+            MenuStripSettings.Size = new Size(61, 20);
+            MenuStripSettings.Text = "Settings";
             // 
-            // projectSettingsToolStripMenuItem
+            // ToolStripProperties
             // 
-            projectSettingsToolStripMenuItem.Name = "projectSettingsToolStripMenuItem";
-            projectSettingsToolStripMenuItem.Size = new Size(165, 22);
-            projectSettingsToolStripMenuItem.Text = "Properties";
+            ToolStripProperties.Name = "ToolStripProperties";
+            ToolStripProperties.Size = new Size(165, 22);
+            ToolStripProperties.Text = "Properties";
             // 
-            // programSettingsToolStripMenuItem
+            // ToolStripProgramSettings
             // 
-            programSettingsToolStripMenuItem.Name = "programSettingsToolStripMenuItem";
-            programSettingsToolStripMenuItem.Size = new Size(165, 22);
-            programSettingsToolStripMenuItem.Text = "Program Settings";
+            ToolStripProgramSettings.Name = "ToolStripProgramSettings";
+            ToolStripProgramSettings.Size = new Size(165, 22);
+            ToolStripProgramSettings.Text = "Program Settings";
             // 
-            // buildToolStripMenuItem
+            // MenuStripBuild
             // 
-            buildToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { verifyToolStripMenuItem, buildToolStripMenuItem1 });
-            buildToolStripMenuItem.Name = "buildToolStripMenuItem";
-            buildToolStripMenuItem.Size = new Size(46, 20);
-            buildToolStripMenuItem.Text = "Build";
+            MenuStripBuild.DropDownItems.AddRange(new ToolStripItem[] { ToolStripVerify, ToolStripBuild });
+            MenuStripBuild.Name = "MenuStripBuild";
+            MenuStripBuild.Size = new Size(46, 20);
+            MenuStripBuild.Text = "Build";
             // 
-            // verifyToolStripMenuItem
+            // ToolStripVerify
             // 
-            verifyToolStripMenuItem.Name = "verifyToolStripMenuItem";
-            verifyToolStripMenuItem.Size = new Size(103, 22);
-            verifyToolStripMenuItem.Text = "Verify";
+            ToolStripVerify.Name = "ToolStripVerify";
+            ToolStripVerify.Size = new Size(103, 22);
+            ToolStripVerify.Text = "Verify";
             // 
-            // buildToolStripMenuItem1
+            // ToolStripBuild
             // 
-            buildToolStripMenuItem1.Name = "buildToolStripMenuItem1";
-            buildToolStripMenuItem1.Size = new Size(103, 22);
-            buildToolStripMenuItem1.Text = "Build";
+            ToolStripBuild.Name = "ToolStripBuild";
+            ToolStripBuild.Size = new Size(103, 22);
+            ToolStripBuild.Text = "Build";
             // 
-            // aboutToolStripMenuItem
+            // ToolStripAbout
             // 
-            aboutToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { aboutToolStripMenuItem1 });
-            aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            aboutToolStripMenuItem.Size = new Size(52, 20);
-            aboutToolStripMenuItem.Text = "About";
+            ToolStripAbout.DropDownItems.AddRange(new ToolStripItem[] { AboutMenuItem });
+            ToolStripAbout.Name = "ToolStripAbout";
+            ToolStripAbout.Size = new Size(52, 20);
+            ToolStripAbout.Text = "About";
             // 
-            // aboutToolStripMenuItem1
+            // AboutMenuItem
             // 
-            aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
-            aboutToolStripMenuItem1.Size = new Size(107, 22);
-            aboutToolStripMenuItem1.Text = "About";
+            AboutMenuItem.Name = "AboutMenuItem";
+            AboutMenuItem.Size = new Size(107, 22);
+            AboutMenuItem.Text = "About";
             // 
             // SplitContainer1
             // 
+            SplitContainer1.BorderStyle = BorderStyle.FixedSingle;
             SplitContainer1.Dock = DockStyle.Fill;
             SplitContainer1.Location = new Point(0, 24);
             SplitContainer1.Name = "SplitContainer1";
             // 
             // SplitContainer1.Panel1
             // 
+            SplitContainer1.Panel1.Controls.Add(ProjectNameLabel);
+            SplitContainer1.Panel1.Controls.Add(label1);
             // 
             // SplitContainer1.Panel2
             // 
@@ -222,8 +252,30 @@
             SplitContainer1.SplitterDistance = 207;
             SplitContainer1.TabIndex = 2;
             // 
+            // ProjectNameLabel
+            // 
+            ProjectNameLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            ProjectNameLabel.BackColor = SystemColors.Control;
+            ProjectNameLabel.BorderStyle = BorderStyle.None;
+            ProjectNameLabel.Enabled = false;
+            ProjectNameLabel.Location = new Point(62, 11);
+            ProjectNameLabel.Name = "ProjectNameLabel";
+            ProjectNameLabel.Size = new Size(140, 16);
+            ProjectNameLabel.TabIndex = 2;
+            ProjectNameLabel.TextAlign = HorizontalAlignment.Right;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(12, 11);
+            label1.Name = "label1";
+            label1.Size = new Size(44, 15);
+            label1.TabIndex = 1;
+            label1.Text = "Project";
+            // 
             // SplitContainer2
             // 
+            SplitContainer2.BorderStyle = BorderStyle.FixedSingle;
             SplitContainer2.Dock = DockStyle.Fill;
             SplitContainer2.Location = new Point(0, 0);
             SplitContainer2.Name = "SplitContainer2";
@@ -237,13 +289,49 @@
             // 
             // SplitContainer3
             // 
+            SplitContainer3.BorderStyle = BorderStyle.FixedSingle;
             SplitContainer3.Dock = DockStyle.Fill;
             SplitContainer3.Location = new Point(0, 0);
             SplitContainer3.Name = "SplitContainer3";
             SplitContainer3.Orientation = Orientation.Horizontal;
+            // 
+            // SplitContainer3.Panel2
+            // 
+            SplitContainer3.Panel2.Controls.Add(tabControl1);
             SplitContainer3.Size = new Size(269, 536);
             SplitContainer3.SplitterDistance = 307;
             SplitContainer3.TabIndex = 0;
+            // 
+            // tabControl1
+            // 
+            tabControl1.Controls.Add(RegionProperties);
+            tabControl1.Controls.Add(NeuronProperties);
+            tabControl1.Dock = DockStyle.Fill;
+            tabControl1.Location = new Point(0, 0);
+            tabControl1.Name = "tabControl1";
+            tabControl1.SelectedIndex = 0;
+            tabControl1.Size = new Size(267, 223);
+            tabControl1.TabIndex = 0;
+            // 
+            // RegionProperties
+            // 
+            RegionProperties.Location = new Point(4, 24);
+            RegionProperties.Name = "RegionProperties";
+            RegionProperties.Padding = new Padding(3);
+            RegionProperties.Size = new Size(259, 195);
+            RegionProperties.TabIndex = 0;
+            RegionProperties.Text = "Properties";
+            RegionProperties.UseVisualStyleBackColor = true;
+            // 
+            // NeuronProperties
+            // 
+            NeuronProperties.Location = new Point(4, 24);
+            NeuronProperties.Name = "NeuronProperties";
+            NeuronProperties.Padding = new Padding(3);
+            NeuronProperties.Size = new Size(259, 195);
+            NeuronProperties.TabIndex = 1;
+            NeuronProperties.Text = "Properties";
+            NeuronProperties.UseVisualStyleBackColor = true;
             // 
             // SapaDesigner
             // 
@@ -256,18 +344,23 @@
             MainMenuStrip = menuStrip1;
             Name = "SapaDesigner";
             Text = "SAPA Designer";
+            FormClosing += SapaDesigner_FormClosing;
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
+            SplitContainer1.Panel1.ResumeLayout(false);
+            SplitContainer1.Panel1.PerformLayout();
             SplitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)SplitContainer1).EndInit();
             SplitContainer1.ResumeLayout(false);
             SplitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)SplitContainer2).EndInit();
             SplitContainer2.ResumeLayout(false);
+            SplitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)SplitContainer3).EndInit();
             SplitContainer3.ResumeLayout(false);
+            tabControl1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -276,22 +369,22 @@
 
         private StatusStrip statusStrip1;
         private MenuStrip menuStrip1;
-        private ToolStripMenuItem fileToolStripMenuItem;
-        private ToolStripMenuItem settingsToolStripMenuItem;
-        private ToolStripMenuItem buildToolStripMenuItem;
-        private ToolStripMenuItem aboutToolStripMenuItem;
-        private ToolStripMenuItem saveToolStripMenuItem;
-        private ToolStripMenuItem saveAsToolStripMenuItem;
+        private ToolStripMenuItem MenuStripFile;
+        private ToolStripMenuItem MenuStripSettings;
+        private ToolStripMenuItem MenuStripBuild;
+        private ToolStripMenuItem ToolStripAbout;
+        private ToolStripMenuItem ToolStripSave;
+        private ToolStripMenuItem ToolStripSaveAs;
         private ToolStripSeparator toolStripSeparator2;
-        private ToolStripMenuItem openToolStripMenuItem;
-        private ToolStripMenuItem recentToolStripMenuItem;
+        private ToolStripMenuItem ToolStripOpen;
+        private ToolStripMenuItem ToolStripRecent;
         private ToolStripSeparator toolStripSeparator1;
-        private ToolStripMenuItem exitToolStripMenuItem;
-        private ToolStripMenuItem projectSettingsToolStripMenuItem;
-        private ToolStripMenuItem programSettingsToolStripMenuItem;
-        private ToolStripMenuItem verifyToolStripMenuItem;
-        private ToolStripMenuItem buildToolStripMenuItem1;
-        private ToolStripMenuItem aboutToolStripMenuItem1;
+        private ToolStripMenuItem ToolStripExit;
+        private ToolStripMenuItem ToolStripProperties;
+        private ToolStripMenuItem ToolStripProgramSettings;
+        private ToolStripMenuItem ToolStripVerify;
+        private ToolStripMenuItem ToolStripBuild;
+        private ToolStripMenuItem AboutMenuItem;
         private ToolStripProgressBar ToolStripProgressBar;
         private ToolStripStatusLabel toolStripStatusLabel1;
         private ToolStripStatusLabel ToolStripProjectName;
@@ -299,5 +392,12 @@
         private SplitContainer SplitContainer1;
         private SplitContainer SplitContainer2;
         private SplitContainer SplitContainer3;
+        private TabControl tabControl1;
+        private TabPage RegionProperties;
+        private TabPage NeuronProperties;
+        private Label label1;
+        private TextBox ProjectNameLabel;
+        private ToolStripMenuItem ToolStripNew;
+        private ToolStripSeparator toolStripSeparator3;
     }
 }
