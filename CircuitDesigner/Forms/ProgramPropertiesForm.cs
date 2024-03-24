@@ -1,4 +1,5 @@
 ﻿using CircuitDesigner.Models;
+using CircuitDesigner.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,6 +24,9 @@ namespace CircuitDesigner.Forms
         private List<TreeNode> TreeNodeReference;
 
         private DataTable TransmitterSource;
+
+
+        #region Form Update
 
         internal ProgramPropertiesForm(ProgramPersist program, ProjectState? project = null)
         {
@@ -100,6 +104,8 @@ namespace CircuitDesigner.Forms
                 }
                 PropertiesTree.Nodes.Remove(root);
             }
+
+            UpdateProjectConfigTab();
         }
 
         [MemberNotNull(nameof(Program))]
@@ -107,6 +113,11 @@ namespace CircuitDesigner.Forms
         {
             Program = program;
         }
+
+        #endregion
+
+
+        #region Events
 
         private void PropertiesTree_TabIndexChanged(object sender, EventArgs e)
         {
@@ -119,21 +130,6 @@ namespace CircuitDesigner.Forms
             if (selected == null) { return; }
 
             SetSelectedPage(selected.Name);
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void ProgramPropertiesForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -152,20 +148,21 @@ namespace CircuitDesigner.Forms
 
             var defs = Definitions.GetInstance();
 
-            if(TransmitterSource == null)
+            if (TransmitterSource == null)
             {
                 TransmitterSource = new();
                 TransmitterSource.Columns.Add(NameCol);
                 TransmitterSource.Columns.Add(ChargeMultCol);
                 TransmitterSource.Columns.Add(EffectCol);
 
-                
-            } else
+
+            }
+            else
             {
                 TransmitterSource.Clear();
             }
 
-            foreach(var trans in defs.Transmitters)
+            foreach (var trans in defs.Transmitters)
             {
                 var row = TransmitterSource.NewRow();
 
@@ -193,5 +190,68 @@ namespace CircuitDesigner.Forms
         {
             UpdateTransmitterList();
         }
+
+        private void ProjectNameInput_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ProjectNameInput_Validating(object sender, CancelEventArgs e)
+        {
+            if(Project == null) { return; }
+
+            if (ProjectNameInput.Text.Length == 0)
+            {
+                ProjectNameInput.BackColor = Color.Firebrick;
+            } else
+            {
+                ProjectNameInput.BackColor = default;
+                Project.ProjectName = ProjectNameInput.Text;
+            }
+        }
+
+        private void PathUpdateBtn_Click(object sender, EventArgs e)
+        {
+            if (Project == null) { return; }
+            using FolderBrowserDialog dlg = new();
+            if (dlg.ShowDialog() != DialogResult.OK) { return; }
+            var path = dlg.SelectedPath;
+
+            if (PathExists(path, Project.ProjectName, FileUtil.ProjectExt))
+            {
+                MessageBox.Show("", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            Project.ProjectDir = path;
+        }
+        #endregion
+
+
+        #region Helpers
+
+        private bool PathExists(string dirPath, string fileName = "", string ext = "")
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return Directory.Exists(dirPath);
+            }
+            else
+            {
+                return File.Exists(
+                    Path.Join(dirPath, $"{fileName}{ext}")
+                    );
+            }
+        }
+
+        private void UpdateProjectConfigTab()
+        {
+            if (Project == null) { return; }
+
+            ProjectNameInput.Text = Project.ProjectName;
+            ProjectPathLabel.Text = Project.ProjectDir;
+        }
+
+        #endregion
     }
 }

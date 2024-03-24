@@ -38,6 +38,10 @@
             PropertiesTree = new TreeView();
             PropertyPages = new TabControl();
             ProjectConfiguration = new TabPage();
+            PathUpdateBtn = new Button();
+            ProjectPathLabel = new Label();
+            ProjectNameInput = new TextBox();
+            label1 = new Label();
             SystemConfiguration = new TabPage();
             SystemPaths = new TabPage();
             SystemDefinitions = new TabPage();
@@ -51,6 +55,7 @@
             PropertiesContainer.Panel2.SuspendLayout();
             PropertiesContainer.SuspendLayout();
             PropertyPages.SuspendLayout();
+            ProjectConfiguration.SuspendLayout();
             SystemDefinitions.SuspendLayout();
             TransmitterGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)TransmitterTable).BeginInit();
@@ -113,6 +118,10 @@
             // 
             // ProjectConfiguration
             // 
+            ProjectConfiguration.Controls.Add(PathUpdateBtn);
+            ProjectConfiguration.Controls.Add(ProjectPathLabel);
+            ProjectConfiguration.Controls.Add(ProjectNameInput);
+            ProjectConfiguration.Controls.Add(label1);
             ProjectConfiguration.Location = new Point(4, 24);
             ProjectConfiguration.Name = "ProjectConfiguration";
             ProjectConfiguration.Padding = new Padding(3);
@@ -120,6 +129,47 @@
             ProjectConfiguration.TabIndex = 0;
             ProjectConfiguration.Text = "Project Configuration";
             ProjectConfiguration.UseVisualStyleBackColor = true;
+            // 
+            // PathUpdateBtn
+            // 
+            PathUpdateBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            PathUpdateBtn.Enabled = false;
+            PathUpdateBtn.Location = new Point(439, 36);
+            PathUpdateBtn.Name = "PathUpdateBtn";
+            PathUpdateBtn.Size = new Size(35, 23);
+            PathUpdateBtn.TabIndex = 3;
+            PathUpdateBtn.Text = "...";
+            PathUpdateBtn.UseVisualStyleBackColor = true;
+            PathUpdateBtn.Click += PathUpdateBtn_Click;
+            // 
+            // ProjectPathLabel
+            // 
+            ProjectPathLabel.AutoSize = true;
+            ProjectPathLabel.Location = new Point(6, 40);
+            ProjectPathLabel.Name = "ProjectPathLabel";
+            ProjectPathLabel.Size = new Size(22, 15);
+            ProjectPathLabel.TabIndex = 2;
+            ProjectPathLabel.Text = "---";
+            // 
+            // ProjectNameInput
+            // 
+            ProjectNameInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            ProjectNameInput.Enabled = false;
+            ProjectNameInput.Location = new Point(91, 6);
+            ProjectNameInput.Name = "ProjectNameInput";
+            ProjectNameInput.Size = new Size(383, 23);
+            ProjectNameInput.TabIndex = 1;
+            ProjectNameInput.TextChanged += ProjectNameInput_TextChanged;
+            ProjectNameInput.Validating += ProjectNameInput_Validating;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(6, 9);
+            label1.Name = "label1";
+            label1.Size = new Size(79, 15);
+            label1.TabIndex = 0;
+            label1.Text = "Project Name";
             // 
             // SystemConfiguration
             // 
@@ -224,6 +274,8 @@
             ((System.ComponentModel.ISupportInitialize)PropertiesContainer).EndInit();
             PropertiesContainer.ResumeLayout(false);
             PropertyPages.ResumeLayout(false);
+            ProjectConfiguration.ResumeLayout(false);
+            ProjectConfiguration.PerformLayout();
             SystemDefinitions.ResumeLayout(false);
             TransmitterGroup.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)TransmitterTable).EndInit();
@@ -244,5 +296,9 @@
         private Button DeleteTransmitterBtn;
         private Button EditTransmitterBtn;
         private DataGridView TransmitterTable;
+        private Label label1;
+        private TextBox ProjectNameInput;
+        private Label ProjectPathLabel;
+        private Button PathUpdateBtn;
     }
 }

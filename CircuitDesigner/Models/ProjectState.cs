@@ -8,9 +8,9 @@ namespace CircuitDesigner.Models
         private const string DefaultProjectName = "__default__";
 
         [JsonProperty]
-        public string ProjectName { get; private set; } = "";
+        public string ProjectName { get; internal set; } = "";
         [JsonProperty]
-        public string ProjectDir { get; private set; } = "";
+        public string ProjectDir { get; internal set; } = "";
 
 
         public List<Transmitter> Transmitters { get; set; } = [];
