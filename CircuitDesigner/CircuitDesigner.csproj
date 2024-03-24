@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Folder Include="Controls\Properties\" />
+    <Folder Include="Resources\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -11,6 +11,8 @@ namespace CircuitDesigner.Models
         public string ProjectDir { get; private set; } = "";
 
 
+        public CircuitModel RootModel { get; set; }
+
         private string FilePath()
         {
             return Path.Join(ProjectDir, $"{ProjectName}{FileUtil.ProjectExt}");
@@ -18,6 +20,7 @@ namespace CircuitDesigner.Models
 
         public ProjectState(string? projectPath = null)
         {
+            RootModel = new("Root");
             projectPath ??= Path.Join(FileUtil.ProjectsUri, $"{DefaultProjectName}{FileUtil.ProjectExt}");
             Rename(projectPath);
         }
@@ -32,23 +35,17 @@ namespace CircuitDesigner.Models
 
         public static ProjectState LoadOrDefault(string? path = null)
         {
-            if (path == null)
-            {
-                path = Path.Join(FileUtil.ProjectsUri, $"{DefaultProjectName}{FileUtil.ProjectExt}");
-                var ret = FileUtil.Load<ProjectState>(path);
+            path ??= Path.Join(FileUtil.ProjectsUri, $"{DefaultProjectName}{FileUtil.ProjectExt}");
 
-                if (ret == null)
-                {
-                    NCLogger.Log($"Unable to load project at {path}", NCLogger.LogType.WRN);
-                    ret = new ProjectState();
-                }
+            var ret = FileUtil.Load<ProjectState>(path);
 
-                return ret;
-            }
-            else
+            if (ret == null)
             {
-                return new ProjectState(path);
+                NCLogger.Log($"Unable to load project at {path}", NCLogger.LogType.WRN);
+                ret = new ProjectState();
             }
+
+            return ret;
         }
 
         public void Save()

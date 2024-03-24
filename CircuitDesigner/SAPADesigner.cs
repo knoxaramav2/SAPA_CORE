@@ -1,6 +1,5 @@
 using CircuitDesigner.Models;
 using CircuitDesigner.Util;
-using System.Data;
 
 namespace CircuitDesigner
 {
@@ -44,7 +43,7 @@ namespace CircuitDesigner
             var recents = PersistState.GetRecents();
             var items = new ToolStripMenuItem[recents.Count];
 
-            for(var i = 0; i < items.Length; i++)
+            for (var i = 0; i < items.Length; i++)
             {
                 var dataTuple = recents[i];
                 var item = new ToolStripMenuItem
@@ -61,12 +60,52 @@ namespace CircuitDesigner
             ToolStripRecent.DropDownItems.AddRange(items);
         }
 
+        private void UpdateCircuitTree()
+        {
+            CircuitTree.Nodes.Clear();
+
+            var root = ProjectState.RootModel;
+            AddCircuitTreeLeaf(null, root);
+        }
+
+        private TreeNode? SearchCircuitTree(TreeNode node, Guid id)
+        {
+            
+            return null;
+        }
+
+        private void UpdateCircuitTreeLeaf(Guid id, string Name)
+        {
+            
+        }
+
+        private void AddCircuitTreeLeaf(TreeNode? parent, CircuitModel model)
+        {
+            var node = new TreeNode
+            {
+                Name = model.ID.ToString(),
+                Text = model.Name
+            };
+
+            if (parent == null) { CircuitTree.Nodes.Add(node); } 
+            else
+            { parent.Nodes.Add(node); }
+
+
+        }
+
+        private void RemoveCircuitTreeLeaf()
+        {
+
+        }
+
         private void UpdateStatus()
         {
             ToolStripProgressBar.Value = 0;
             ToolStripStatusText.Text = "Ready";
             UpdateControlEnabledStates();
             UpdateRecentsList();
+            UpdateCircuitTree();
         }
 
         private void UpdateProjectLabel()
@@ -75,7 +114,7 @@ namespace CircuitDesigner
             ToolStripProjectName.Text = ProjectState.ProjectName;
         }
 
-        private void UpdateProject(ProjectState? state=null)
+        private void UpdateProject(ProjectState? state = null)
         {
             if (state != null) { ProjectState = state; }
             PersistState.SetRecent(ProjectState.ProjectName, ProjectState.ProjectDir);
@@ -119,7 +158,7 @@ namespace CircuitDesigner
             return filePath;
         }
 
-        private void Open(string? path=null)
+        private void Open(string? path = null)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -165,7 +204,8 @@ namespace CircuitDesigner
         #region Form Events
         private void SapaDesigner_FormClosing(object sender, FormClosingEventArgs e)
         {
-            //Save();
+            if (ProjectState.IsDefaultProject()) { return; }
+            Save();
         }
 
         private void ToolStripSave_Click(object sender, EventArgs e) { Save(); }
@@ -173,11 +213,6 @@ namespace CircuitDesigner
         private void ToolStripSaveAs_Click(object sender, EventArgs e) { Save(saveAs: true); }
 
         private void ToolStripOpen_Click(object sender, EventArgs e) { Open(); }
-
-        private void ToolStripRecent_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void ToolStripExit_Click(object sender, EventArgs e)
         {

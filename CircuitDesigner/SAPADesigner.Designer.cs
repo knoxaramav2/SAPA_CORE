@@ -53,9 +53,11 @@
             ToolStripAbout = new ToolStripMenuItem();
             AboutMenuItem = new ToolStripMenuItem();
             SplitContainer1 = new SplitContainer();
+            CircuitTree = new TreeView();
             ProjectNameLabel = new TextBox();
             label1 = new Label();
             SplitContainer2 = new SplitContainer();
+            designBoard1 = new Controls.DesignBoard();
             SplitContainer3 = new SplitContainer();
             tabControl1 = new TabControl();
             RegionProperties = new TabPage();
@@ -67,6 +69,7 @@
             SplitContainer1.Panel2.SuspendLayout();
             SplitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)SplitContainer2).BeginInit();
+            SplitContainer2.Panel1.SuspendLayout();
             SplitContainer2.Panel2.SuspendLayout();
             SplitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)SplitContainer3).BeginInit();
@@ -128,57 +131,56 @@
             // ToolStripNew
             // 
             ToolStripNew.Name = "ToolStripNew";
-            ToolStripNew.Size = new Size(180, 22);
+            ToolStripNew.Size = new Size(114, 22);
             ToolStripNew.Text = "New";
             ToolStripNew.Click += ToolStripNew_Click;
             // 
             // toolStripSeparator3
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new Size(177, 6);
+            toolStripSeparator3.Size = new Size(111, 6);
             // 
             // ToolStripSave
             // 
             ToolStripSave.Name = "ToolStripSave";
-            ToolStripSave.Size = new Size(180, 22);
+            ToolStripSave.Size = new Size(114, 22);
             ToolStripSave.Text = "Save";
             ToolStripSave.Click += ToolStripSave_Click;
             // 
             // ToolStripSaveAs
             // 
             ToolStripSaveAs.Name = "ToolStripSaveAs";
-            ToolStripSaveAs.Size = new Size(180, 22);
+            ToolStripSaveAs.Size = new Size(114, 22);
             ToolStripSaveAs.Text = "Save As";
             ToolStripSaveAs.Click += ToolStripSaveAs_Click;
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(177, 6);
+            toolStripSeparator2.Size = new Size(111, 6);
             // 
             // ToolStripOpen
             // 
             ToolStripOpen.Name = "ToolStripOpen";
-            ToolStripOpen.Size = new Size(180, 22);
+            ToolStripOpen.Size = new Size(114, 22);
             ToolStripOpen.Text = "Open";
             ToolStripOpen.Click += ToolStripOpen_Click;
             // 
             // ToolStripRecent
             // 
             ToolStripRecent.Name = "ToolStripRecent";
-            ToolStripRecent.Size = new Size(180, 22);
+            ToolStripRecent.Size = new Size(114, 22);
             ToolStripRecent.Text = "Recent";
-            ToolStripRecent.Click += ToolStripRecent_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(177, 6);
+            toolStripSeparator1.Size = new Size(111, 6);
             // 
             // ToolStripExit
             // 
             ToolStripExit.Name = "ToolStripExit";
-            ToolStripExit.Size = new Size(180, 22);
+            ToolStripExit.Size = new Size(114, 22);
             ToolStripExit.Text = "Exit";
             ToolStripExit.Click += ToolStripExit_Click;
             // 
@@ -242,6 +244,7 @@
             // 
             // SplitContainer1.Panel1
             // 
+            SplitContainer1.Panel1.Controls.Add(CircuitTree);
             SplitContainer1.Panel1.Controls.Add(ProjectNameLabel);
             SplitContainer1.Panel1.Controls.Add(label1);
             // 
@@ -251,6 +254,14 @@
             SplitContainer1.Size = new Size(1198, 536);
             SplitContainer1.SplitterDistance = 207;
             SplitContainer1.TabIndex = 2;
+            // 
+            // CircuitTree
+            // 
+            CircuitTree.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            CircuitTree.Location = new Point(3, 321);
+            CircuitTree.Name = "CircuitTree";
+            CircuitTree.Size = new Size(199, 209);
+            CircuitTree.TabIndex = 3;
             // 
             // ProjectNameLabel
             // 
@@ -280,12 +291,25 @@
             SplitContainer2.Location = new Point(0, 0);
             SplitContainer2.Name = "SplitContainer2";
             // 
+            // SplitContainer2.Panel1
+            // 
+            SplitContainer2.Panel1.Controls.Add(designBoard1);
+            // 
             // SplitContainer2.Panel2
             // 
             SplitContainer2.Panel2.Controls.Add(SplitContainer3);
             SplitContainer2.Size = new Size(987, 536);
             SplitContainer2.SplitterDistance = 714;
             SplitContainer2.TabIndex = 0;
+            // 
+            // designBoard1
+            // 
+            designBoard1.BackColor = Color.Black;
+            designBoard1.Dock = DockStyle.Fill;
+            designBoard1.Location = new Point(0, 0);
+            designBoard1.Name = "designBoard1";
+            designBoard1.Size = new Size(712, 534);
+            designBoard1.TabIndex = 0;
             // 
             // SplitContainer3
             // 
@@ -354,6 +378,7 @@
             SplitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)SplitContainer1).EndInit();
             SplitContainer1.ResumeLayout(false);
+            SplitContainer2.Panel1.ResumeLayout(false);
             SplitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)SplitContainer2).EndInit();
             SplitContainer2.ResumeLayout(false);
@@ -399,5 +424,7 @@
         private TextBox ProjectNameLabel;
         private ToolStripMenuItem ToolStripNew;
         private ToolStripSeparator toolStripSeparator3;
+        private Controls.DesignBoard designBoard1;
+        private TreeView CircuitTree;
     }
 }
