@@ -16,10 +16,7 @@ namespace CircuitDesigner.Models
 
         private Definitions()
         {
-            Transmitters = [
-                new Transmitter("Exc 1", 1),
-                new Transmitter("Inh 1", -1)
-                ];
+            Transmitters = [];
         }
         
         public static Definitions GetInstance()

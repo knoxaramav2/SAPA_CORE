@@ -41,11 +41,19 @@
             SystemConfiguration = new TabPage();
             SystemPaths = new TabPage();
             SystemDefinitions = new TabPage();
+            TransmitterGroup = new GroupBox();
+            TransmitterTable = new DataGridView();
+            AddTransmitterBtn = new Button();
+            DeleteTransmitterBtn = new Button();
+            EditTransmitterBtn = new Button();
             ((System.ComponentModel.ISupportInitialize)PropertiesContainer).BeginInit();
             PropertiesContainer.Panel1.SuspendLayout();
             PropertiesContainer.Panel2.SuspendLayout();
             PropertiesContainer.SuspendLayout();
             PropertyPages.SuspendLayout();
+            SystemDefinitions.SuspendLayout();
+            TransmitterGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)TransmitterTable).BeginInit();
             SuspendLayout();
             // 
             // PropertiesContainer
@@ -63,8 +71,8 @@
             // 
             PropertiesContainer.Panel2.AutoScroll = true;
             PropertiesContainer.Panel2.Controls.Add(PropertyPages);
-            PropertiesContainer.Size = new Size(800, 450);
-            PropertiesContainer.SplitterDistance = 204;
+            PropertiesContainer.Size = new Size(662, 450);
+            PropertiesContainer.SplitterDistance = 168;
             PropertiesContainer.TabIndex = 0;
             // 
             // PropertiesTree
@@ -85,7 +93,7 @@
             treeNode6.Name = "SystemRoot";
             treeNode6.Text = "System";
             PropertiesTree.Nodes.AddRange(new TreeNode[] { treeNode2, treeNode6 });
-            PropertiesTree.Size = new Size(204, 450);
+            PropertiesTree.Size = new Size(168, 450);
             PropertiesTree.TabIndex = 0;
             PropertiesTree.AfterSelect += PropertiesTree_AfterSelect;
             PropertiesTree.TabIndexChanged += PropertiesTree_TabIndexChanged;
@@ -100,7 +108,7 @@
             PropertyPages.Location = new Point(0, 0);
             PropertyPages.Name = "PropertyPages";
             PropertyPages.SelectedIndex = 0;
-            PropertyPages.Size = new Size(592, 450);
+            PropertyPages.Size = new Size(490, 450);
             PropertyPages.TabIndex = 0;
             // 
             // ProjectConfiguration
@@ -108,7 +116,7 @@
             ProjectConfiguration.Location = new Point(4, 24);
             ProjectConfiguration.Name = "ProjectConfiguration";
             ProjectConfiguration.Padding = new Padding(3);
-            ProjectConfiguration.Size = new Size(584, 422);
+            ProjectConfiguration.Size = new Size(482, 422);
             ProjectConfiguration.TabIndex = 0;
             ProjectConfiguration.Text = "Project Configuration";
             ProjectConfiguration.UseVisualStyleBackColor = true;
@@ -118,7 +126,7 @@
             SystemConfiguration.Location = new Point(4, 24);
             SystemConfiguration.Name = "SystemConfiguration";
             SystemConfiguration.Padding = new Padding(3);
-            SystemConfiguration.Size = new Size(584, 422);
+            SystemConfiguration.Size = new Size(482, 422);
             SystemConfiguration.TabIndex = 1;
             SystemConfiguration.Text = "System Configuration";
             SystemConfiguration.UseVisualStyleBackColor = true;
@@ -128,33 +136,97 @@
             SystemPaths.Location = new Point(4, 24);
             SystemPaths.Name = "SystemPaths";
             SystemPaths.Padding = new Padding(3);
-            SystemPaths.Size = new Size(584, 422);
+            SystemPaths.Size = new Size(482, 422);
             SystemPaths.TabIndex = 2;
             SystemPaths.Text = "System Paths";
             SystemPaths.UseVisualStyleBackColor = true;
             // 
             // SystemDefinitions
             // 
+            SystemDefinitions.Controls.Add(TransmitterGroup);
             SystemDefinitions.Location = new Point(4, 24);
             SystemDefinitions.Name = "SystemDefinitions";
-            SystemDefinitions.Size = new Size(584, 422);
+            SystemDefinitions.Size = new Size(482, 422);
             SystemDefinitions.TabIndex = 3;
             SystemDefinitions.Text = "Definitions";
             SystemDefinitions.UseVisualStyleBackColor = true;
+            // 
+            // TransmitterGroup
+            // 
+            TransmitterGroup.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            TransmitterGroup.Controls.Add(TransmitterTable);
+            TransmitterGroup.Controls.Add(AddTransmitterBtn);
+            TransmitterGroup.Controls.Add(DeleteTransmitterBtn);
+            TransmitterGroup.Controls.Add(EditTransmitterBtn);
+            TransmitterGroup.Location = new Point(8, 8);
+            TransmitterGroup.Name = "TransmitterGroup";
+            TransmitterGroup.Size = new Size(466, 265);
+            TransmitterGroup.TabIndex = 0;
+            TransmitterGroup.TabStop = false;
+            TransmitterGroup.Text = "Transmitters";
+            // 
+            // TransmitterTable
+            // 
+            TransmitterTable.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            TransmitterTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            TransmitterTable.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
+            TransmitterTable.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            TransmitterTable.Location = new Point(3, 19);
+            TransmitterTable.MultiSelect = false;
+            TransmitterTable.Name = "TransmitterTable";
+            TransmitterTable.Size = new Size(457, 203);
+            TransmitterTable.TabIndex = 3;
+            // 
+            // AddTransmitterBtn
+            // 
+            AddTransmitterBtn.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            AddTransmitterBtn.Location = new Point(223, 228);
+            AddTransmitterBtn.Name = "AddTransmitterBtn";
+            AddTransmitterBtn.Size = new Size(75, 29);
+            AddTransmitterBtn.TabIndex = 1;
+            AddTransmitterBtn.Text = "Add";
+            AddTransmitterBtn.UseVisualStyleBackColor = true;
+            AddTransmitterBtn.Click += TransmitterAdd_Click;
+            // 
+            // DeleteTransmitterBtn
+            // 
+            DeleteTransmitterBtn.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            DeleteTransmitterBtn.Location = new Point(304, 228);
+            DeleteTransmitterBtn.Name = "DeleteTransmitterBtn";
+            DeleteTransmitterBtn.Size = new Size(75, 29);
+            DeleteTransmitterBtn.TabIndex = 2;
+            DeleteTransmitterBtn.Text = "Delete";
+            DeleteTransmitterBtn.UseVisualStyleBackColor = true;
+            DeleteTransmitterBtn.Click += TransmitterDelete_Click;
+            // 
+            // EditTransmitterBtn
+            // 
+            EditTransmitterBtn.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            EditTransmitterBtn.Location = new Point(385, 228);
+            EditTransmitterBtn.Name = "EditTransmitterBtn";
+            EditTransmitterBtn.Size = new Size(75, 29);
+            EditTransmitterBtn.TabIndex = 1;
+            EditTransmitterBtn.Text = "Edit";
+            EditTransmitterBtn.UseVisualStyleBackColor = true;
+            EditTransmitterBtn.Click += TransmitterEdit_Click;
             // 
             // ProgramPropertiesForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(662, 450);
             Controls.Add(PropertiesContainer);
             Name = "ProgramPropertiesForm";
             Text = "Properties";
+            FormClosing += ProgramPropertiesForm_FormClosing;
             PropertiesContainer.Panel1.ResumeLayout(false);
             PropertiesContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)PropertiesContainer).EndInit();
             PropertiesContainer.ResumeLayout(false);
             PropertyPages.ResumeLayout(false);
+            SystemDefinitions.ResumeLayout(false);
+            TransmitterGroup.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)TransmitterTable).EndInit();
             ResumeLayout(false);
         }
 
@@ -167,5 +239,10 @@
         private TabPage SystemConfiguration;
         private TabPage SystemPaths;
         private TabPage SystemDefinitions;
+        private GroupBox TransmitterGroup;
+        private Button AddTransmitterBtn;
+        private Button DeleteTransmitterBtn;
+        private Button EditTransmitterBtn;
+        private DataGridView TransmitterTable;
     }
 }

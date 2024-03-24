@@ -22,12 +22,16 @@ namespace CircuitDesigner.Forms
         private TabPage[] TabPageReference;
         private List<TreeNode> TreeNodeReference;
 
+        private DataTable TransmitterSource;
+
         internal ProgramPropertiesForm(ProgramPersist program, ProjectState? project = null)
         {
             InitializeComponent();
 
             InitProgramSettings(program);
             InitProjectSettings(project);
+            UpdateTransmitterList();
+
             InitPages();
         }
 
@@ -35,7 +39,7 @@ namespace CircuitDesigner.Forms
         {
             PropertyPages.TabPages.Clear();
 
-            foreach(var item in PropertiesTree.Nodes.OfType<TreeNode>())
+            foreach (var item in PropertiesTree.Nodes.OfType<TreeNode>())
             {
                 Debug.WriteLine($"{item.Name} | {item.Text} ");
             }
@@ -75,7 +79,7 @@ namespace CircuitDesigner.Forms
             TabPageReference = PropertyPages.TabPages.OfType<TabPage>().ToArray();
             TreeNodeReference = [];
 
-            foreach(var node in PropertiesTree.Nodes.OfType<TreeNode>())
+            foreach (var node in PropertiesTree.Nodes.OfType<TreeNode>())
             {
                 TreeNodeReference.Add(node);
                 TreeNodeReference.AddRange(node.Nodes.OfType<TreeNode>());
@@ -106,7 +110,7 @@ namespace CircuitDesigner.Forms
 
         private void PropertiesTree_TabIndexChanged(object sender, EventArgs e)
         {
-            
+
         }
 
         private void PropertiesTree_AfterSelect(object sender, TreeViewEventArgs e)
@@ -115,6 +119,79 @@ namespace CircuitDesigner.Forms
             if (selected == null) { return; }
 
             SetSelectedPage(selected.Name);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ProgramPropertiesForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Project?.Save();
+            Program.Save();
+            Definitions.GetInstance().Save();
+        }
+
+        [MemberNotNull(nameof(TransmitterSource))]
+        private void UpdateTransmitterList()
+        {
+            const string NameCol = "Name";
+            const string ChargeMultCol = "Q Coeff";
+            const string EffectCol = "Effect";
+
+            var defs = Definitions.GetInstance();
+
+            if(TransmitterSource == null)
+            {
+                TransmitterSource = new();
+                TransmitterSource.Columns.Add(NameCol);
+                TransmitterSource.Columns.Add(ChargeMultCol);
+                TransmitterSource.Columns.Add(EffectCol);
+
+                
+            } else
+            {
+                TransmitterSource.Clear();
+            }
+
+            foreach(var trans in defs.Transmitters)
+            {
+                var row = TransmitterSource.NewRow();
+
+                row[NameCol] = trans.Name;
+                row[ChargeMultCol] = trans.ChargeMultipler;
+                row[EffectCol] = Enum.GetName(trans.Effect);
+
+                TransmitterSource.Rows.Add(row);
+            }
+
+            TransmitterTable.DataSource = TransmitterSource;
+        }
+
+        private void TransmitterAdd_Click(object sender, EventArgs e)
+        {
+            UpdateTransmitterList();
+        }
+
+        private void TransmitterDelete_Click(object sender, EventArgs e)
+        {
+            UpdateTransmitterList();
+        }
+
+        private void TransmitterEdit_Click(object sender, EventArgs e)
+        {
+            UpdateTransmitterList();
         }
     }
 }
