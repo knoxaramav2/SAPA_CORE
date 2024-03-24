@@ -16,5 +16,7 @@ namespace CircuitDesigner.Controls
         {
             InitializeComponent();
         }
+
+        public virtual void MoveTo(Point pos) { }
     }
 }

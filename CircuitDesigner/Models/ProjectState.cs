@@ -13,6 +13,8 @@ namespace CircuitDesigner.Models
 
         public CircuitModel RootModel { get; set; }
 
+        public CircuitModel CurrentCircuit { get; set; }
+
         private string FilePath()
         {
             return Path.Join(ProjectDir, $"{ProjectName}{FileUtil.ProjectExt}");
@@ -21,6 +23,7 @@ namespace CircuitDesigner.Models
         public ProjectState(string? projectPath = null)
         {
             RootModel = new("Root");
+            CurrentCircuit = RootModel;
             projectPath ??= Path.Join(FileUtil.ProjectsUri, $"{DefaultProjectName}{FileUtil.ProjectExt}");
             Rename(projectPath);
         }
@@ -46,6 +49,14 @@ namespace CircuitDesigner.Models
             }
 
             return ret;
+        }
+
+        public CircuitModel NavigateToCircuit(Guid id)
+        {
+            if (RootModel.ID == id) { return RootModel; }
+
+            var ret = RootModel.SearchSubCircuits(id);
+            return ret ?? RootModel;
         }
 
         public void Save()

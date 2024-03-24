@@ -25,8 +25,9 @@ namespace CircuitDesigner
         private void InitSystem()
         {
             FileUtil.AssureDirectories();
-            UpdateStatus();
-            UpdateProjectLabel();
+            UpdateProject(ProjectState);
+            //UpdateStatus();
+            //UpdateProjectLabel();
         }
 
         private void UpdateControlEnabledStates()
@@ -120,8 +121,16 @@ namespace CircuitDesigner
             PersistState.SetRecent(ProjectState.ProjectName, ProjectState.ProjectDir);
             UpdateProjectLabel();
             UpdateStatus();
+            NavigateToCircuit(ProjectState.RootModel.ID);
             PersistState.Save();
         }
+
+        private void NavigateToCircuit(Guid id)
+        {
+            var model = ProjectState.NavigateToCircuit(id);
+            DesignBoard.LoadCircuit(model);
+        }
+
         #endregion
 
         #region File Handling

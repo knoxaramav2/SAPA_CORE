@@ -37,6 +37,7 @@
             BackColor = Color.Black;
             Name = "DesignBoard";
             Size = new Size(473, 415);
+            Paint += DesignBoard_Paint;
             ResumeLayout(false);
         }
 

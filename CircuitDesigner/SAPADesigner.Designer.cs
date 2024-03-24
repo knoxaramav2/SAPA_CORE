@@ -57,7 +57,7 @@
             ProjectNameLabel = new TextBox();
             label1 = new Label();
             SplitContainer2 = new SplitContainer();
-            designBoard1 = new Controls.DesignBoard();
+            DesignBoard = new Controls.DesignBoard();
             SplitContainer3 = new SplitContainer();
             tabControl1 = new TabControl();
             RegionProperties = new TabPage();
@@ -293,7 +293,7 @@
             // 
             // SplitContainer2.Panel1
             // 
-            SplitContainer2.Panel1.Controls.Add(designBoard1);
+            SplitContainer2.Panel1.Controls.Add(DesignBoard);
             // 
             // SplitContainer2.Panel2
             // 
@@ -302,14 +302,14 @@
             SplitContainer2.SplitterDistance = 714;
             SplitContainer2.TabIndex = 0;
             // 
-            // designBoard1
+            // DesignBoard
             // 
-            designBoard1.BackColor = Color.Black;
-            designBoard1.Dock = DockStyle.Fill;
-            designBoard1.Location = new Point(0, 0);
-            designBoard1.Name = "designBoard1";
-            designBoard1.Size = new Size(712, 534);
-            designBoard1.TabIndex = 0;
+            DesignBoard.BackColor = Color.Black;
+            DesignBoard.Dock = DockStyle.Fill;
+            DesignBoard.Location = new Point(0, 0);
+            DesignBoard.Name = "DesignBoard";
+            DesignBoard.Size = new Size(712, 534);
+            DesignBoard.TabIndex = 0;
             // 
             // SplitContainer3
             // 
@@ -424,7 +424,7 @@
         private TextBox ProjectNameLabel;
         private ToolStripMenuItem ToolStripNew;
         private ToolStripSeparator toolStripSeparator3;
-        private Controls.DesignBoard designBoard1;
         private TreeView CircuitTree;
+        private Controls.DesignBoard DesignBoard;
     }
 }

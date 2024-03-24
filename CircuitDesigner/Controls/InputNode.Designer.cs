@@ -28,8 +28,20 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            SuspendLayout();
+            // 
+            // InputNode
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.Transparent;
+            Name = "InputNode";
+            Size = new Size(39, 37);
+            Load += InputNode_Load;
+            Paint += InputNode_Paint;
+            Move += InputNode_Move;
+            Resize += InputNode_Resize;
+            ResumeLayout(false);
         }
 
         #endregion

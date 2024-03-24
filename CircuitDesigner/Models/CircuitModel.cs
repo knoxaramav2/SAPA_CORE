@@ -14,6 +14,7 @@ namespace CircuitDesigner.Models
         public string Name { get; set; }
         public Guid ID { get; set; }
         public Point Pos { get; set; }
+        public double Scale { get; set; }
 
         public List<CircuitModel> SubCircuits { get; set; } = [];
         public List<InputModel> Inputs { get; set; } = [];
@@ -32,6 +33,24 @@ namespace CircuitDesigner.Models
             }
         }
 
+        public CircuitModel? SearchSubCircuits(Guid id)
+        {
+            if (ID == id) { return this; }
 
+            CircuitModel? ret = null;
+
+            foreach(var node in  SubCircuits)
+            {
+                ret = node.SearchSubCircuits(id);
+                if (ret != null) { break; }
+            }
+
+            return ret;
+        }
+
+        public void SetScale(double scale)
+        {
+            Scale = scale;
+        }
     }
 }

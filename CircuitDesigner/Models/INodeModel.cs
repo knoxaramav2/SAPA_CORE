@@ -11,6 +11,6 @@ namespace CircuitDesigner.Models
         public string Name { get; set; }
         public Guid ID { get; set; }
         public Point Pos { get; set; }
-
     }
+
 }
