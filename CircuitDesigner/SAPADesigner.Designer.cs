@@ -59,6 +59,8 @@
             SplitContainer2 = new SplitContainer();
             DesignBoard = new Controls.DesignBoard();
             SplitContainer3 = new SplitContainer();
+            OutputListGroup = new GroupBox();
+            InputListGroup = new GroupBox();
             tabControl1 = new TabControl();
             RegionProperties = new TabPage();
             NeuronProperties = new TabPage();
@@ -73,6 +75,7 @@
             SplitContainer2.Panel2.SuspendLayout();
             SplitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)SplitContainer3).BeginInit();
+            SplitContainer3.Panel1.SuspendLayout();
             SplitContainer3.Panel2.SuspendLayout();
             SplitContainer3.SuspendLayout();
             tabControl1.SuspendLayout();
@@ -83,7 +86,7 @@
             statusStrip1.Items.AddRange(new ToolStripItem[] { ToolStripProgressBar, toolStripStatusLabel1, ToolStripStatusText, ToolStripProjectName });
             statusStrip1.Location = new Point(0, 560);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(1198, 22);
+            statusStrip1.Size = new Size(757, 22);
             statusStrip1.TabIndex = 0;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -107,7 +110,7 @@
             // 
             ToolStripProjectName.Name = "ToolStripProjectName";
             ToolStripProjectName.RightToLeft = RightToLeft.No;
-            ToolStripProjectName.Size = new Size(1064, 17);
+            ToolStripProjectName.Size = new Size(623, 17);
             ToolStripProjectName.Spring = true;
             ToolStripProjectName.Text = "Unnamed Project";
             ToolStripProjectName.TextAlign = ContentAlignment.MiddleRight;
@@ -117,7 +120,7 @@
             menuStrip1.Items.AddRange(new ToolStripItem[] { MenuStripFile, MenuStripSettings, MenuStripBuild, ToolStripAbout });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(1198, 24);
+            menuStrip1.Size = new Size(757, 24);
             menuStrip1.TabIndex = 1;
             menuStrip1.Text = "MenuStrip";
             // 
@@ -194,13 +197,14 @@
             // ToolStripProperties
             // 
             ToolStripProperties.Name = "ToolStripProperties";
-            ToolStripProperties.Size = new Size(165, 22);
+            ToolStripProperties.Size = new Size(180, 22);
             ToolStripProperties.Text = "Properties";
+            ToolStripProperties.Click += ToolStripProperties_Click;
             // 
             // ToolStripProgramSettings
             // 
             ToolStripProgramSettings.Name = "ToolStripProgramSettings";
-            ToolStripProgramSettings.Size = new Size(165, 22);
+            ToolStripProgramSettings.Size = new Size(180, 22);
             ToolStripProgramSettings.Text = "Program Settings";
             // 
             // MenuStripBuild
@@ -251,8 +255,8 @@
             // SplitContainer1.Panel2
             // 
             SplitContainer1.Panel2.Controls.Add(SplitContainer2);
-            SplitContainer1.Size = new Size(1198, 536);
-            SplitContainer1.SplitterDistance = 207;
+            SplitContainer1.Size = new Size(757, 536);
+            SplitContainer1.SplitterDistance = 130;
             SplitContainer1.TabIndex = 2;
             // 
             // CircuitTree
@@ -260,7 +264,7 @@
             CircuitTree.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             CircuitTree.Location = new Point(3, 321);
             CircuitTree.Name = "CircuitTree";
-            CircuitTree.Size = new Size(199, 209);
+            CircuitTree.Size = new Size(122, 209);
             CircuitTree.TabIndex = 3;
             // 
             // ProjectNameLabel
@@ -271,7 +275,7 @@
             ProjectNameLabel.Enabled = false;
             ProjectNameLabel.Location = new Point(62, 11);
             ProjectNameLabel.Name = "ProjectNameLabel";
-            ProjectNameLabel.Size = new Size(140, 16);
+            ProjectNameLabel.Size = new Size(63, 16);
             ProjectNameLabel.TabIndex = 2;
             ProjectNameLabel.TextAlign = HorizontalAlignment.Right;
             // 
@@ -298,8 +302,8 @@
             // SplitContainer2.Panel2
             // 
             SplitContainer2.Panel2.Controls.Add(SplitContainer3);
-            SplitContainer2.Size = new Size(987, 536);
-            SplitContainer2.SplitterDistance = 714;
+            SplitContainer2.Size = new Size(623, 536);
+            SplitContainer2.SplitterDistance = 312;
             SplitContainer2.TabIndex = 0;
             // 
             // DesignBoard
@@ -308,7 +312,7 @@
             DesignBoard.Dock = DockStyle.Fill;
             DesignBoard.Location = new Point(0, 0);
             DesignBoard.Name = "DesignBoard";
-            DesignBoard.Size = new Size(712, 534);
+            DesignBoard.Size = new Size(310, 534);
             DesignBoard.TabIndex = 0;
             // 
             // SplitContainer3
@@ -319,12 +323,37 @@
             SplitContainer3.Name = "SplitContainer3";
             SplitContainer3.Orientation = Orientation.Horizontal;
             // 
+            // SplitContainer3.Panel1
+            // 
+            SplitContainer3.Panel1.Controls.Add(OutputListGroup);
+            SplitContainer3.Panel1.Controls.Add(InputListGroup);
+            // 
             // SplitContainer3.Panel2
             // 
             SplitContainer3.Panel2.Controls.Add(tabControl1);
-            SplitContainer3.Size = new Size(269, 536);
-            SplitContainer3.SplitterDistance = 307;
+            SplitContainer3.Size = new Size(307, 536);
+            SplitContainer3.SplitterDistance = 395;
             SplitContainer3.TabIndex = 0;
+            // 
+            // OutputListGroup
+            // 
+            OutputListGroup.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            OutputListGroup.Location = new Point(3, 207);
+            OutputListGroup.Name = "OutputListGroup";
+            OutputListGroup.Size = new Size(297, 183);
+            OutputListGroup.TabIndex = 1;
+            OutputListGroup.TabStop = false;
+            OutputListGroup.Text = "Outputs";
+            // 
+            // InputListGroup
+            // 
+            InputListGroup.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            InputListGroup.Location = new Point(4, 3);
+            InputListGroup.Name = "InputListGroup";
+            InputListGroup.Size = new Size(297, 198);
+            InputListGroup.TabIndex = 0;
+            InputListGroup.TabStop = false;
+            InputListGroup.Text = "Inputs";
             // 
             // tabControl1
             // 
@@ -334,7 +363,7 @@
             tabControl1.Location = new Point(0, 0);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(267, 223);
+            tabControl1.Size = new Size(305, 135);
             tabControl1.TabIndex = 0;
             // 
             // RegionProperties
@@ -342,7 +371,7 @@
             RegionProperties.Location = new Point(4, 24);
             RegionProperties.Name = "RegionProperties";
             RegionProperties.Padding = new Padding(3);
-            RegionProperties.Size = new Size(259, 195);
+            RegionProperties.Size = new Size(297, 107);
             RegionProperties.TabIndex = 0;
             RegionProperties.Text = "Properties";
             RegionProperties.UseVisualStyleBackColor = true;
@@ -352,7 +381,7 @@
             NeuronProperties.Location = new Point(4, 24);
             NeuronProperties.Name = "NeuronProperties";
             NeuronProperties.Padding = new Padding(3);
-            NeuronProperties.Size = new Size(259, 195);
+            NeuronProperties.Size = new Size(297, 107);
             NeuronProperties.TabIndex = 1;
             NeuronProperties.Text = "Properties";
             NeuronProperties.UseVisualStyleBackColor = true;
@@ -361,7 +390,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1198, 582);
+            ClientSize = new Size(757, 582);
             Controls.Add(SplitContainer1);
             Controls.Add(statusStrip1);
             Controls.Add(menuStrip1);
@@ -382,6 +411,7 @@
             SplitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)SplitContainer2).EndInit();
             SplitContainer2.ResumeLayout(false);
+            SplitContainer3.Panel1.ResumeLayout(false);
             SplitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)SplitContainer3).EndInit();
             SplitContainer3.ResumeLayout(false);
@@ -426,5 +456,7 @@
         private ToolStripSeparator toolStripSeparator3;
         private TreeView CircuitTree;
         private Controls.DesignBoard DesignBoard;
+        private GroupBox OutputListGroup;
+        private GroupBox InputListGroup;
     }
 }

@@ -63,9 +63,14 @@ namespace CircuitDesigner.Util
         {
             if (!File.Exists(path)) { return null; }
 
+            var serializerSettings = new JsonSerializerSettings
+            {
+                MissingMemberHandling = MissingMemberHandling.Error
+            };
+
             using StreamReader sr = new(path);
             var content = sr.ReadToEnd(); 
-            var ret = JsonConvert.DeserializeObject<T>(content);
+            var ret = JsonConvert.DeserializeObject<T>(content, serializerSettings);
             
             return ret;
         }

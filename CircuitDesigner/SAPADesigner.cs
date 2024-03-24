@@ -1,3 +1,4 @@
+using CircuitDesigner.Forms;
 using CircuitDesigner.Models;
 using CircuitDesigner.Util;
 
@@ -7,6 +8,7 @@ namespace CircuitDesigner
     {
         readonly ProgramPersist PersistState = ProgramPersist.Load();
         ProjectState ProjectState = ProjectState.LoadOrDefault();
+        readonly Definitions Definitions = Definitions.GetInstance();
 
         #region Form Updates
 
@@ -26,8 +28,6 @@ namespace CircuitDesigner
         {
             FileUtil.AssureDirectories();
             UpdateProject(ProjectState);
-            //UpdateStatus();
-            //UpdateProjectLabel();
         }
 
         private void UpdateControlEnabledStates()
@@ -71,13 +71,13 @@ namespace CircuitDesigner
 
         private TreeNode? SearchCircuitTree(TreeNode node, Guid id)
         {
-            
+
             return null;
         }
 
         private void UpdateCircuitTreeLeaf(Guid id, string Name)
         {
-            
+
         }
 
         private void AddCircuitTreeLeaf(TreeNode? parent, CircuitModel model)
@@ -88,7 +88,7 @@ namespace CircuitDesigner
                 Text = model.Name
             };
 
-            if (parent == null) { CircuitTree.Nodes.Add(node); } 
+            if (parent == null) { CircuitTree.Nodes.Add(node); }
             else
             { parent.Nodes.Add(node); }
 
@@ -107,6 +107,7 @@ namespace CircuitDesigner
             UpdateControlEnabledStates();
             UpdateRecentsList();
             UpdateCircuitTree();
+            UpdateInputOutputList();
         }
 
         private void UpdateProjectLabel()
@@ -119,9 +120,11 @@ namespace CircuitDesigner
         {
             if (state != null) { ProjectState = state; }
             PersistState.SetRecent(ProjectState.ProjectName, ProjectState.ProjectDir);
+
             UpdateProjectLabel();
             UpdateStatus();
             NavigateToCircuit(ProjectState.RootModel.ID);
+
             PersistState.Save();
         }
 
@@ -129,6 +132,11 @@ namespace CircuitDesigner
         {
             var model = ProjectState.NavigateToCircuit(id);
             DesignBoard.LoadCircuit(model);
+        }
+
+        private void UpdateInputOutputList()
+        {
+
         }
 
         #endregion
@@ -195,6 +203,8 @@ namespace CircuitDesigner
 
             ProjectState.Save();
             PersistState.Save();
+            Definitions.Save();
+
             UpdateProject(project);
         }
 
@@ -240,5 +250,10 @@ namespace CircuitDesigner
         }
 
         #endregion
+
+        private void ToolStripProperties_Click(object sender, EventArgs e)
+        {
+            (new ProgramPropertiesForm(PersistState, ProjectState.IsDefaultProject() ? null : ProjectState)).ShowDialog();
+        }
     }
 }

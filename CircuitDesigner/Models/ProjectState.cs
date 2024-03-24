@@ -1,4 +1,5 @@
 ﻿using CircuitDesigner.Util;
+using Newtonsoft.Json;
 
 namespace CircuitDesigner.Models
 {
@@ -6,9 +7,13 @@ namespace CircuitDesigner.Models
     {
         private const string DefaultProjectName = "__default__";
 
-
+        [JsonProperty]
         public string ProjectName { get; private set; } = "";
+        [JsonProperty]
         public string ProjectDir { get; private set; } = "";
+
+
+        public List<Transmitter> Transmitters { get; set; } = [];
 
 
         public CircuitModel RootModel { get; set; }
