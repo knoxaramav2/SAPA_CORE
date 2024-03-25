@@ -1,4 +1,5 @@
 ﻿using CircuitDesigner.Models;
+using CircuitDesigner.Util;
 using System.Diagnostics.CodeAnalysis;
 
 namespace CircuitDesigner.Controls
@@ -9,6 +10,9 @@ namespace CircuitDesigner.Controls
         private List<DesignNode> Nodes;
 
         private int ZoomScale;
+        private Point? DragOrigin = null;
+        private bool IsDragging = false;
+        private DesignNode? SelectedNode = null;
 
         #region Form Data
         public DesignBoard()
@@ -52,13 +56,23 @@ namespace CircuitDesigner.Controls
 
         private void CreateControl(INodeModel model, Point pos)
         {
-            if (model is InputModel input) 
+            if (model is InputModel input)
             {
-                var node = new InputNode(input);
-                pos = new Point(pos.X, pos.Y-node.Height/2);
+                var node = new InputNode(this, input);
+                pos = new Point(pos.X, pos.Y - node.Height / 2);
                 Controls.Add(node);
                 node.MoveTo(pos);
             }
+
+            ResetSelections();
+        }
+
+        private void ResetSelections()
+        {
+            DragOrigin = null;
+            IsDragging = false;
+            SelectedNode = null;
+            ZoomScale = 0;
         }
         #endregion
 
@@ -69,9 +83,36 @@ namespace CircuitDesigner.Controls
             Zoom(e.Delta);
         }
 
+        private void DesignBoard_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
         #endregion
 
         #region Helpers
+
+        private void Drag(Point pos)
+        {
+            if (!IsDragging || DragOrigin == null) { return; }
+            var origin = (Point)DragOrigin;
+            var deltaPos = pos.Sub(origin);
+
+            if(SelectedNode == null)
+            {
+                RootCircuit.Pos = RootCircuit.Pos.Add(deltaPos);
+
+                foreach(DesignNode node in Controls)
+                {
+                    node.Location = node.Location.Add(deltaPos);
+                }
+
+                DragOrigin = pos;
+            } else
+            {
+                SelectedNode.Location = SelectedNode.Location.Add(deltaPos);
+            }
+        }
 
         private void Zoom(int amount)
         {
@@ -81,7 +122,7 @@ namespace CircuitDesigner.Controls
             if (amount == 0) { return; }
             amount = Math.Clamp(amount, -1, 1);
 
-            if(ZoomScale+amount < MIN_SCALE && ZoomScale+amount > MAX_SCALE)
+            if (ZoomScale + amount < MIN_SCALE && ZoomScale + amount > MAX_SCALE)
             {
                 return;
             }
@@ -101,7 +142,69 @@ namespace CircuitDesigner.Controls
 
         #endregion
 
-        private void DesignBoard_Paint(object sender, PaintEventArgs e)
+
+        public void DesignBoard_MouseMove(object sender, MouseEventArgs e)
+        {
+            Drag(e.Location);
+        }
+
+        public void DesignBoard_MouseUp(object sender, MouseEventArgs e)
+        {
+            IsDragging = false;
+        }
+
+        private void LinkNode(DesignNode node1, DesignNode node2)
+        {
+
+        }
+
+        private void ReleaseSelection()
+        {
+            if (SelectedNode != null)
+            {
+                SelectedNode.BackColor = default;
+            }
+
+            DragOrigin = null;
+            SelectedNode = null;
+        }
+
+        private void SetSelection(DesignNode? node, Point pos)
+        {
+            ReleaseSelection();
+
+            DragOrigin = pos;
+
+            if (node == null)
+            {
+
+            }
+            else
+            {
+                node.BackColor = Color.LightGreen;
+                SelectedNode = node;
+            }
+        }
+
+        public void DesignBoard_MouseDown(object sender, MouseEventArgs e)
+        {
+            var obj = sender is DesignNode ? sender as DesignNode : null;
+
+            if (ModifierKeys.HasFlag(Keys.Shift))
+            {
+                if (obj != null && SelectedNode != null && SelectedNode != obj)
+                {
+                    LinkNode(SelectedNode, obj);
+                }
+            }
+            else
+            {
+                SetSelection(obj, e.Location);
+                IsDragging = true;
+            }
+        }
+
+        public void DesignBoard_KeyUp(object sender, KeyEventArgs e)
         {
 
         }
