@@ -1,17 +1,9 @@
 ﻿using CircuitDesigner.Models;
 using CircuitDesigner.Util;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using static System.ComponentModel.Design.ObjectSelectorEditor;
 
 namespace CircuitDesigner.Forms
 {
@@ -136,7 +128,7 @@ namespace CircuitDesigner.Forms
         {
             Project?.Save();
             Program.Save();
-            Definitions.GetInstance().Save();
+            Definitions.Save();
         }
 
         [MemberNotNull(nameof(TransmitterSource))]
@@ -230,7 +222,8 @@ namespace CircuitDesigner.Forms
 
         #region Helpers
 
-        private bool PathExists(string dirPath, string fileName = "", string ext = "")
+        private static bool PathExists(string dirPath, 
+            string fileName = "", string ext = "")
         {
             if (string.IsNullOrEmpty(fileName))
             {

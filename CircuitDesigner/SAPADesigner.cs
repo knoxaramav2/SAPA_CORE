@@ -8,7 +8,6 @@ namespace CircuitDesigner
     {
         readonly ProgramPersist PersistState = ProgramPersist.Load();
         ProjectState ProjectState = ProjectState.LoadOrDefault();
-        readonly Definitions Definitions = Definitions.GetInstance();
 
         #region Form Updates
 
@@ -69,17 +68,6 @@ namespace CircuitDesigner
             AddCircuitTreeLeaf(null, root);
         }
 
-        private TreeNode? SearchCircuitTree(TreeNode node, Guid id)
-        {
-
-            return null;
-        }
-
-        private void UpdateCircuitTreeLeaf(Guid id, string Name)
-        {
-
-        }
-
         private void AddCircuitTreeLeaf(TreeNode? parent, CircuitModel model)
         {
             var node = new TreeNode
@@ -92,11 +80,6 @@ namespace CircuitDesigner
             else
             { parent.Nodes.Add(node); }
 
-
-        }
-
-        private void RemoveCircuitTreeLeaf()
-        {
 
         }
 
@@ -136,7 +119,24 @@ namespace CircuitDesigner
 
         private void UpdateInputOutputList()
         {
+            var inputs = ProjectState.CurrentCircuit.Inputs;
 
+            InputsList.Items.Clear();
+            OutputsList.Items.Clear();
+
+            InputsList.ItemCheck -= InputsList_ItemCheck;
+            OutputsList.ItemCheck -= OutputsList_ItemCheck;
+
+            InputListGroup.Text = $"Inputs ({inputs.Count})";
+
+            foreach (var input in inputs)
+            {
+                InputsList.Items.Add(input.Name, input.Enabled);
+            }
+
+            InputsList.ItemCheck += InputsList_ItemCheck;
+            OutputsList.ItemCheck += OutputsList_ItemCheck;
+            
         }
 
         #endregion
@@ -249,11 +249,82 @@ namespace CircuitDesigner
             Open(muItem.Name);
         }
 
-        #endregion
-
         private void ToolStripProperties_Click(object sender, EventArgs e)
         {
             (new ProgramPropertiesForm(PersistState, ProjectState.IsDefaultProject() ? null : ProjectState)).ShowDialog();
+        }
+
+        private void InputsList_KeyUp(object sender, KeyEventArgs e)
+        {
+            var inputs = ProjectState.CurrentCircuit.Inputs;
+
+            switch (e.KeyCode)
+            {
+                case Keys.Insert:
+                    var newName = $"New Input";
+                    uint i = 0;
+                    while (inputs.Any(x => x.Name.Equals(newName, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        newName = $"New Input {i}";
+                        i++;
+                    }
+
+                    var newInput = new InputModel(newName);
+                    inputs.Add(newInput);
+                    break;
+                case Keys.Delete:
+                    var selected = InputsList.SelectedItem;
+                    if (selected == null) { return; }
+
+                    break;
+                default: return;
+            }
+
+            UpdateInputOutputList();
+        }
+
+        private void OutputsLists_KeyUp(object sender, KeyEventArgs e)
+        {
+
+
+            UpdateInputOutputList();
+        }
+
+
+        private void InputsList_DoubleClick(object sender, EventArgs e)
+        {
+            var inputs = ProjectState.CurrentCircuit.Inputs;
+            var selected = (string?)InputsList.SelectedItem;
+            if (selected == null) { return; }
+
+            var connector = inputs.FirstOrDefault(x => x.Name.Equals(selected, StringComparison.OrdinalIgnoreCase));
+            if (connector == null) { return; }
+
+            using InputOutputForm dlg = new(connector, inputs);
+            if (dlg.ShowDialog() == DialogResult.Cancel) 
+            { return; }
+
+            connector.Name = dlg.ConnectorName;
+            connector.Enabled = dlg.Enabled;
+
+            UpdateInputOutputList();
+        }
+
+        private void OutputsLists_DoubleClick(object sender, EventArgs e)
+        {
+            UpdateInputOutputList();
+        }
+
+        #endregion
+
+        private void InputsList_ItemCheck(object? sender, ItemCheckEventArgs e)
+        {
+            e.NewValue = e.CurrentValue;
+        }
+
+        private void OutputsList_ItemCheck(object? sender, ItemCheckEventArgs e)
+        {
+            e.NewValue = e.CurrentValue;
         }
     }
 }

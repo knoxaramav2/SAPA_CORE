@@ -1,15 +1,5 @@
 ﻿using CircuitDesigner.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.Remoting;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace CircuitDesigner.Controls
 {
@@ -18,12 +8,15 @@ namespace CircuitDesigner.Controls
         private CircuitModel RootCircuit;
         private List<DesignNode> Nodes;
 
+        private int ZoomScale;
+
         #region Form Data
         public DesignBoard()
         {
             InitializeComponent();
             SetupEvents();
             var model = new CircuitModel("");
+            ZoomScale = 0;
             LoadCircuit(model);
         }
 
@@ -44,7 +37,7 @@ namespace CircuitDesigner.Controls
             ClearAll();
 
             RootCircuit = model;
-            Nodes = new();
+            Nodes = [];
 
             int num_inputs = RootCircuit.Inputs.Count;
             int input_dy = Height / (num_inputs + 1);
@@ -87,6 +80,13 @@ namespace CircuitDesigner.Controls
 
             if (amount == 0) { return; }
             amount = Math.Clamp(amount, -1, 1);
+
+            if(ZoomScale+amount < MIN_SCALE && ZoomScale+amount > MAX_SCALE)
+            {
+                return;
+            }
+
+            ZoomScale += amount;
 
             foreach (var node in Nodes)
             {

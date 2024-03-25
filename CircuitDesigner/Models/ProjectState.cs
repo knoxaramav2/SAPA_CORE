@@ -6,29 +6,46 @@ namespace CircuitDesigner.Models
     internal class ProjectState
     {
         private const string DefaultProjectName = "__default__";
+        private const string RootCircuitName = "Root";
 
         [JsonProperty]
         public string ProjectName { get; internal set; } = "";
         [JsonProperty]
         public string ProjectDir { get; internal set; } = "";
 
-
+        [JsonProperty]
         public List<Transmitter> Transmitters { get; set; } = [];
 
+        [JsonProperty]
+        public CircuitModel RootModel { get; private set; }
 
-        public CircuitModel RootModel { get; set; }
+        [JsonIgnore]
+        public CircuitModel CurrentCircuit { get; private set; }
 
-        public CircuitModel CurrentCircuit { get; set; }
+        [JsonProperty]
+        public Guid CurrentID { get; set; }
 
         private string FilePath()
         {
             return Path.Join(ProjectDir, $"{ProjectName}{FileUtil.ProjectExt}");
         }
 
+        
+        public ProjectState()
+        {
+            RootModel = new(RootCircuitName);
+            CurrentCircuit = RootModel;
+            CurrentID = CurrentCircuit.ID;
+            var projectPath = Path.Join(FileUtil.ProjectsUri, $"{DefaultProjectName}{FileUtil.ProjectExt}");
+            Rename(projectPath);
+        }
+
+        [JsonConstructor]
         public ProjectState(string? projectPath = null)
         {
-            RootModel = new("Root");
+            RootModel = new(RootCircuitName);
             CurrentCircuit = RootModel;
+            CurrentID = CurrentCircuit.ID;
             projectPath ??= Path.Join(FileUtil.ProjectsUri, $"{DefaultProjectName}{FileUtil.ProjectExt}");
             Rename(projectPath);
         }
@@ -52,16 +69,26 @@ namespace CircuitDesigner.Models
                 NCLogger.Log($"Unable to load project at {path}", NCLogger.LogType.WRN);
                 ret = new ProjectState();
             }
+            else
+            {
+                ret.NavigateToCircuit(ret.CurrentID);
+            }
 
             return ret;
         }
 
         public CircuitModel NavigateToCircuit(Guid id)
         {
-            if (RootModel.ID == id) { return RootModel; }
+            CircuitModel ret = RootModel;
 
-            var ret = RootModel.SearchSubCircuits(id);
-            return ret ?? RootModel;
+            if (RootModel.ID != id) 
+            {
+                ret = RootModel.SearchSubCircuits(id) ?? RootModel;
+                CurrentID = ret.ID;
+            }
+
+            CurrentCircuit = ret;
+            return ret;
         }
 
         public void Save()

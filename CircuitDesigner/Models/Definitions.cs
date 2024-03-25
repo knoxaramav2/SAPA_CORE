@@ -1,15 +1,10 @@
 ﻿using CircuitDesigner.Util;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CircuitDesigner.Models
 {
     internal class Definitions
     {
-        private static string __filepath = Path.Join(FileUtil.ProgramDataUri, $"definitions{FileUtil.InternalDataExt}");
+        private static readonly string __filepath = Path.Join(FileUtil.ProgramDataUri, $"definitions{FileUtil.InternalDataExt}");
         private static Definitions? __instance = null;           
         
         public List<Transmitter> Transmitters { get; private set; }
@@ -31,7 +26,7 @@ namespace CircuitDesigner.Models
             return defs ?? new();
         }
 
-        public void Save()
+        public static void Save()
         {
             FileUtil.Save(__filepath, __instance);
         }

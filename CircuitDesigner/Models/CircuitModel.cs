@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
 
 namespace CircuitDesigner.Models
 {
@@ -16,19 +12,31 @@ namespace CircuitDesigner.Models
         public Point Pos { get; set; }
         public double Scale { get; set; }
 
+        [JsonProperty]
         public List<CircuitModel> SubCircuits { get; set; } = [];
+        [JsonProperty]
         public List<InputModel> Inputs { get; set; } = [];
+
+        [JsonConstructor]
+        public CircuitModel()
+        {
+            Name = string.Empty;
+            ID = Guid.Empty;
+            Pos = new();
+        }
 
         public CircuitModel(string name, Point? pos=null) 
         {
             Name = name;
             ID = Guid.NewGuid();
             Pos = pos ?? new();
+        }
 
+        public void BasicStartup()
+        {
             for (var i = 0; i < DefaultInputSize; ++i)
             {
                 var item = new InputModel($"Input {i + 1}", new Point(0, i * 5));
-
                 Inputs.Add(item);
             }
         }

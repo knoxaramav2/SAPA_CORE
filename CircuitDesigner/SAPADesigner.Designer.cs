@@ -60,7 +60,9 @@
             DesignBoard = new Controls.DesignBoard();
             SplitContainer3 = new SplitContainer();
             OutputListGroup = new GroupBox();
+            OutputsList = new CheckedListBox();
             InputListGroup = new GroupBox();
+            InputsList = new CheckedListBox();
             tabControl1 = new TabControl();
             RegionProperties = new TabPage();
             NeuronProperties = new TabPage();
@@ -78,6 +80,8 @@
             SplitContainer3.Panel1.SuspendLayout();
             SplitContainer3.Panel2.SuspendLayout();
             SplitContainer3.SuspendLayout();
+            OutputListGroup.SuspendLayout();
+            InputListGroup.SuspendLayout();
             tabControl1.SuspendLayout();
             SuspendLayout();
             // 
@@ -197,14 +201,14 @@
             // ToolStripProperties
             // 
             ToolStripProperties.Name = "ToolStripProperties";
-            ToolStripProperties.Size = new Size(180, 22);
+            ToolStripProperties.Size = new Size(165, 22);
             ToolStripProperties.Text = "Properties";
             ToolStripProperties.Click += ToolStripProperties_Click;
             // 
             // ToolStripProgramSettings
             // 
             ToolStripProgramSettings.Name = "ToolStripProgramSettings";
-            ToolStripProgramSettings.Size = new Size(180, 22);
+            ToolStripProgramSettings.Size = new Size(165, 22);
             ToolStripProgramSettings.Text = "Program Settings";
             // 
             // MenuStripBuild
@@ -338,6 +342,7 @@
             // OutputListGroup
             // 
             OutputListGroup.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            OutputListGroup.Controls.Add(OutputsList);
             OutputListGroup.Location = new Point(3, 207);
             OutputListGroup.Name = "OutputListGroup";
             OutputListGroup.Size = new Size(297, 183);
@@ -345,15 +350,40 @@
             OutputListGroup.TabStop = false;
             OutputListGroup.Text = "Outputs";
             // 
+            // OutputsLists
+            // 
+            OutputsList.Dock = DockStyle.Fill;
+            OutputsList.FormattingEnabled = true;
+            OutputsList.Location = new Point(3, 19);
+            OutputsList.Name = "OutputsLists";
+            OutputsList.Size = new Size(291, 161);
+            OutputsList.TabIndex = 0;
+            OutputsList.ItemCheck += OutputsList_ItemCheck;
+            OutputsList.DoubleClick += OutputsLists_DoubleClick;
+            OutputsList.KeyUp += OutputsLists_KeyUp;
+            // 
             // InputListGroup
             // 
             InputListGroup.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            InputListGroup.Controls.Add(InputsList);
             InputListGroup.Location = new Point(4, 3);
             InputListGroup.Name = "InputListGroup";
             InputListGroup.Size = new Size(297, 198);
             InputListGroup.TabIndex = 0;
             InputListGroup.TabStop = false;
             InputListGroup.Text = "Inputs";
+            // 
+            // InputsList
+            // 
+            InputsList.Dock = DockStyle.Fill;
+            InputsList.FormattingEnabled = true;
+            InputsList.Location = new Point(3, 19);
+            InputsList.Name = "InputsList";
+            InputsList.Size = new Size(291, 176);
+            InputsList.TabIndex = 0;
+            InputsList.ItemCheck += InputsList_ItemCheck;
+            InputsList.DoubleClick += InputsList_DoubleClick;
+            InputsList.KeyUp += InputsList_KeyUp;
             // 
             // tabControl1
             // 
@@ -415,6 +445,8 @@
             SplitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)SplitContainer3).EndInit();
             SplitContainer3.ResumeLayout(false);
+            OutputListGroup.ResumeLayout(false);
+            InputListGroup.ResumeLayout(false);
             tabControl1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
@@ -458,5 +490,7 @@
         private Controls.DesignBoard DesignBoard;
         private GroupBox OutputListGroup;
         private GroupBox InputListGroup;
+        private CheckedListBox OutputsList;
+        private CheckedListBox InputsList;
     }
 }
