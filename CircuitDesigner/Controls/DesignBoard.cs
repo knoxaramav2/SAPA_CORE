@@ -2,6 +2,7 @@
 using CircuitDesigner.Util;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using static CircuitDesigner.Events.InterformEvents;
 
 namespace CircuitDesigner.Controls
 {
@@ -16,6 +17,12 @@ namespace CircuitDesigner.Controls
 
         private Bitmap BMBuffer;
         private Graphics GBuffer;
+
+        #region Custom Events
+
+        public event BroadcastModel BroadcastModel;
+
+        #endregion
 
         #region Form Data
         public DesignBoard()
@@ -53,26 +60,28 @@ namespace CircuitDesigner.Controls
             RootCircuit = model ?? new();
             Nodes = [];
 
-            int num_inputs = RootCircuit.Inputs.Count;
-            int input_dy = Height / (num_inputs + 1);
-
-            int y_offset = input_dy;
             foreach (var input in RootCircuit.Inputs)
             {
-                CreateControl(input, new Point(0, y_offset));
-                y_offset += input_dy;
+                CreateControl(input);
             }
         }
 
-        private void CreateControl(INodeModel model, Point pos)
+        private void CreateControl(INodeModel model, Point? pos=null)
         {
+            var loc = pos ?? model.Pos;
+
+            DesignNode node;
+
             if (model is InputModel input)
             {
-                var node = new InputNode(this, input);
-                pos = new Point(pos.X, pos.Y - node.Height / 2);
-                Controls.Add(node);
-                node.MoveTo(pos);
+                node = new InputNode(this, input);
+            } else
+            {
+                throw new NotImplementedException(nameof(CreateControl));
             }
+
+            node.MoveTo(loc);
+            Controls.Add(node);
 
             ResetSelections();
         }
@@ -115,23 +124,6 @@ namespace CircuitDesigner.Controls
 
         }
 
-        private void SetSelection(DesignNode? node, Point pos)
-        {
-            ReleaseSelection();
-
-            DragOrigin = pos;
-
-            if (node == null)
-            {
-
-            }
-            else
-            {
-                node.BackColor = Color.LightGreen;
-                SelectedNode = node;
-            }
-        }
-
         public void DesignBoard_MouseDown(object sender, MouseEventArgs e)
         {
             var obj = sender is DesignNode ? sender as DesignNode : null;
@@ -163,6 +155,31 @@ namespace CircuitDesigner.Controls
         #endregion
 
         #region Helpers
+        private void SetSelection(DesignNode? node, Point pos)
+        {
+            ReleaseSelection();
+
+            DragOrigin = pos;
+
+            if (node == null)
+            {
+
+            }
+            else
+            {
+                node.BackColor = Color.LightGreen;
+                SelectedNode = node;
+
+                var model = RootCircuit.SearchByID(node.ModelID);
+                if (model != null)
+                {
+                    BroadcastModel?.Invoke(node, model);
+                }
+                
+            }
+        }
+
+
         private void ReleaseSelection()
         {
             if (SelectedNode != null)
@@ -235,6 +252,25 @@ namespace CircuitDesigner.Controls
         #endregion
 
         #region Public
+
+        public void ZoomTo(Point pos)
+        {
+            IsDragging = true;
+
+            DragOrigin = pos;
+            Drag(new Point(Width/2, Height/2));
+            
+            IsDragging = false;
+        }
+
+        public void ZoomTo(Guid id)
+        {
+            var pos = RootCircuit.SearchByID(id)?.Pos;
+            if(pos != null)
+            {
+                ZoomTo(pos.Value);
+            }
+        }
 
         public void UpdateControl(INodeModel model, Point? pos = null, bool delete = false)
         {

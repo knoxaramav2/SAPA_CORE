@@ -59,13 +59,18 @@
             SplitContainer2 = new SplitContainer();
             DesignBoard = new Controls.DesignBoard();
             SplitContainer3 = new SplitContainer();
-            OutputListGroup = new GroupBox();
-            OutputsList = new CheckedListBox();
+            splitContainer4 = new SplitContainer();
             InputListGroup = new GroupBox();
             InputsList = new CheckedListBox();
-            tabControl1 = new TabControl();
+            OutputListGroup = new GroupBox();
+            OutputsList = new CheckedListBox();
+            PropertiesTabs = new TabControl();
             RegionProperties = new TabPage();
             NeuronProperties = new TabPage();
+            InputProperties = new TabPage();
+            InputPropertiesInputsList = new ListBox();
+            InputPropertiesName = new Label();
+            OutputProperties = new TabPage();
             statusStrip1.SuspendLayout();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)SplitContainer1).BeginInit();
@@ -80,9 +85,14 @@
             SplitContainer3.Panel1.SuspendLayout();
             SplitContainer3.Panel2.SuspendLayout();
             SplitContainer3.SuspendLayout();
-            OutputListGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer4).BeginInit();
+            splitContainer4.Panel1.SuspendLayout();
+            splitContainer4.Panel2.SuspendLayout();
+            splitContainer4.SuspendLayout();
             InputListGroup.SuspendLayout();
-            tabControl1.SuspendLayout();
+            OutputListGroup.SuspendLayout();
+            PropertiesTabs.SuspendLayout();
+            InputProperties.SuspendLayout();
             SuspendLayout();
             // 
             // statusStrip1
@@ -329,47 +339,43 @@
             // 
             // SplitContainer3.Panel1
             // 
-            SplitContainer3.Panel1.Controls.Add(OutputListGroup);
-            SplitContainer3.Panel1.Controls.Add(InputListGroup);
+            SplitContainer3.Panel1.Controls.Add(splitContainer4);
             // 
             // SplitContainer3.Panel2
             // 
-            SplitContainer3.Panel2.Controls.Add(tabControl1);
+            SplitContainer3.Panel2.Controls.Add(PropertiesTabs);
             SplitContainer3.Size = new Size(307, 536);
-            SplitContainer3.SplitterDistance = 395;
+            SplitContainer3.SplitterDistance = 367;
             SplitContainer3.TabIndex = 0;
             // 
-            // OutputListGroup
+            // splitContainer4
             // 
-            OutputListGroup.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            OutputListGroup.Controls.Add(OutputsList);
-            OutputListGroup.Location = new Point(3, 207);
-            OutputListGroup.Name = "OutputListGroup";
-            OutputListGroup.Size = new Size(297, 183);
-            OutputListGroup.TabIndex = 1;
-            OutputListGroup.TabStop = false;
-            OutputListGroup.Text = "Outputs";
+            splitContainer4.Dock = DockStyle.Fill;
+            splitContainer4.Location = new Point(0, 0);
+            splitContainer4.Name = "splitContainer4";
+            splitContainer4.Orientation = Orientation.Horizontal;
             // 
-            // OutputsLists
+            // splitContainer4.Panel1
             // 
-            OutputsList.Dock = DockStyle.Fill;
-            OutputsList.FormattingEnabled = true;
-            OutputsList.Location = new Point(3, 19);
-            OutputsList.Name = "OutputsLists";
-            OutputsList.Size = new Size(291, 161);
-            OutputsList.TabIndex = 0;
-            OutputsList.ItemCheck += OutputsList_ItemCheck;
-            OutputsList.DoubleClick += OutputsLists_DoubleClick;
-            OutputsList.KeyUp += OutputsLists_KeyUp;
+            splitContainer4.Panel1.Controls.Add(InputListGroup);
+            splitContainer4.Panel1.Paint += splitContainer4_Panel1_Paint;
+            // 
+            // splitContainer4.Panel2
+            // 
+            splitContainer4.Panel2.Controls.Add(OutputListGroup);
+            splitContainer4.Size = new Size(305, 365);
+            splitContainer4.SplitterDistance = 157;
+            splitContainer4.TabIndex = 0;
             // 
             // InputListGroup
             // 
-            InputListGroup.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            InputListGroup.AutoSize = true;
             InputListGroup.Controls.Add(InputsList);
-            InputListGroup.Location = new Point(4, 3);
+            InputListGroup.Dock = DockStyle.Fill;
+            InputListGroup.Location = new Point(0, 0);
             InputListGroup.Name = "InputListGroup";
-            InputListGroup.Size = new Size(297, 198);
-            InputListGroup.TabIndex = 0;
+            InputListGroup.Size = new Size(305, 157);
+            InputListGroup.TabIndex = 5;
             InputListGroup.TabStop = false;
             InputListGroup.Text = "Inputs";
             // 
@@ -379,31 +385,55 @@
             InputsList.FormattingEnabled = true;
             InputsList.Location = new Point(3, 19);
             InputsList.Name = "InputsList";
-            InputsList.Size = new Size(291, 176);
+            InputsList.Size = new Size(299, 135);
             InputsList.TabIndex = 0;
-            InputsList.ItemCheck += InputsList_ItemCheck;
-            InputsList.DoubleClick += InputsList_DoubleClick;
+            InputsList.DoubleClick += OnZoomableDoubleClick;
             InputsList.KeyUp += InputsList_KeyUp;
             // 
-            // tabControl1
+            // OutputListGroup
             // 
-            tabControl1.Controls.Add(RegionProperties);
-            tabControl1.Controls.Add(NeuronProperties);
-            tabControl1.Dock = DockStyle.Fill;
-            tabControl1.Location = new Point(0, 0);
-            tabControl1.Name = "tabControl1";
-            tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(305, 135);
-            tabControl1.TabIndex = 0;
+            OutputListGroup.Controls.Add(OutputsList);
+            OutputListGroup.Dock = DockStyle.Fill;
+            OutputListGroup.Location = new Point(0, 0);
+            OutputListGroup.Name = "OutputListGroup";
+            OutputListGroup.Size = new Size(305, 204);
+            OutputListGroup.TabIndex = 6;
+            OutputListGroup.TabStop = false;
+            OutputListGroup.Text = "Outputs";
+            // 
+            // OutputsList
+            // 
+            OutputsList.Dock = DockStyle.Fill;
+            OutputsList.FormattingEnabled = true;
+            OutputsList.Location = new Point(3, 19);
+            OutputsList.Name = "OutputsList";
+            OutputsList.Size = new Size(299, 182);
+            OutputsList.TabIndex = 0;
+            OutputsList.DoubleClick += OnZoomableDoubleClick;
+            OutputsList.KeyUp += OutputsLists_KeyUp;
+            // 
+            // PropertiesTabs
+            // 
+            PropertiesTabs.Controls.Add(RegionProperties);
+            PropertiesTabs.Controls.Add(NeuronProperties);
+            PropertiesTabs.Controls.Add(InputProperties);
+            PropertiesTabs.Controls.Add(OutputProperties);
+            PropertiesTabs.Dock = DockStyle.Fill;
+            PropertiesTabs.Location = new Point(0, 0);
+            PropertiesTabs.Name = "PropertiesTabs";
+            PropertiesTabs.SelectedIndex = 0;
+            PropertiesTabs.Size = new Size(305, 163);
+            PropertiesTabs.TabIndex = 0;
             // 
             // RegionProperties
             // 
             RegionProperties.Location = new Point(4, 24);
             RegionProperties.Name = "RegionProperties";
             RegionProperties.Padding = new Padding(3);
-            RegionProperties.Size = new Size(297, 107);
+            RegionProperties.Size = new Size(297, 135);
             RegionProperties.TabIndex = 0;
-            RegionProperties.Text = "Properties";
+            RegionProperties.Tag = "RegionTab";
+            RegionProperties.Text = "Region Properties";
             RegionProperties.UseVisualStyleBackColor = true;
             // 
             // NeuronProperties
@@ -411,10 +441,55 @@
             NeuronProperties.Location = new Point(4, 24);
             NeuronProperties.Name = "NeuronProperties";
             NeuronProperties.Padding = new Padding(3);
-            NeuronProperties.Size = new Size(297, 107);
+            NeuronProperties.Size = new Size(297, 135);
             NeuronProperties.TabIndex = 1;
-            NeuronProperties.Text = "Properties";
+            NeuronProperties.Tag = "NeuronTag";
+            NeuronProperties.Text = "Neuron Properties";
             NeuronProperties.UseVisualStyleBackColor = true;
+            // 
+            // InputProperties
+            // 
+            InputProperties.AutoScroll = true;
+            InputProperties.Controls.Add(InputPropertiesInputsList);
+            InputProperties.Controls.Add(InputPropertiesName);
+            InputProperties.Location = new Point(4, 24);
+            InputProperties.Name = "InputProperties";
+            InputProperties.Padding = new Padding(3);
+            InputProperties.Size = new Size(297, 135);
+            InputProperties.TabIndex = 2;
+            InputProperties.Tag = "InputTag";
+            InputProperties.Text = "Input Properties";
+            InputProperties.UseVisualStyleBackColor = true;
+            // 
+            // InputPropertiesInputsList
+            // 
+            InputPropertiesInputsList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            InputPropertiesInputsList.FormattingEnabled = true;
+            InputPropertiesInputsList.ItemHeight = 15;
+            InputPropertiesInputsList.Location = new Point(6, 21);
+            InputPropertiesInputsList.Name = "InputPropertiesInputsList";
+            InputPropertiesInputsList.Size = new Size(285, 94);
+            InputPropertiesInputsList.TabIndex = 1;
+            // 
+            // InputPropertiesName
+            // 
+            InputPropertiesName.AutoSize = true;
+            InputPropertiesName.Location = new Point(6, 3);
+            InputPropertiesName.Name = "InputPropertiesName";
+            InputPropertiesName.Size = new Size(22, 15);
+            InputPropertiesName.TabIndex = 0;
+            InputPropertiesName.Text = "---";
+            // 
+            // OutputProperties
+            // 
+            OutputProperties.Location = new Point(4, 24);
+            OutputProperties.Name = "OutputProperties";
+            OutputProperties.Padding = new Padding(3);
+            OutputProperties.Size = new Size(297, 135);
+            OutputProperties.TabIndex = 3;
+            OutputProperties.Tag = "OutputTag";
+            OutputProperties.Text = "Output Properties";
+            OutputProperties.UseVisualStyleBackColor = true;
             // 
             // SapaDesigner
             // 
@@ -445,9 +520,16 @@
             SplitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)SplitContainer3).EndInit();
             SplitContainer3.ResumeLayout(false);
-            OutputListGroup.ResumeLayout(false);
+            splitContainer4.Panel1.ResumeLayout(false);
+            splitContainer4.Panel1.PerformLayout();
+            splitContainer4.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer4).EndInit();
+            splitContainer4.ResumeLayout(false);
             InputListGroup.ResumeLayout(false);
-            tabControl1.ResumeLayout(false);
+            OutputListGroup.ResumeLayout(false);
+            PropertiesTabs.ResumeLayout(false);
+            InputProperties.ResumeLayout(false);
+            InputProperties.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -479,7 +561,7 @@
         private SplitContainer SplitContainer1;
         private SplitContainer SplitContainer2;
         private SplitContainer SplitContainer3;
-        private TabControl tabControl1;
+        private TabControl PropertiesTabs;
         private TabPage RegionProperties;
         private TabPage NeuronProperties;
         private Label label1;
@@ -488,9 +570,14 @@
         private ToolStripSeparator toolStripSeparator3;
         private TreeView CircuitTree;
         private Controls.DesignBoard DesignBoard;
+        private TabPage InputProperties;
+        private TabPage OutputProperties;
+        private Label InputPropertiesName;
+        private ListBox InputPropertiesInputsList;
+        private SplitContainer splitContainer4;
         private GroupBox OutputListGroup;
-        private GroupBox InputListGroup;
         private CheckedListBox OutputsList;
+        private GroupBox InputListGroup;
         private CheckedListBox InputsList;
     }
 }

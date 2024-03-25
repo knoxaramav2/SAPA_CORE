@@ -1,6 +1,7 @@
 using CircuitDesigner.Forms;
 using CircuitDesigner.Models;
 using CircuitDesigner.Util;
+using System.Diagnostics.CodeAnalysis;
 using static CircuitDesigner.Util.NCLogger;
 
 namespace CircuitDesigner
@@ -9,6 +10,8 @@ namespace CircuitDesigner
     {
         readonly ProgramPersist PersistState = ProgramPersist.Load();
         ProjectState ProjectState = ProjectState.LoadOrDefault();
+
+        TabPage[] PropertiesReference;
 
         #region Form Updates
 
@@ -22,12 +25,26 @@ namespace CircuitDesigner
         {
             InitializeComponent();
             InitSystem();
+            SetupComponents();
         }
 
         private void InitSystem()
         {
             FileUtil.AssureDirectories();
             UpdateProject(ProjectState);
+            InitEvents();
+        }
+
+        [MemberNotNull(nameof(PropertiesReference))]
+        private void SetupComponents()
+        {
+            PropertiesReference = PropertiesTabs.TabPages.OfType<TabPage>().ToArray();
+            PropertiesTabs.TabPages.Clear();
+        }
+
+        private void InitEvents()
+        {
+            DesignBoard.BroadcastModel += UpdateModelProperties;
         }
 
         private void UpdateControlEnabledStates()
@@ -132,12 +149,17 @@ namespace CircuitDesigner
 
             foreach (var input in inputs)
             {
-                InputsList.Items.Add(input.Name, input.Enabled);
+                var lbl = new Label()
+                {
+                    Text = input.Name,
+                    Tag = input.ID
+                };
+                InputsList.Items.Add(lbl, input.Enabled);
             }
 
             InputsList.ItemCheck += InputsList_ItemCheck;
             OutputsList.ItemCheck += OutputsList_ItemCheck;
-            
+
         }
 
         #endregion
@@ -221,7 +243,7 @@ namespace CircuitDesigner
 
         #endregion
 
-        #region Form Events
+        #region Events
         private void SapaDesigner_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (ProjectState.IsDefaultProject()) { return; }
@@ -261,14 +283,15 @@ namespace CircuitDesigner
 
             switch (e.KeyCode)
             {
-                case Keys.Insert: UpdateModel<InputModel>(
-                    new InputModel(GetAutoName<InputModel>(inputs.Select(x=>x.Name).ToArray()))); 
+                case Keys.Insert:
+                    UpdateModel<InputModel>(
+                    new InputModel(GetAutoName<InputModel>(inputs.Select(x => x.Name).ToArray())));
                     break;
                 case Keys.Delete:
-                    var selected = (string?)InputsList.SelectedItem;
-                    if (selected == null) { return; }
-                    var model = inputs.FirstOrDefault(x => x.Name == selected);
-                    if(model == null)
+                    var selected = ((Label?)InputsList.SelectedItem);
+                    if (selected?.Tag == null) { return; }
+                    var model = inputs.FirstOrDefault(x => x.ID == (Guid)selected.Tag);
+                    if (model == null)
                     {
                         Log($"Input {selected} not found", LogType.WRN);
                         return;
@@ -288,7 +311,6 @@ namespace CircuitDesigner
             UpdateInputOutputList();
         }
 
-
         private void InputsList_DoubleClick(object sender, EventArgs e)
         {
             var inputs = ProjectState.CurrentCircuit.Inputs;
@@ -299,7 +321,7 @@ namespace CircuitDesigner
             if (connector == null) { return; }
 
             using InputOutputForm dlg = new(connector, inputs);
-            if (dlg.ShowDialog() == DialogResult.Cancel) 
+            if (dlg.ShowDialog() == DialogResult.Cancel)
             { return; }
 
             connector.Name = dlg.ConnectorName;
@@ -321,6 +343,32 @@ namespace CircuitDesigner
         private void OutputsList_ItemCheck(object? sender, ItemCheckEventArgs e)
         {
             e.NewValue = e.CurrentValue;
+        }
+
+        private void UpdateModelProperties(object sender, INodeModel model)
+        {
+            var currTab = PropertiesTabs.SelectedTab;
+            TabPage? selTab = null;
+
+            if (model is InputModel input)
+            {
+                InputPropertiesName.Text = input.Name;
+                selTab = PropertiesReference.FirstOrDefault(x => (string?)x.Tag == "InputTag");
+            }
+
+            if (selTab == null || currTab == selTab) { return; }
+            PropertiesTabs.TabPages.Clear();
+            PropertiesTabs.TabPages.Add(selTab);
+        }
+
+        internal void OnZoomableDoubleClick(object sender, EventArgs e)
+        {
+            if(sender == InputsList)
+            {
+                var sel = (Guid?)((Label?)InputsList.SelectedItem)?.Tag;
+                if((sel == null)) { return; }
+                DesignBoard.ZoomTo(sel.Value);
+            }
         }
 
         #endregion
@@ -351,31 +399,25 @@ namespace CircuitDesigner
             return name;
         }
 
-        private void UpdateInput()
-        {
-
-        }
-
-        private void UpdateOutput()
-        {
-
-        }
-
-        private void UpdateNeuron()
-        {
-
-        }
-
-        private void UpdateSubcircuit()
-        {
-
-        }
-
-        private void UpdateModel<T>(INodeModel model, Point? pos=null, bool delete=false)
+        private void UpdateModel<T>(INodeModel model, Point? pos = null, bool delete = false)
         {
             DesignBoard.UpdateControl(model, pos, delete);
         }
 
         #endregion
+
+        #region Exposed
+
+        internal void UpdateSelected(INodeModel model)
+        {
+
+        }
+
+        #endregion
+
+        private void splitContainer4_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

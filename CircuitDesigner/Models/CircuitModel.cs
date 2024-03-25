@@ -60,5 +60,12 @@ namespace CircuitDesigner.Models
         {
             Scale = scale;
         }
+    
+        public INodeModel? SearchByID(Guid id)
+        {
+            return 
+                (INodeModel?)SubCircuits.FirstOrDefault(x => x.ID == id) ??
+                Inputs.FirstOrDefault(x => x.ID == id);
+        }
     }
 }
