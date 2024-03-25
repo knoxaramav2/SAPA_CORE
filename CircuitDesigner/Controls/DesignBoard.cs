@@ -1,5 +1,6 @@
 ﻿using CircuitDesigner.Models;
 using CircuitDesigner.Util;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace CircuitDesigner.Controls
@@ -9,24 +10,33 @@ namespace CircuitDesigner.Controls
         private CircuitModel RootCircuit;
         private List<DesignNode> Nodes;
 
-        private int ZoomScale;
         private Point? DragOrigin = null;
         private bool IsDragging = false;
         private DesignNode? SelectedNode = null;
+
+        private Bitmap BMBuffer;
+        private Graphics GBuffer;
 
         #region Form Data
         public DesignBoard()
         {
             InitializeComponent();
             SetupEvents();
-            var model = new CircuitModel("");
-            ZoomScale = 0;
-            LoadCircuit(model);
+            LoadCircuit();
+            InitGraphics();
+        }
+
+        [MemberNotNull([nameof(GBuffer), nameof(BMBuffer)])]
+        private void InitGraphics()
+        {
+            BMBuffer = new(1, 1);
+            GBuffer = Graphics.FromImage(BMBuffer);
         }
 
         private void SetupEvents()
         {
             MouseWheel += OnMouseWheel;
+            HandleCreated += OnHandleCreated;
         }
 
         private void ClearAll()
@@ -36,11 +46,11 @@ namespace CircuitDesigner.Controls
 
         [MemberNotNull(nameof(RootCircuit))]
         [MemberNotNull(nameof(Nodes))]
-        public void LoadCircuit(CircuitModel model)
+        public void LoadCircuit(CircuitModel? model = null)
         {
             ClearAll();
 
-            RootCircuit = model;
+            RootCircuit = model ?? new();
             Nodes = [];
 
             int num_inputs = RootCircuit.Inputs.Count;
@@ -72,76 +82,23 @@ namespace CircuitDesigner.Controls
             DragOrigin = null;
             IsDragging = false;
             SelectedNode = null;
-            ZoomScale = 0;
         }
         #endregion
 
         #region Events
 
+        private void OnHandleCreated(object? sender, EventArgs e)
+        {
+            BMBuffer = new Bitmap(Width, Height);
+            GBuffer = Graphics.FromImage(BMBuffer);
+            GBuffer.Clear(Color.Transparent);
+            DoubleBuffered = true;
+        }
+
         private void OnMouseWheel(object? sender, MouseEventArgs e)
         {
             Zoom(e.Delta);
         }
-
-        private void DesignBoard_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        #endregion
-
-        #region Helpers
-
-        private void Drag(Point pos)
-        {
-            if (!IsDragging || DragOrigin == null) { return; }
-            var origin = (Point)DragOrigin;
-            var deltaPos = pos.Sub(origin);
-
-            if(SelectedNode == null)
-            {
-                RootCircuit.Pos = RootCircuit.Pos.Add(deltaPos);
-
-                foreach(DesignNode node in Controls)
-                {
-                    node.Location = node.Location.Add(deltaPos);
-                }
-
-                DragOrigin = pos;
-            } else
-            {
-                SelectedNode.Location = SelectedNode.Location.Add(deltaPos);
-            }
-        }
-
-        private void Zoom(int amount)
-        {
-            const int MIN_SCALE = -25;
-            const int MAX_SCALE = 15;
-
-            if (amount == 0) { return; }
-            amount = Math.Clamp(amount, -1, 1);
-
-            if (ZoomScale + amount < MIN_SCALE && ZoomScale + amount > MAX_SCALE)
-            {
-                return;
-            }
-
-            ZoomScale += amount;
-
-            foreach (var node in Nodes)
-            {
-                SetNodeScale(node, amount);
-            }
-        }
-
-        private static void SetNodeScale(DesignNode node, int amnt)
-        {
-
-        }
-
-        #endregion
-
 
         public void DesignBoard_MouseMove(object sender, MouseEventArgs e)
         {
@@ -153,20 +110,9 @@ namespace CircuitDesigner.Controls
             IsDragging = false;
         }
 
-        private void LinkNode(DesignNode node1, DesignNode node2)
+        private static void LinkNode(DesignNode node1, DesignNode node2)
         {
 
-        }
-
-        private void ReleaseSelection()
-        {
-            if (SelectedNode != null)
-            {
-                SelectedNode.BackColor = default;
-            }
-
-            DragOrigin = null;
-            SelectedNode = null;
         }
 
         private void SetSelection(DesignNode? node, Point pos)
@@ -208,5 +154,117 @@ namespace CircuitDesigner.Controls
         {
 
         }
+
+        private void DesignBoard_Paint(object sender, PaintEventArgs e)
+        {
+            //e.Graphics.DrawImage(BMBuffer, 0, 0);
+            //base.OnPaint(e);
+        }
+        #endregion
+
+        #region Helpers
+        private void ReleaseSelection()
+        {
+            if (SelectedNode != null)
+            {
+                SelectedNode.BackColor = default;
+            }
+
+            DragOrigin = null;
+            SelectedNode = null;
+        }
+
+        private void Drag(Point pos)
+        {
+            if (!IsDragging || DragOrigin == null) { return; }
+            var origin = (Point)DragOrigin;
+            var deltaPos = pos.Sub(origin);
+
+            if(SelectedNode == null)
+            {
+                RootCircuit.Pos = RootCircuit.Pos.Add(deltaPos);
+
+                foreach(DesignNode node in Controls)
+                {
+                    node.Location = node.Location.Add(deltaPos);
+                }
+
+                DragOrigin = pos;
+            } else
+            {
+                SelectedNode.Location = SelectedNode.Location.Add(deltaPos);
+            }
+        }
+
+        private void Zoom(int amount)
+        {
+            const int MIN_SCALE = -25;
+            const int MAX_SCALE = 15;
+
+            if (amount == 0) { return; }
+            amount = Math.Clamp(amount, -1, 1);
+
+            if (RootCircuit.Scale + amount < MIN_SCALE && RootCircuit.Scale + amount > MAX_SCALE) { return; }
+
+            RootCircuit.SetScale(RootCircuit.Scale + amount);
+
+            foreach (var node in Nodes)
+            {
+                SetNodeScale(node, amount);
+            }
+
+            Debug.WriteLine($"ZOOM {amount}");
+        }
+
+        private static void SetNodeScale(DesignNode node, int amnt)
+        {
+
+        }
+
+        private void PaintNodes()
+        {
+            DrawConnectionLines();
+            Refresh();
+        }
+
+        private void DrawConnectionLines()
+        {
+
+        }
+        
+        #endregion
+
+        #region Public
+
+        public void UpdateControl(INodeModel model, Point? pos = null, bool delete = false)
+        {
+            Debug.WriteLine($"NAME={model.Name} POS={pos} | DEL={delete}");
+            if (delete)
+            {
+                var node = Nodes.FirstOrDefault(x => x.ModelID == model.ID);
+                if (node == null) { return; }
+                Controls.Remove(node);
+                Nodes.Remove(node);
+            } else
+            {
+                if (model is InputModel input)
+                {
+                    pos ??= new Point(0, Height / 2);
+                    var node = new InputNode(this, input)
+                    {
+                        Location = pos.Value
+                    };
+                    RootCircuit.Inputs.Add(input);
+                    Nodes.Add(node);
+                    Controls.Add(node);
+                } else
+                {
+                    throw new NotImplementedException(nameof(UpdateControl));
+                }
+            }
+        }
+
+        #endregion
+
     }
 }

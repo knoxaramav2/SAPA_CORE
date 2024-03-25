@@ -10,7 +10,7 @@ namespace CircuitDesigner.Models
         public string Name { get; set; }
         public Guid ID { get; set; }
         public Point Pos { get; set; }
-        public double Scale { get; set; }
+        public int Scale { get; private set; }
 
         [JsonProperty]
         public List<CircuitModel> SubCircuits { get; set; } = [];
@@ -56,7 +56,7 @@ namespace CircuitDesigner.Models
             return ret;
         }
 
-        public void SetScale(double scale)
+        public void SetScale(int scale)
         {
             Scale = scale;
         }

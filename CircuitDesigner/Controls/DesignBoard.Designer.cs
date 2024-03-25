@@ -38,6 +38,10 @@
             Name = "DesignBoard";
             Size = new Size(473, 415);
             Paint += DesignBoard_Paint;
+            KeyUp += DesignBoard_KeyUp;
+            MouseDown += DesignBoard_MouseDown;
+            MouseMove += DesignBoard_MouseMove;
+            MouseUp += DesignBoard_MouseUp;
             ResumeLayout(false);
         }
 

@@ -28,8 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            SuspendLayout();
+            // 
+            // DesignNode
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            Name = "DesignNode";
+            KeyUp += DesignNode_KeyUp;
+            MouseDown += DesignNode_MouseDown;
+            MouseMove += DesignNode_MouseMove;
+            MouseUp += DesignNode_MouseUp;
+            ResumeLayout(false);
         }
 
         #endregion

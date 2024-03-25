@@ -65,7 +65,9 @@ namespace CircuitDesigner.Util
 
             var serializerSettings = new JsonSerializerSettings
             {
-                MissingMemberHandling = MissingMemberHandling.Error
+                MissingMemberHandling = MissingMemberHandling.Error,
+                TypeNameHandling = TypeNameHandling.All,
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             };
 
             using StreamReader sr = new(path);

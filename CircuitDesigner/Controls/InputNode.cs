@@ -1,15 +1,6 @@
 ﻿using CircuitDesigner.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace CircuitDesigner.Controls
 {
@@ -30,16 +21,16 @@ namespace CircuitDesigner.Controls
             }
         }
 
-        public InputNode(InputModel? model = null)
+        public InputNode(DesignBoard board, InputModel model) : base(board, model.ID)
         {
             InitializeComponent();
             BindModel(model);
         }
 
         [MemberNotNull(nameof(Model))]
-        private void BindModel(InputModel? model = null)
+        private void BindModel(InputModel model)
         {
-            Model = model ?? new InputModel("ERR");
+            Model = model;
         }
 
         private void InputNode_Load(object sender, EventArgs e)

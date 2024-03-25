@@ -1,6 +1,7 @@
 using CircuitDesigner.Forms;
 using CircuitDesigner.Models;
 using CircuitDesigner.Util;
+using static CircuitDesigner.Util.NCLogger;
 
 namespace CircuitDesigner
 {
@@ -260,22 +261,19 @@ namespace CircuitDesigner
 
             switch (e.KeyCode)
             {
-                case Keys.Insert:
-                    var newName = $"New Input";
-                    uint i = 0;
-                    while (inputs.Any(x => x.Name.Equals(newName, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        newName = $"New Input {i}";
-                        i++;
-                    }
-
-                    var newInput = new InputModel(newName);
-                    inputs.Add(newInput);
+                case Keys.Insert: UpdateModel<InputModel>(
+                    new InputModel(GetAutoName<InputModel>(inputs.Select(x=>x.Name).ToArray()))); 
                     break;
                 case Keys.Delete:
-                    var selected = InputsList.SelectedItem;
+                    var selected = (string?)InputsList.SelectedItem;
                     if (selected == null) { return; }
-
+                    var model = inputs.FirstOrDefault(x => x.Name == selected);
+                    if(model == null)
+                    {
+                        Log($"Input {selected} not found", LogType.WRN);
+                        return;
+                    }
+                    UpdateModel<InputModel>(model, null, true);
                     break;
                 default: return;
             }
@@ -315,8 +313,6 @@ namespace CircuitDesigner
             UpdateInputOutputList();
         }
 
-        #endregion
-
         private void InputsList_ItemCheck(object? sender, ItemCheckEventArgs e)
         {
             e.NewValue = e.CurrentValue;
@@ -326,5 +322,60 @@ namespace CircuitDesigner
         {
             e.NewValue = e.CurrentValue;
         }
+
+        #endregion
+
+        #region Helpers
+
+        private string GetAutoName<T>(string[] existing)
+        {
+            string rName = "";
+
+            rName = typeof(T) switch
+            {
+                Type a when a == typeof(InputModel) => "Input",
+                //case Type a when a == typeof(InputModel) : rName = "Output"; break;
+                Type a when a == typeof(CircuitModel) => "Neuron",
+                //case Type a when a == typeof(InputModel) : rName = "SubCircuit"; break;
+                _ => throw new NotImplementedException(nameof(GetAutoName)),
+            };
+            string name = rName;
+
+            uint i = 0;
+            while (existing.Any(x => x.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            {
+                name = $"{rName} {i}";
+                i++;
+            }
+
+            return name;
+        }
+
+        private void UpdateInput()
+        {
+
+        }
+
+        private void UpdateOutput()
+        {
+
+        }
+
+        private void UpdateNeuron()
+        {
+
+        }
+
+        private void UpdateSubcircuit()
+        {
+
+        }
+
+        private void UpdateModel<T>(INodeModel model, Point? pos=null, bool delete=false)
+        {
+            DesignBoard.UpdateControl(model, pos, delete);
+        }
+
+        #endregion
     }
 }
