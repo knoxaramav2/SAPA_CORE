@@ -2,6 +2,7 @@
 using CircuitDesigner.Util;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Eventing.Reader;
 using static CircuitDesigner.Events.InterformEvents;
 
 namespace CircuitDesigner.Controls
@@ -20,7 +21,7 @@ namespace CircuitDesigner.Controls
 
         #region Custom Events
 
-        public event BroadcastModel BroadcastModel;
+        public event BroadcastModel? BroadcastModel;
 
         #endregion
 
@@ -64,6 +65,11 @@ namespace CircuitDesigner.Controls
             {
                 CreateControl(input);
             }
+
+            foreach (var output in RootCircuit.Outputs)
+            {
+                CreateControl(output);
+            }
         }
 
         private void CreateControl(INodeModel model, Point? pos=null)
@@ -72,9 +78,10 @@ namespace CircuitDesigner.Controls
 
             DesignNode node;
 
-            if (model is InputModel input)
-            {
+            if (model is InputModel input) {
                 node = new InputNode(this, input);
+            } else if (model is OutputModel output) {
+                node = new OutputNode(this, output);
             } else
             {
                 throw new NotImplementedException(nameof(CreateControl));
@@ -178,7 +185,6 @@ namespace CircuitDesigner.Controls
                 
             }
         }
-
 
         private void ReleaseSelection()
         {
@@ -291,6 +297,14 @@ namespace CircuitDesigner.Controls
                         Location = pos.Value
                     };
                     RootCircuit.Inputs.Add(input);
+                    Nodes.Add(node);
+                    Controls.Add(node);
+                } else if (model is OutputModel output)
+                {
+                    var node = new OutputNode(this, output);
+                    pos ??= new Point(Width - node.Width, Height / 2);
+                    node.Location = pos.Value;
+                    RootCircuit.Outputs.Add(output);
                     Nodes.Add(node);
                     Controls.Add(node);
                 } else

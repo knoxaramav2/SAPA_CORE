@@ -5,6 +5,11 @@
         readonly DesignBoard HostBoard;
         public readonly Guid ModelID;
 
+        public DesignNode()
+        {
+            InitializeComponent();
+        }
+
         public DesignNode(DesignBoard board, Guid modelID)
         {
             InitializeComponent();

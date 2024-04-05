@@ -10,6 +10,8 @@ namespace CircuitDesigner
     {
         readonly ProgramPersist PersistState = ProgramPersist.Load();
         ProjectState ProjectState = ProjectState.LoadOrDefault();
+        readonly List<(int, Guid)> InputListIds = [];
+        readonly List<(int, Guid)> OutputListIds = [];
 
         TabPage[] PropertiesReference;
 
@@ -138,6 +140,7 @@ namespace CircuitDesigner
         private void UpdateInputOutputList()
         {
             var inputs = ProjectState.CurrentCircuit.Inputs;
+            var outputs = ProjectState.CurrentCircuit.Outputs;
 
             InputsList.Items.Clear();
             OutputsList.Items.Clear();
@@ -146,20 +149,22 @@ namespace CircuitDesigner
             OutputsList.ItemCheck -= OutputsList_ItemCheck;
 
             InputListGroup.Text = $"Inputs ({inputs.Count})";
+            OutputListGroup.Text = $"Outputs ({outputs.Count})";
 
             foreach (var input in inputs)
             {
-                var lbl = new Label()
-                {
-                    Text = input.Name,
-                    Tag = input.ID
-                };
-                InputsList.Items.Add(lbl, input.Enabled);
+                var id = InputsList.Items.Add(input.Name, input.Enabled);
+                InputListIds.Add((id, input.ID));
+            }
+
+            foreach(var output in outputs)
+            {
+                var id = OutputsList.Items.Add(output.Name, output.Enabled);
+                OutputListIds.Add((id, output.ID));
             }
 
             InputsList.ItemCheck += InputsList_ItemCheck;
             OutputsList.ItemCheck += OutputsList_ItemCheck;
-
         }
 
         #endregion
@@ -288,9 +293,9 @@ namespace CircuitDesigner
                     new InputModel(GetAutoName<InputModel>(inputs.Select(x => x.Name).ToArray())));
                     break;
                 case Keys.Delete:
-                    var selected = ((Label?)InputsList.SelectedItem);
-                    if (selected?.Tag == null) { return; }
-                    var model = inputs.FirstOrDefault(x => x.ID == (Guid)selected.Tag);
+                    var idx = InputsList.SelectedIndex;
+                    var selected = InputListIds.First(x => x.Item1 == idx);
+                    var model = inputs.FirstOrDefault(x => x.ID == selected.Item2);
                     if (model == null)
                     {
                         Log($"Input {selected} not found", LogType.WRN);
@@ -306,7 +311,27 @@ namespace CircuitDesigner
 
         private void OutputsLists_KeyUp(object sender, KeyEventArgs e)
         {
+            var outputs = ProjectState.CurrentCircuit.Outputs;
 
+            switch (e.KeyCode)
+            {
+                case Keys.Insert:
+                    UpdateModel<OutputModel>(
+                    new OutputModel(GetAutoName<OutputModel>(outputs.Select(x => x.Name).ToArray())));
+                    break;
+                case Keys.Delete:
+                    var idx = OutputsList.SelectedIndex;
+                    var selected = OutputListIds.First(x => x.Item1 == idx);
+                    var model = outputs.FirstOrDefault(x => x.ID == selected.Item2);
+                    if (model == null)
+                    {
+                        Log($"Input {selected} not found", LogType.WRN);
+                        return;
+                    }
+                    UpdateModel<InputModel>(model, null, true);
+                    break;
+                default: return;
+            }
 
             UpdateInputOutputList();
         }
@@ -363,12 +388,13 @@ namespace CircuitDesigner
 
         internal void OnZoomableDoubleClick(object sender, EventArgs e)
         {
-            if(sender == InputsList)
-            {
-                var sel = (Guid?)((Label?)InputsList.SelectedItem)?.Tag;
-                if((sel == null)) { return; }
-                DesignBoard.ZoomTo(sel.Value);
-            }
+            if (sender is not CheckedListBox) { return; }
+            var ioList = (CheckedListBox) sender;
+            var idList = ioList == InputsList ? InputListIds : OutputListIds;
+
+            var idx = ioList.SelectedIndex;
+            var sel = idList.First(x => x.Item1 == idx);
+            DesignBoard.ZoomTo(sel.Item2);
         }
 
         #endregion
@@ -377,12 +403,10 @@ namespace CircuitDesigner
 
         private string GetAutoName<T>(string[] existing)
         {
-            string rName = "";
-
-            rName = typeof(T) switch
+            string rName = typeof(T) switch
             {
                 Type a when a == typeof(InputModel) => "Input",
-                //case Type a when a == typeof(InputModel) : rName = "Output"; break;
+                Type a when a == typeof(OutputModel) => "Output",
                 Type a when a == typeof(CircuitModel) => "Neuron",
                 //case Type a when a == typeof(InputModel) : rName = "SubCircuit"; break;
                 _ => throw new NotImplementedException(nameof(GetAutoName)),
@@ -414,10 +438,5 @@ namespace CircuitDesigner
         }
 
         #endregion
-
-        private void splitContainer4_Panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
     }
 }

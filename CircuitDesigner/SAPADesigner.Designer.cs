@@ -317,7 +317,7 @@
             // 
             SplitContainer2.Panel2.Controls.Add(SplitContainer3);
             SplitContainer2.Size = new Size(623, 536);
-            SplitContainer2.SplitterDistance = 312;
+            SplitContainer2.SplitterDistance = 411;
             SplitContainer2.TabIndex = 0;
             // 
             // DesignBoard
@@ -326,7 +326,7 @@
             DesignBoard.Dock = DockStyle.Fill;
             DesignBoard.Location = new Point(0, 0);
             DesignBoard.Name = "DesignBoard";
-            DesignBoard.Size = new Size(310, 534);
+            DesignBoard.Size = new Size(409, 534);
             DesignBoard.TabIndex = 0;
             // 
             // SplitContainer3
@@ -344,7 +344,7 @@
             // SplitContainer3.Panel2
             // 
             SplitContainer3.Panel2.Controls.Add(PropertiesTabs);
-            SplitContainer3.Size = new Size(307, 536);
+            SplitContainer3.Size = new Size(208, 536);
             SplitContainer3.SplitterDistance = 367;
             SplitContainer3.TabIndex = 0;
             // 
@@ -358,12 +358,11 @@
             // splitContainer4.Panel1
             // 
             splitContainer4.Panel1.Controls.Add(InputListGroup);
-            splitContainer4.Panel1.Paint += splitContainer4_Panel1_Paint;
             // 
             // splitContainer4.Panel2
             // 
             splitContainer4.Panel2.Controls.Add(OutputListGroup);
-            splitContainer4.Size = new Size(305, 365);
+            splitContainer4.Size = new Size(206, 365);
             splitContainer4.SplitterDistance = 157;
             splitContainer4.TabIndex = 0;
             // 
@@ -374,7 +373,7 @@
             InputListGroup.Dock = DockStyle.Fill;
             InputListGroup.Location = new Point(0, 0);
             InputListGroup.Name = "InputListGroup";
-            InputListGroup.Size = new Size(305, 157);
+            InputListGroup.Size = new Size(206, 157);
             InputListGroup.TabIndex = 5;
             InputListGroup.TabStop = false;
             InputListGroup.Text = "Inputs";
@@ -385,7 +384,7 @@
             InputsList.FormattingEnabled = true;
             InputsList.Location = new Point(3, 19);
             InputsList.Name = "InputsList";
-            InputsList.Size = new Size(299, 135);
+            InputsList.Size = new Size(200, 135);
             InputsList.TabIndex = 0;
             InputsList.DoubleClick += OnZoomableDoubleClick;
             InputsList.KeyUp += InputsList_KeyUp;
@@ -396,7 +395,7 @@
             OutputListGroup.Dock = DockStyle.Fill;
             OutputListGroup.Location = new Point(0, 0);
             OutputListGroup.Name = "OutputListGroup";
-            OutputListGroup.Size = new Size(305, 204);
+            OutputListGroup.Size = new Size(206, 204);
             OutputListGroup.TabIndex = 6;
             OutputListGroup.TabStop = false;
             OutputListGroup.Text = "Outputs";
@@ -407,7 +406,7 @@
             OutputsList.FormattingEnabled = true;
             OutputsList.Location = new Point(3, 19);
             OutputsList.Name = "OutputsList";
-            OutputsList.Size = new Size(299, 182);
+            OutputsList.Size = new Size(200, 182);
             OutputsList.TabIndex = 0;
             OutputsList.DoubleClick += OnZoomableDoubleClick;
             OutputsList.KeyUp += OutputsLists_KeyUp;
@@ -422,7 +421,7 @@
             PropertiesTabs.Location = new Point(0, 0);
             PropertiesTabs.Name = "PropertiesTabs";
             PropertiesTabs.SelectedIndex = 0;
-            PropertiesTabs.Size = new Size(305, 163);
+            PropertiesTabs.Size = new Size(206, 163);
             PropertiesTabs.TabIndex = 0;
             // 
             // RegionProperties
@@ -430,7 +429,7 @@
             RegionProperties.Location = new Point(4, 24);
             RegionProperties.Name = "RegionProperties";
             RegionProperties.Padding = new Padding(3);
-            RegionProperties.Size = new Size(297, 135);
+            RegionProperties.Size = new Size(198, 135);
             RegionProperties.TabIndex = 0;
             RegionProperties.Tag = "RegionTab";
             RegionProperties.Text = "Region Properties";
@@ -441,7 +440,7 @@
             NeuronProperties.Location = new Point(4, 24);
             NeuronProperties.Name = "NeuronProperties";
             NeuronProperties.Padding = new Padding(3);
-            NeuronProperties.Size = new Size(297, 135);
+            NeuronProperties.Size = new Size(198, 135);
             NeuronProperties.TabIndex = 1;
             NeuronProperties.Tag = "NeuronTag";
             NeuronProperties.Text = "Neuron Properties";
@@ -455,7 +454,7 @@
             InputProperties.Location = new Point(4, 24);
             InputProperties.Name = "InputProperties";
             InputProperties.Padding = new Padding(3);
-            InputProperties.Size = new Size(297, 135);
+            InputProperties.Size = new Size(198, 135);
             InputProperties.TabIndex = 2;
             InputProperties.Tag = "InputTag";
             InputProperties.Text = "Input Properties";
@@ -485,7 +484,7 @@
             OutputProperties.Location = new Point(4, 24);
             OutputProperties.Name = "OutputProperties";
             OutputProperties.Padding = new Padding(3);
-            OutputProperties.Size = new Size(297, 135);
+            OutputProperties.Size = new Size(198, 135);
             OutputProperties.TabIndex = 3;
             OutputProperties.Tag = "OutputTag";
             OutputProperties.Text = "Output Properties";

@@ -5,7 +5,7 @@ namespace CircuitDesigner.Models
     internal class CircuitModel : INodeModel
     {
         private const int DefaultInputSize = 4;
-        //private const int DefaultOutputSize = 4;
+        private const int DefaultOutputSize = 4;
 
         public string Name { get; set; }
         public Guid ID { get; set; }
@@ -16,7 +16,8 @@ namespace CircuitDesigner.Models
         public List<CircuitModel> SubCircuits { get; set; } = [];
         [JsonProperty]
         public List<InputModel> Inputs { get; set; } = [];
-
+        [JsonProperty]
+        public List<OutputModel> Outputs { get; set; } = [];
         [JsonConstructor]
         public CircuitModel()
         {
@@ -38,6 +39,11 @@ namespace CircuitDesigner.Models
             {
                 var item = new InputModel($"Input {i + 1}", new Point(0, i * 5));
                 Inputs.Add(item);
+            }
+
+            for(var i = 0; i < DefaultOutputSize; ++i)
+            {
+                var item = new OutputModel($"Output {i+1}", new Point(0, i*5));
             }
         }
 
@@ -65,7 +71,8 @@ namespace CircuitDesigner.Models
         {
             return 
                 (INodeModel?)SubCircuits.FirstOrDefault(x => x.ID == id) ??
-                Inputs.FirstOrDefault(x => x.ID == id);
+                (INodeModel?)Inputs.FirstOrDefault(x => x.ID == id) ??
+                (INodeModel?)Outputs.FirstOrDefault(x => x.ID == id);
         }
     }
 }
