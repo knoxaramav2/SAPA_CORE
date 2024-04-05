@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CircuitDesigner.Controls;
+using Newtonsoft.Json;
 
 namespace CircuitDesigner.Models
 {
@@ -13,11 +14,13 @@ namespace CircuitDesigner.Models
         public int Scale { get; private set; }
 
         [JsonProperty]
-        public List<CircuitModel> SubCircuits { get; set; } = [];
+        public List<CircuitModel> SubCircuits { get; private set; } = [];
         [JsonProperty]
-        public List<InputModel> Inputs { get; set; } = [];
+        public List<InputModel> Inputs { get; private set; } = [];
         [JsonProperty]
-        public List<OutputModel> Outputs { get; set; } = [];
+        public List<OutputModel> Outputs { get; private set; } = [];
+        [JsonProperty]
+        public List<IDendriteModel> Dendrites { get; private set; } = [];
         [JsonConstructor]
         public CircuitModel()
         {
@@ -44,6 +47,7 @@ namespace CircuitDesigner.Models
             for(var i = 0; i < DefaultOutputSize; ++i)
             {
                 var item = new OutputModel($"Output {i+1}", new Point(0, i*5));
+                Outputs.Add(item);
             }
         }
 
@@ -74,5 +78,65 @@ namespace CircuitDesigner.Models
                 (INodeModel?)Inputs.FirstOrDefault(x => x.ID == id) ??
                 (INodeModel?)Outputs.FirstOrDefault(x => x.ID == id);
         }
+
+
+        #region Component methods
+
+        public bool AddComponent(INodeModel model)
+        {
+            switch (model)
+            {
+                case InputModel input: Inputs.Add(input); break;
+                case OutputModel output: Outputs.Add(output); break;
+                case CircuitModel subcirc: SubCircuits.Add(subcirc); break;
+                default: throw new NotImplementedException();
+            }
+
+            return true;
+        }
+
+        public bool RemoveComponent(INodeModel model)
+        {
+            return true;
+        }
+
+        public bool AddConnection(Guid senderID, Guid receiverID)
+        {
+            var sender = SearchByID(senderID);
+            var receiver = SearchByID(receiverID);
+
+            if (sender == null || receiver == null)
+            {
+                throw new Exception("One or connectors not found:" +
+                    $"S={senderID} " +
+                    $"R={receiverID}");
+            }
+
+            //Prevent duplicates and n0 loop
+            if (Dendrites.Any(x => x.Sender == sender && x.Receiver == receiver) ||
+                Dendrites.Any(x => x.Sender == receiver && x.Receiver == sender))
+            {
+                return false;
+            }
+
+            var dendrite = new DendriteModel(sender, receiver);
+            Dendrites.Add(dendrite);
+
+            return true;
+        }
+
+        public bool RemoveConnection(Guid id1, Guid id2)
+        {
+            var conn = Dendrites.FirstOrDefault(x => x.Sender.ID == id1 && x.Receiver.ID == id2) ??
+                Dendrites.FirstOrDefault(x => x.Sender.ID == id2 && x.Receiver.ID == id1);
+
+            if (conn == null) { return false; }
+            Dendrites.Remove(conn);
+
+            return true;
+        }
+
+        #endregion
+
     }
 }

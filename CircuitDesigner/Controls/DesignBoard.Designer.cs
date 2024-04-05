@@ -42,6 +42,7 @@
             MouseDown += DesignBoard_MouseDown;
             MouseMove += DesignBoard_MouseMove;
             MouseUp += DesignBoard_MouseUp;
+            Resize += DesignBoard_Resize;
             ResumeLayout(false);
         }
 

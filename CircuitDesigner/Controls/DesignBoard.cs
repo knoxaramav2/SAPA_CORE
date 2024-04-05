@@ -1,8 +1,10 @@
 ﻿using CircuitDesigner.Models;
 using CircuitDesigner.Util;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Eventing.Reader;
+using System.Drawing.Drawing2D;
 using static CircuitDesigner.Events.InterformEvents;
 
 namespace CircuitDesigner.Controls
@@ -30,15 +32,14 @@ namespace CircuitDesigner.Controls
         {
             InitializeComponent();
             SetupEvents();
-            LoadCircuit();
             InitGraphics();
+            LoadCircuit();
         }
 
         [MemberNotNull([nameof(GBuffer), nameof(BMBuffer)])]
         private void InitGraphics()
         {
-            BMBuffer = new(1, 1);
-            GBuffer = Graphics.FromImage(BMBuffer);
+            SetDrawBuffer();
         }
 
         private void SetupEvents()
@@ -70,19 +71,25 @@ namespace CircuitDesigner.Controls
             {
                 CreateControl(output);
             }
+
+            UpdateDrawing();
         }
 
-        private void CreateControl(INodeModel model, Point? pos=null)
+        private void CreateControl(INodeModel model, Point? pos = null)
         {
             var loc = pos ?? model.Pos;
 
             DesignNode node;
 
-            if (model is InputModel input) {
+            if (model is InputModel input)
+            {
                 node = new InputNode(this, input);
-            } else if (model is OutputModel output) {
+            }
+            else if (model is OutputModel output)
+            {
                 node = new OutputNode(this, output);
-            } else
+            }
+            else
             {
                 throw new NotImplementedException(nameof(CreateControl));
             }
@@ -91,6 +98,8 @@ namespace CircuitDesigner.Controls
             Controls.Add(node);
 
             ResetSelections();
+
+            UpdateDrawing();
         }
 
         private void ResetSelections()
@@ -105,10 +114,7 @@ namespace CircuitDesigner.Controls
 
         private void OnHandleCreated(object? sender, EventArgs e)
         {
-            BMBuffer = new Bitmap(Width, Height);
-            GBuffer = Graphics.FromImage(BMBuffer);
-            GBuffer.Clear(Color.Transparent);
-            DoubleBuffered = true;
+            SetDrawBuffer();
         }
 
         private void OnMouseWheel(object? sender, MouseEventArgs e)
@@ -126,9 +132,17 @@ namespace CircuitDesigner.Controls
             IsDragging = false;
         }
 
-        private static void LinkNode(DesignNode node1, DesignNode node2)
+        private void LinkNode(DesignNode node1, DesignNode node2)
         {
+            if (node1 is OutputNode || node2 is InputNode) { return; }
 
+            Debug.WriteLine($"LINK {node1.ModelID} -> {node2.ModelID}");
+            if (!RootCircuit.AddConnection(node1.ModelID, node2.ModelID))
+            {
+                RootCircuit.RemoveConnection(node1.ModelID, node2.ModelID);
+            }
+
+            UpdateDrawing();
         }
 
         public void DesignBoard_MouseDown(object sender, MouseEventArgs e)
@@ -156,12 +170,74 @@ namespace CircuitDesigner.Controls
 
         private void DesignBoard_Paint(object sender, PaintEventArgs e)
         {
-            //e.Graphics.DrawImage(BMBuffer, 0, 0);
+            e.Graphics.DrawImage(BMBuffer, 0, 0);
             //base.OnPaint(e);
         }
+
+        private void DesignBoard_Resize(object sender, EventArgs e)
+        {
+            SetDrawBuffer();
+            UpdateDrawing();
+        }
+
+        #endregion
+
+        #region Drawing
+
+        private void SetDrawBuffer()
+        {
+            BMBuffer = new Bitmap(Width, Height);
+            GBuffer = Graphics.FromImage(BMBuffer);
+            GBuffer.Clear(Color.Transparent);
+            DoubleBuffered = true;
+        }
+
+        private void UpdateDrawing()
+        {
+            DrawConnectionLines();
+            Refresh();
+        }
+
+        private void DrawConnectionLines()
+        {
+            var dendrites = RootCircuit.Dendrites;
+
+            using var gradBrush = new LinearGradientBrush(new RectangleF(0, 0, 5, 5),
+                Color.LightCyan, Color.Magenta, 0f);
+            using var pen = new Pen(gradBrush);
+
+            const float CURVE = 0.15f;
+
+            GBuffer.Clear(Color.Transparent);
+
+            foreach (var dendrite in dendrites)
+            {
+                var src = Nodes.First(x => x.ModelID == dendrite.Sender.ID);
+                var dst = Nodes.First(x => x.ModelID == dendrite.Receiver.ID);
+
+                var srcP = new Point
+                {
+                    X = src.Location.X + src.Width / 2,
+                    Y = src.Location.Y + src.Height / 2
+                };
+
+                var dstP = new Point
+                {
+                    X = dst.Location.X + dst.Width / 2,
+                    Y = dst.Location.Y + dst.Height / 2
+                };
+
+                var dist = GeomUtil.Dist(srcP, dstP) * CURVE;
+                var lp1 = new Point((int)(srcP.X + dist), (int)(srcP.Y - dist));
+                var lp2 = new Point((int)(dstP.X - dist), (int)(dstP.Y + dist));
+                GBuffer.DrawBezier(pen, srcP, lp1, lp2, dstP);
+            }
+        }
+
         #endregion
 
         #region Helpers
+
         private void SetSelection(DesignNode? node, Point pos)
         {
             ReleaseSelection();
@@ -182,7 +258,7 @@ namespace CircuitDesigner.Controls
                 {
                     BroadcastModel?.Invoke(node, model);
                 }
-                
+
             }
         }
 
@@ -203,20 +279,23 @@ namespace CircuitDesigner.Controls
             var origin = (Point)DragOrigin;
             var deltaPos = pos.Sub(origin);
 
-            if(SelectedNode == null)
+            if (SelectedNode == null)
             {
                 RootCircuit.Pos = RootCircuit.Pos.Add(deltaPos);
 
-                foreach(DesignNode node in Controls)
+                foreach (DesignNode node in Controls)
                 {
                     node.Location = node.Location.Add(deltaPos);
                 }
 
                 DragOrigin = pos;
-            } else
+            }
+            else
             {
                 SelectedNode.Location = SelectedNode.Location.Add(deltaPos);
             }
+
+            UpdateDrawing();
         }
 
         private void Zoom(int amount)
@@ -244,17 +323,6 @@ namespace CircuitDesigner.Controls
 
         }
 
-        private void PaintNodes()
-        {
-            DrawConnectionLines();
-            Refresh();
-        }
-
-        private void DrawConnectionLines()
-        {
-
-        }
-        
         #endregion
 
         #region Public
@@ -264,15 +332,15 @@ namespace CircuitDesigner.Controls
             IsDragging = true;
 
             DragOrigin = pos;
-            Drag(new Point(Width/2, Height/2));
-            
+            Drag(new Point(Width / 2, Height / 2));
+
             IsDragging = false;
         }
 
         public void ZoomTo(Guid id)
         {
             var pos = RootCircuit.SearchByID(id)?.Pos;
-            if(pos != null)
+            if (pos != null)
             {
                 ZoomTo(pos.Value);
             }
@@ -287,7 +355,8 @@ namespace CircuitDesigner.Controls
                 if (node == null) { return; }
                 Controls.Remove(node);
                 Nodes.Remove(node);
-            } else
+            }
+            else
             {
                 if (model is InputModel input)
                 {
@@ -296,18 +365,20 @@ namespace CircuitDesigner.Controls
                     {
                         Location = pos.Value
                     };
-                    RootCircuit.Inputs.Add(input);
+                    RootCircuit.AddComponent(input);
                     Nodes.Add(node);
                     Controls.Add(node);
-                } else if (model is OutputModel output)
+                }
+                else if (model is OutputModel output)
                 {
                     var node = new OutputNode(this, output);
                     pos ??= new Point(Width - node.Width, Height / 2);
                     node.Location = pos.Value;
-                    RootCircuit.Outputs.Add(output);
+                    RootCircuit.AddComponent(output);
                     Nodes.Add(node);
                     Controls.Add(node);
-                } else
+                }
+                else
                 {
                     throw new NotImplementedException(nameof(UpdateControl));
                 }
@@ -315,6 +386,5 @@ namespace CircuitDesigner.Controls
         }
 
         #endregion
-
     }
 }
