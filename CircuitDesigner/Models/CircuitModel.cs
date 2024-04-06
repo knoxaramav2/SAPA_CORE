@@ -1,4 +1,5 @@
 ﻿using CircuitDesigner.Controls;
+using CircuitDesigner.Util;
 using Newtonsoft.Json;
 
 namespace CircuitDesigner.Models
@@ -20,6 +21,9 @@ namespace CircuitDesigner.Models
         [JsonProperty]
         public List<OutputModel> Outputs { get; private set; } = [];
         [JsonProperty]
+        public List<NeuronModel> Neurons { get; private set; } = [];
+
+        [JsonProperty]
         public List<IDendriteModel> Dendrites { get; private set; } = [];
         [JsonConstructor]
         public CircuitModel()
@@ -29,11 +33,47 @@ namespace CircuitDesigner.Models
             Pos = new();
         }
 
-        public CircuitModel(string name, Point? pos=null) 
+        public CircuitModel(string name)
         {
             Name = name;
             ID = Guid.NewGuid();
-            Pos = pos ?? new();
+            Pos = new();
+            InitIO(DefaultInputSize, DefaultOutputSize);
+        }
+
+        public CircuitModel(
+            string name, Point? pos = null,
+            uint inputNodes = 0, uint outputNodes = 0
+            ) 
+        {
+            Name = name;
+            ID = Guid.NewGuid();
+            Pos = pos ?? new();            
+            InitIO(inputNodes, outputNodes);
+        }
+
+        private void InitIO(uint inputNodes = 0, uint outputNodes = 0)
+        {
+            for (var i = 0; i < inputNodes; ++i)
+            {
+                var modName = AgnosticModelUtil.AutoModelName<InputModel>([]);
+                AddComponent(new InputModel(modName));
+            }
+
+            for (var i = 0; i < outputNodes; ++i)
+            {
+                var modName = AgnosticModelUtil.AutoModelName<OutputModel>([]);
+                AddComponent(new OutputModel(modName));
+            }
+        }
+
+        public int ComponentCount()
+        {
+            return
+                SubCircuits.Count +
+                Inputs.Count +
+                Outputs.Count +
+                Neurons.Count;
         }
 
         public void BasicStartup()
@@ -73,10 +113,11 @@ namespace CircuitDesigner.Models
     
         public INodeModel? SearchByID(Guid id)
         {
-            return 
+            return
                 (INodeModel?)SubCircuits.FirstOrDefault(x => x.ID == id) ??
                 (INodeModel?)Inputs.FirstOrDefault(x => x.ID == id) ??
-                (INodeModel?)Outputs.FirstOrDefault(x => x.ID == id);
+                (INodeModel?)Outputs.FirstOrDefault(x => x.ID == id) ??
+                (INodeModel?)Neurons.FirstOrDefault(x => x.ID == id);
         }
 
 
@@ -89,6 +130,7 @@ namespace CircuitDesigner.Models
                 case InputModel input: Inputs.Add(input); break;
                 case OutputModel output: Outputs.Add(output); break;
                 case CircuitModel subcirc: SubCircuits.Add(subcirc); break;
+                case NeuronModel neuron: Neurons.Add(neuron); break;
                 default: throw new NotImplementedException();
             }
 
@@ -136,6 +178,13 @@ namespace CircuitDesigner.Models
             return true;
         }
 
+        public IEnumerable<IDendriteModel> ListConnections(Guid id)
+        {
+            var model = SearchByID(id);
+            var dendrites = Dendrites.Where(x => x.Sender.ID == id)
+                .Concat(Dendrites.Where(x => x.Receiver.ID == id));
+            return dendrites;
+        }
         #endregion
 
     }

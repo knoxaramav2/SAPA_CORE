@@ -6,25 +6,24 @@ namespace CircuitDesigner.Controls
 {
     internal partial class InputNode : DesignNode
     {
-        InputModel Model;
+        public new InputModel Model { get; private set; }
+        public new Guid ModelID { get { return Model.ID; } private set { Model.ID = value; } }
+        public new Point Position { get { return Model.Pos; } private set { Model.Pos = Location = value; } }
+        public new string ModelName { get { return Model.Name; } private set { Model.Name = value; } }
 
-        public Point Position
-        {
-            get
-            {
-                return Model.Pos;
-            }
-
-            set {
-                Model.Pos = value;
-                Location = value;
-            }
-        }
-
-        public InputNode(DesignBoard board, InputModel model) : base(board, model.ID)
+        public InputNode(DesignBoard board, InputModel model) : base(board, model)
         {
             InitializeComponent();
             BindModel(model);
+            InitDrawing();
+        }
+
+        private void InitDrawing()
+        {
+            SelectColor = Color.Lime;
+            UnselectColor = Color.SteelBlue;
+            BackColor = Color.LightSteelBlue;
+            SetSelectState(IsSelected);
         }
 
         [MemberNotNull(nameof(Model))]
@@ -40,19 +39,19 @@ namespace CircuitDesigner.Controls
 
         private void InputNode_Paint(object sender, PaintEventArgs e)
         {
-            var dPath = new GraphicsPath();
-            dPath.AddPolygon(new Point[]
-            {
-                new(0, 0),
+            using SolidBrush brush = new(BackColor);
+            using SolidBrush pen = new(Outline);
+            const int THICK = 15;
+
+            Point[] shape = [
+                new(0,0),
                 new(Width, Height/2),
                 new(0, Height)
-            });
-
-            dPath.AddEllipse(new RectangleF(
-                Width - 3, Height / 2, 3, 3
-                ));
-
-            e.Graphics.FillPath(Brushes.LightBlue, dPath);
+            ];
+            RectangleF circ = new(Width-THICK, (Height/2)-(THICK/2), THICK, THICK);
+            
+            e.Graphics.FillPolygon(brush, shape);
+            e.Graphics.FillEllipse(pen, circ);
         }
 
         private void InputNode_Resize(object sender, EventArgs e)

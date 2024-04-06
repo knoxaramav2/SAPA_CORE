@@ -54,7 +54,6 @@ namespace CircuitDesigner
             var enabled = !ProjectState.IsDefaultProject();
 
             ToolStripSave.Enabled = enabled;
-            ToolStripSaveAs.Enabled = enabled;
             MenuStripBuild.Enabled = enabled;
         }
 
@@ -127,6 +126,7 @@ namespace CircuitDesigner
             UpdateProjectLabel();
             UpdateStatus();
             NavigateToCircuit(ProjectState.RootModel.ID);
+            DesignBoard.RepositionComponents();
 
             PersistState.Save();
         }
@@ -243,6 +243,7 @@ namespace CircuitDesigner
             if (string.IsNullOrEmpty(newPath)) { return; }
 
             UpdateProject(new ProjectState(newPath));
+            DesignBoard.RepositionComponents();
             Save();
         }
 
@@ -290,7 +291,8 @@ namespace CircuitDesigner
             {
                 case Keys.Insert:
                     UpdateModel<InputModel>(
-                    new InputModel(GetAutoName<InputModel>(inputs.Select(x => x.Name).ToArray())));
+                    new InputModel(AgnosticModelUtil.AutoModelName<InputModel>
+                        (inputs.Select(x => x.Name).ToArray())));
                     break;
                 case Keys.Delete:
                     var idx = InputsList.SelectedIndex;
@@ -317,7 +319,8 @@ namespace CircuitDesigner
             {
                 case Keys.Insert:
                     UpdateModel<OutputModel>(
-                    new OutputModel(GetAutoName<OutputModel>(outputs.Select(x => x.Name).ToArray())));
+                    new OutputModel(AgnosticModelUtil.AutoModelName<OutputModel>
+                        (outputs.Select(x => x.Name).ToArray())));
                     break;
                 case Keys.Delete:
                     var idx = OutputsList.SelectedIndex;
@@ -400,28 +403,6 @@ namespace CircuitDesigner
         #endregion
 
         #region Helpers
-
-        private string GetAutoName<T>(string[] existing)
-        {
-            string rName = typeof(T) switch
-            {
-                Type a when a == typeof(InputModel) => "Input",
-                Type a when a == typeof(OutputModel) => "Output",
-                Type a when a == typeof(CircuitModel) => "Neuron",
-                //case Type a when a == typeof(InputModel) : rName = "SubCircuit"; break;
-                _ => throw new NotImplementedException(nameof(GetAutoName)),
-            };
-            string name = rName;
-
-            uint i = 0;
-            while (existing.Any(x => x.Equals(name, StringComparison.OrdinalIgnoreCase)))
-            {
-                name = $"{rName} {i}";
-                i++;
-            }
-
-            return name;
-        }
 
         private void UpdateModel<T>(INodeModel model, Point? pos = null, bool delete = false)
         {

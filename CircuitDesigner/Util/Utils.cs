@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CircuitDesigner.Models;
+using Newtonsoft.Json;
 
 namespace CircuitDesigner.Util
 {
@@ -99,6 +100,31 @@ namespace CircuitDesigner.Util
         public static double Angle(Point p1, Point p2 = new Point())
         {
             return Math.Atan2(p1.Y-p2.Y, p1.X-p2.X);
+        }
+    }
+
+    internal static class AgnosticModelUtil
+    {
+        public static string AutoModelName<T>(string[] existing) where T : INodeModel
+        {
+            string rName = typeof(T) switch
+            {
+                Type a when a == typeof(InputModel) => "Input",
+                Type a when a == typeof(OutputModel) => "Output",
+                Type a when a == typeof(CircuitModel) => "Circuit",
+                Type a when a == typeof(NeuronModel) => "Neuron",
+                _ => throw new NotImplementedException(nameof(AutoModelName)),
+            };
+            string name = rName;
+
+            uint i = 0;
+            while (existing.Any(x => x.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            {
+                name = $"{rName} {i}";
+                i++;
+            }
+
+            return name;
         }
     }
 }

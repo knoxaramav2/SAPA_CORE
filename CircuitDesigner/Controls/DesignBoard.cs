@@ -4,6 +4,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Eventing.Reader;
+using System.DirectoryServices.ActiveDirectory;
 using System.Drawing.Drawing2D;
 using static CircuitDesigner.Events.InterformEvents;
 
@@ -40,6 +41,7 @@ namespace CircuitDesigner.Controls
         private void InitGraphics()
         {
             SetDrawBuffer();
+            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
 
         private void SetupEvents()
@@ -55,11 +57,11 @@ namespace CircuitDesigner.Controls
 
         [MemberNotNull(nameof(RootCircuit))]
         [MemberNotNull(nameof(Nodes))]
-        public void LoadCircuit(CircuitModel? model = null)
+        public void LoadCircuit(CircuitModel? model = null, bool asNew=false)
         {
             ClearAll();
 
-            RootCircuit = model ?? new();
+            RootCircuit = model ?? new("New Circuit");
             Nodes = [];
 
             foreach (var input in RootCircuit.Inputs)
@@ -72,10 +74,20 @@ namespace CircuitDesigner.Controls
                 CreateControl(output);
             }
 
+            foreach (var circuit in RootCircuit.SubCircuits)
+            {
+                CreateControl(circuit);
+            }
+
+            foreach(var neuron in RootCircuit.Neurons)
+            {
+                CreateControl(neuron);
+            }
+
             UpdateDrawing();
         }
 
-        private void CreateControl(INodeModel model, Point? pos = null)
+        private DesignNode? CreateControl(INodeModel model, Point? pos = null)
         {
             var loc = pos ?? model.Pos;
 
@@ -88,18 +100,24 @@ namespace CircuitDesigner.Controls
             else if (model is OutputModel output)
             {
                 node = new OutputNode(this, output);
-            }
-            else
+            } else if (model is CircuitModel circuit)
+            {
+                node = new CircuitNode(this, circuit);
+            } else if (model is NeuronModel neuron)
+            {
+                node = new NeuronNode(this, neuron);
+            } else
             {
                 throw new NotImplementedException(nameof(CreateControl));
             }
 
             node.MoveTo(loc);
-            Controls.Add(node);
-
+            AddNode(node);
             ResetSelections();
 
             UpdateDrawing();
+
+            return node;
         }
 
         private void ResetSelections()
@@ -130,6 +148,43 @@ namespace CircuitDesigner.Controls
         public void DesignBoard_MouseUp(object sender, MouseEventArgs e)
         {
             IsDragging = false;
+
+            if (ModifierKeys.HasFlag(Keys.Shift) && SelectedNode == null)
+            {
+                var ctrl = ModifierKeys.HasFlag(Keys.Control);
+                var alt = ModifierKeys.HasFlag(Keys.Alt);
+
+                INodeModel? model = null;
+
+                if (!ctrl && !alt)//Neuron
+                {
+                    model = new NeuronModel(
+                        AgnosticModelUtil.AutoModelName<NeuronModel>(RootCircuit.Neurons.Select
+                        (x => x.Name).ToArray()));
+                } else if (ctrl && !alt)
+                {
+                    model = new CircuitModel(
+                        AgnosticModelUtil.AutoModelName<CircuitModel>(RootCircuit.SubCircuits.Select
+                        (x => x.Name).ToArray()));
+                }
+                else if (!ctrl && alt)
+                {
+                    model = new InputModel(
+                        AgnosticModelUtil.AutoModelName<InputModel>(RootCircuit.SubCircuits.Select
+                        (x => x.Name).ToArray()));
+                }
+                else if (ctrl && alt)
+                {
+                    model = new OutputModel(
+                        AgnosticModelUtil.AutoModelName<OutputModel>(RootCircuit.SubCircuits.Select
+                        (x => x.Name).ToArray()));
+                }
+
+                if (model != null)
+                {
+                    UpdateControl(model, e.Location);
+                }
+            }
         }
 
         private void LinkNode(DesignNode node1, DesignNode node2)
@@ -165,7 +220,10 @@ namespace CircuitDesigner.Controls
 
         public void DesignBoard_KeyUp(object sender, KeyEventArgs e)
         {
-
+            switch (e.KeyCode)
+            {
+                case Keys.Delete: DeleteNode(SelectedNode); break;
+            }
         }
 
         private void DesignBoard_Paint(object sender, PaintEventArgs e)
@@ -184,6 +242,7 @@ namespace CircuitDesigner.Controls
 
         #region Drawing
 
+        [MemberNotNull([nameof(GBuffer), nameof(BMBuffer)])]
         private void SetDrawBuffer()
         {
             BMBuffer = new Bitmap(Width, Height);
@@ -238,19 +297,27 @@ namespace CircuitDesigner.Controls
 
         #region Helpers
 
+        private void AddNode(DesignNode node)
+        {
+            Nodes.Add(node);
+            Controls.Add(node);
+        }
+
+        private void RemoveNode(DesignNode node)
+        {
+            Nodes.Remove(node);
+            Controls.Remove(node);
+        }
+
         private void SetSelection(DesignNode? node, Point pos)
         {
             ReleaseSelection();
 
             DragOrigin = pos;
 
-            if (node == null)
+            if (node != null)
             {
-
-            }
-            else
-            {
-                node.BackColor = Color.LightGreen;
+                node.SetSelectState(true);
                 SelectedNode = node;
 
                 var model = RootCircuit.SearchByID(node.ModelID);
@@ -258,19 +325,18 @@ namespace CircuitDesigner.Controls
                 {
                     BroadcastModel?.Invoke(node, model);
                 }
-
             }
+
+            UpdateDrawing();
         }
 
         private void ReleaseSelection()
         {
-            if (SelectedNode != null)
-            {
-                SelectedNode.BackColor = default;
-            }
-
+            SelectedNode?.SetSelectState(false);
             DragOrigin = null;
             SelectedNode = null;
+
+            UpdateDrawing();
         }
 
         private void Drag(Point pos)
@@ -323,6 +389,13 @@ namespace CircuitDesigner.Controls
 
         }
 
+        private void DeleteNode(DesignNode? node)
+        {
+            if (node == null) { return; }
+            var connections = RootCircuit.ListConnections(node.ModelID);
+
+        }
+
         #endregion
 
         #region Public
@@ -353,36 +426,85 @@ namespace CircuitDesigner.Controls
             {
                 var node = Nodes.FirstOrDefault(x => x.ModelID == model.ID);
                 if (node == null) { return; }
-                Controls.Remove(node);
-                Nodes.Remove(node);
+                RemoveNode(node);
             }
             else
             {
+                DesignNode? node = null;
+
                 if (model is InputModel input)
                 {
                     pos ??= new Point(0, Height / 2);
-                    var node = new InputNode(this, input)
-                    {
-                        Location = pos.Value
-                    };
-                    RootCircuit.AddComponent(input);
-                    Nodes.Add(node);
-                    Controls.Add(node);
+                    node = new InputNode(this, input);
                 }
                 else if (model is OutputModel output)
                 {
-                    var node = new OutputNode(this, output);
+                    node = new OutputNode(this, output);
                     pos ??= new Point(Width - node.Width, Height / 2);
                     node.Location = pos.Value;
-                    RootCircuit.AddComponent(output);
-                    Nodes.Add(node);
-                    Controls.Add(node);
+                } else if (model is NeuronModel neuron)
+                {
+                    node = new NeuronNode(this, neuron);
+                    pos = pos == null ?
+                        new Point((Width / 2) - (node.Width / 2), (Height / 2) - (node.Height / 2)) :
+                        new Point(pos.Value.X - (node.Width / 2), pos.Value.Y - (node.Height / 2));
+                } else if (model is CircuitModel circuit)
+                {
+                    node = new CircuitNode(this, circuit);
+                    pos = pos == null ?
+                        new Point((Width / 2) - (node.Width / 2), (Height / 2) - (node.Height / 2)) :
+                        new Point(pos.Value.X - (node.Width / 2), pos.Value.Y - (node.Height / 2));
                 }
                 else
                 {
                     throw new NotImplementedException(nameof(UpdateControl));
                 }
+            
+                if (node != null)
+                {
+                    node.Location = pos.Value;
+                    RootCircuit.AddComponent(model);
+                    AddNode(node);
+                }
             }
+        }
+
+        public void RepositionComponents()
+        {
+            var inputs = RootCircuit.Inputs;
+            var outputs = RootCircuit.Outputs;
+
+            var numIn = RootCircuit.Inputs.Count;
+            var numOut = RootCircuit.Outputs.Count;
+
+            var inNodes = Nodes.Where(x => inputs.Any(y => y.ID == x.ModelID)).ToList();
+            var outNodes = Nodes.Where(x => outputs.Any(y => y.ID == x.ModelID)).ToList();
+
+            var inHeight = inNodes.FirstOrDefault()?.Height ?? 0;
+            var outHeight = outNodes.FirstOrDefault()?.Height ?? 0;
+            var outWidth = outNodes.FirstOrDefault()?.Width ?? 0;
+
+            var diY = (Height-inHeight/2) / (numIn+1);
+            var doY = (Height-outHeight/2) / (numOut+1);
+
+            inNodes.Sort((x, y) => x.ModelName.CompareTo(y.ModelName));
+            outNodes.Sort((x, y) => x.ModelName.CompareTo(y.ModelName));
+
+            for(var i = 0; i < inNodes.Count; ++i)
+            {
+                var node = inNodes[i];
+                if (node == null) { continue; }
+                node.Position = new Point(0, diY*(i+1)-(inHeight/2));
+            }
+
+            for (var i = 0; i < outNodes.Count; ++i)
+            {
+                var node = outNodes[i];
+                if (node == null) { continue; }
+                node.Position = new Point(Width-outWidth, doY * (i + 1) - (outHeight / 2));
+            }
+
+            UpdateDrawing();
         }
 
         #endregion
