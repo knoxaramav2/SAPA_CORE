@@ -23,22 +23,31 @@ namespace CircuitDesigner.Models
         [JsonProperty]
         public List<NeuronModel> Neurons { get; private set; } = [];
 
-        [JsonProperty]
-        public List<IDendriteModel> Dendrites { get; private set; } = [];
+        [JsonProperty(IsReference =true)]
+        public List<DendriteModel> Dendrites { get; private set; } = [];
         [JsonConstructor]
         public CircuitModel()
         {
             Name = string.Empty;
             ID = Guid.Empty;
             Pos = new();
+
+            //SubCircuits = subCircuits;
+            //Inputs = inputs;
+            //Outputs = outputs;
+            //Neurons = neurons;
+            //Dendrites = dendrites;
         }
 
-        public CircuitModel(string name)
+        public CircuitModel(string name, bool setupIO=false)
         {
             Name = name;
             ID = Guid.NewGuid();
             Pos = new();
-            InitIO(DefaultInputSize, DefaultOutputSize);
+            if (setupIO)
+            {
+                InitIO(DefaultInputSize, DefaultOutputSize);
+            }
         }
 
         public CircuitModel(

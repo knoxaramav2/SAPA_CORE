@@ -19,33 +19,38 @@ namespace CircuitDesigner.Models
         [JsonProperty]
         public CircuitModel RootModel { get; private set; }
 
-        [JsonIgnore]
+        [JsonProperty]
         public CircuitModel CurrentCircuit { get; private set; }
 
-        [JsonProperty]
-        public Guid CurrentID { get; set; }
+        //[JsonProperty]
+        //public Guid CurrentID { get; set; }
 
         private string FilePath()
         {
             return Path.Join(ProjectDir, $"{ProjectName}{FileUtil.ProjectExt}");
         }
 
-        
+        [JsonConstructor]
         public ProjectState()
         {
-            RootModel = new(RootCircuitName);
+            RootModel = new(RootCircuitName, setupIO: false);
             CurrentCircuit = RootModel;
-            CurrentID = CurrentCircuit.ID;
             var projectPath = Path.Join(FileUtil.ProjectsUri, $"{DefaultProjectName}{FileUtil.ProjectExt}");
             Rename(projectPath);
         }
 
-        [JsonConstructor]
+        public ProjectState(bool populateDefaults)
+        {
+            RootModel = new(RootCircuitName, setupIO:populateDefaults);
+            CurrentCircuit = RootModel;
+            var projectPath = Path.Join(FileUtil.ProjectsUri, $"{DefaultProjectName}{FileUtil.ProjectExt}");
+            Rename(projectPath);
+        }
+
         public ProjectState(string? projectPath = null)
         {
-            RootModel = new(RootCircuitName);
+            RootModel = new(RootCircuitName, setupIO:true);
             CurrentCircuit = RootModel;
-            CurrentID = CurrentCircuit.ID;
             projectPath ??= Path.Join(FileUtil.ProjectsUri, $"{DefaultProjectName}{FileUtil.ProjectExt}");
             Rename(projectPath);
         }
@@ -67,11 +72,11 @@ namespace CircuitDesigner.Models
             if (ret == null)
             {
                 NCLogger.Log($"Unable to load project at {path}", NCLogger.LogType.WRN);
-                ret = new ProjectState();
+                ret = new ProjectState(true);
             }
             else
             {
-                ret.NavigateToCircuit(ret.CurrentID);
+                ret.NavigateToCircuit(ret.CurrentCircuit.ID);
             }
 
             return ret;
@@ -84,7 +89,7 @@ namespace CircuitDesigner.Models
             if (RootModel.ID != id) 
             {
                 ret = RootModel.SearchSubCircuits(id) ?? RootModel;
-                CurrentID = ret.ID;
+                //CurrentID = ret.ID;
             }
 
             CurrentCircuit = ret;

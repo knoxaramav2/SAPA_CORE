@@ -1,4 +1,6 @@
-﻿namespace CircuitDesigner.Models
+﻿using System.Text.Json.Serialization;
+
+namespace CircuitDesigner.Models
 {
     internal class ConnectorModel : INodeModel
     {
@@ -8,6 +10,9 @@
         public bool Enabled { get; set; }
 
         public List<INodeModel> Connections { get; set; }
+
+        [JsonConstructor]
+        public ConnectorModel() { }
 
         public ConnectorModel(string name, Point? pos = null)
         {

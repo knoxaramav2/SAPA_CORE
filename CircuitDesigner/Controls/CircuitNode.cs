@@ -23,7 +23,7 @@ namespace CircuitDesigner.Controls
         public CircuitNode()
         {
             InitializeComponent();
-            Model = new("---");
+            Model = new("---", setupIO: false);
         }
 
         public CircuitNode(DesignBoard board, CircuitModel model) : base(board, model)

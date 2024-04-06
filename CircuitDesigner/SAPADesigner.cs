@@ -33,7 +33,7 @@ namespace CircuitDesigner
         private void InitSystem()
         {
             FileUtil.AssureDirectories();
-            UpdateProject(ProjectState);
+            UpdateProject(ProjectState, true);
             InitEvents();
         }
 
@@ -118,7 +118,7 @@ namespace CircuitDesigner
             ToolStripProjectName.Text = ProjectState.ProjectName;
         }
 
-        private void UpdateProject(ProjectState? state = null)
+        private void UpdateProject(ProjectState? state = null, bool organizeComponents=false)
         {
             if (state != null) { ProjectState = state; }
             PersistState.SetRecent(ProjectState.ProjectName, ProjectState.ProjectDir);
@@ -126,8 +126,11 @@ namespace CircuitDesigner
             UpdateProjectLabel();
             UpdateStatus();
             NavigateToCircuit(ProjectState.RootModel.ID);
-            DesignBoard.RepositionComponents();
-
+            if (organizeComponents)
+            {
+                DesignBoard.RepositionComponents();
+            }
+            
             PersistState.Save();
         }
 
@@ -213,7 +216,7 @@ namespace CircuitDesigner
 
             if (string.IsNullOrEmpty(path)) { return; }
 
-            UpdateProject(ProjectState.LoadOrDefault(path));
+            UpdateProject(ProjectState.LoadOrDefault(path), false);
         }
 
         private void Save(string? path = null, bool saveAs = false)
@@ -233,7 +236,7 @@ namespace CircuitDesigner
             PersistState.Save();
             Definitions.Save();
 
-            UpdateProject(project);
+            UpdateProject(project, false);
         }
 
         private void New()
@@ -242,7 +245,7 @@ namespace CircuitDesigner
             var newPath = FileDialog("New Circuit", $"Circuit | *{FileUtil.ProjectExt}", basePath, true);
             if (string.IsNullOrEmpty(newPath)) { return; }
 
-            UpdateProject(new ProjectState(newPath));
+            UpdateProject(new ProjectState(newPath), true);
             DesignBoard.RepositionComponents();
             Save();
         }

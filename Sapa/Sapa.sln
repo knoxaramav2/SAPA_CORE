@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sapa", "Sapa.vcxproj", "{2C
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SapaCore", "..\SapaCore\SapaCore.vcxproj", "{AABBECE7-C0DE-4808-A718-B580531F0AE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDesigner", "..\CircuitDesigner\CircuitDesigner.csproj", "{25075527-74CB-4287-B896-AE57522FAE63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDesigner", "..\CircuitDesigner\CircuitDesigner.csproj", "{25075527-74CB-4287-B896-AE57522FAE63}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,8 +1,16 @@
-﻿namespace CircuitDesigner.Models
+﻿using System.Text.Json.Serialization;
+
+namespace CircuitDesigner.Models
 {
-    internal class InputModel(string name, Point? pos=null) 
-        : ConnectorModel(name, pos)
+    internal class InputModel 
+        : ConnectorModel
     {
-        
+        [JsonConstructor]
+        public InputModel() { }
+
+        public InputModel(string name, Point? pos = null) : base(name, pos)
+        {
+
+        }
     }
 }

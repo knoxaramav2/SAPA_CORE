@@ -1,5 +1,6 @@
 ﻿using CircuitDesigner.Models;
 using System.Configuration;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CircuitDesigner.Controls
 {

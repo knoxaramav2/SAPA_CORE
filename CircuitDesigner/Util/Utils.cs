@@ -1,5 +1,6 @@
 ﻿using CircuitDesigner.Models;
 using Newtonsoft.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CircuitDesigner.Util
 {
@@ -32,7 +33,7 @@ namespace CircuitDesigner.Util
             AssurePath(ProgramDataUri);
             AssurePath(LogUri);
         }
-    
+
         public static bool PathExists(string path)
         {
             if (!string.IsNullOrEmpty(Path.GetExtension(path)))
@@ -42,21 +43,43 @@ namespace CircuitDesigner.Util
                 {
                     return false;
                 }
-            }          
+            }
 
             return Directory.Exists(path);
         }
 
+        //Extracted for testing
+        public static string JsonSerialize<T>(T data)
+        {
+            var settings = new JsonSerializerSettings { PreserveReferencesHandling=PreserveReferencesHandling.Objects };
+            return JsonConvert.SerializeObject(data, Formatting.Indented, settings);
+        }
+
+        //Extracted for testing
+        public static T? JsonDeSerialize<T>(string content)
+        {
+            var serializerSettings = new JsonSerializerSettings
+            {
+                MissingMemberHandling = MissingMemberHandling.Error,
+                TypeNameHandling = TypeNameHandling.All,
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects
+            };
+
+            return JsonConvert.DeserializeObject<T>(content, serializerSettings);
+        }
+
         public static bool Save<T>(string path, T data)
         {
-            var sj = JsonConvert.SerializeObject(data, Formatting.Indented);
-            return Save(path, [sj]);
+            return Save(path, [JsonSerialize(data)]);
         }
+
+        public static bool Save(string path, string data) { return Save(path, [data]); }
 
         public static bool Save(string path, string[] data)
         {
             using StreamWriter sw = new(path);
-            foreach(var line in data) { sw.Write(line); }
+            foreach (var line in data) { sw.Write(line); }
             return true;
         }
 
@@ -64,17 +87,10 @@ namespace CircuitDesigner.Util
         {
             if (!File.Exists(path)) { return null; }
 
-            var serializerSettings = new JsonSerializerSettings
-            {
-                MissingMemberHandling = MissingMemberHandling.Error,
-                TypeNameHandling = TypeNameHandling.All,
-                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
-            };
-
             using StreamReader sr = new(path);
-            var content = sr.ReadToEnd(); 
-            var ret = JsonConvert.DeserializeObject<T>(content, serializerSettings);
-            
+            var content = sr.ReadToEnd();
+            var ret = JsonDeSerialize<T>(content);
+
             return ret;
         }
     }

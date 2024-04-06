@@ -61,7 +61,7 @@ namespace CircuitDesigner.Controls
         {
             ClearAll();
 
-            RootCircuit = model ?? new("New Circuit");
+            RootCircuit = model ?? new("New Circuit", setupIO: true);
             Nodes = [];
 
             foreach (var input in RootCircuit.Inputs)
@@ -83,6 +83,9 @@ namespace CircuitDesigner.Controls
             {
                 CreateControl(neuron);
             }
+
+            //ZoomTo(RootCircuit.Pos, 0);
+
 
             UpdateDrawing();
         }
@@ -165,7 +168,7 @@ namespace CircuitDesigner.Controls
                 {
                     model = new CircuitModel(
                         AgnosticModelUtil.AutoModelName<CircuitModel>(RootCircuit.SubCircuits.Select
-                        (x => x.Name).ToArray()));
+                        (x => x.Name).ToArray()), setupIO: true);
                 }
                 else if (!ctrl && alt)
                 {
@@ -271,8 +274,10 @@ namespace CircuitDesigner.Controls
 
             foreach (var dendrite in dendrites)
             {
-                var src = Nodes.First(x => x.ModelID == dendrite.Sender.ID);
-                var dst = Nodes.First(x => x.ModelID == dendrite.Receiver.ID);
+                var src = Nodes.FirstOrDefault(x => x.ModelID == dendrite.Sender.ID);
+                var dst = Nodes.FirstOrDefault(x => x.ModelID == dendrite.Receiver.ID);
+
+                if (src == null || dst == null) { continue; }
 
                 var srcP = new Point
                 {
@@ -381,12 +386,15 @@ namespace CircuitDesigner.Controls
                 SetNodeScale(node, amount);
             }
 
-            Debug.WriteLine($"ZOOM {amount}");
+            UpdateDrawing();
+            //Debug.WriteLine($"ZOOM {amount}");
         }
 
         private static void SetNodeScale(DesignNode node, int amnt)
         {
-
+            const float STEP_COEF = 0.95f;
+            var scale = (float)Math.Pow(1/STEP_COEF, amnt);
+            node.Scale(new SizeF(scale, scale));
         }
 
         private void DeleteNode(DesignNode? node)
@@ -400,7 +408,7 @@ namespace CircuitDesigner.Controls
 
         #region Public
 
-        public void ZoomTo(Point pos)
+        public void ZoomTo(Point pos, int zoom=0)
         {
             IsDragging = true;
 
@@ -408,6 +416,8 @@ namespace CircuitDesigner.Controls
             Drag(new Point(Width / 2, Height / 2));
 
             IsDragging = false;
+
+            Zoom(zoom);
         }
 
         public void ZoomTo(Guid id)

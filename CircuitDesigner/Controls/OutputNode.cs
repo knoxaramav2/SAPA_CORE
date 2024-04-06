@@ -15,21 +15,15 @@ namespace CircuitDesigner.Controls
 {
     internal partial class OutputNode : DesignNode
     {
-        public new OutputModel Model { get; private set; } = new("---");
+        public new OutputModel Model { get; private set; }
         public new Guid ModelID { get { return Model.ID; } private set { Model.ID = value; } }
         public new Point Position { get { return Model.Pos; } private set { Model.Pos = Location = value; } }
         public new string ModelName { get { return Model.Name; } private set { Model.Name = value; } }
 
-        public OutputNode()
-        {
-            InitializeComponent();
-            Model = new("---");
-        }
-
         public OutputNode(DesignBoard board, OutputModel model) : base(board, model)
         {
             InitializeComponent();
-            //BindModel(model);
+            BindModel(model);
             InitDrawing();
         }
 
