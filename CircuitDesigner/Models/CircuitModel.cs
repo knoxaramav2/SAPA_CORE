@@ -65,13 +65,13 @@ namespace CircuitDesigner.Models
         {
             for (var i = 0; i < inputNodes; ++i)
             {
-                var modName = AgnosticModelUtil.AutoModelName<InputModel>([]);
+                var modName = $"Input {i+1}";
                 AddComponent(new InputModel(modName));
             }
 
             for (var i = 0; i < outputNodes; ++i)
             {
-                var modName = AgnosticModelUtil.AutoModelName<OutputModel>([]);
+                var modName = $"Output {i + 1}";
                 AddComponent(new OutputModel(modName));
             }
         }

@@ -12,6 +12,7 @@ namespace CircuitDesigner
         ProjectState ProjectState = ProjectState.LoadOrDefault();
         readonly List<(int, Guid)> InputListIds = [];
         readonly List<(int, Guid)> OutputListIds = [];
+        private INodeModel? LastUpdateModel = null;
 
         TabPage[] PropertiesReference;
 
@@ -19,7 +20,11 @@ namespace CircuitDesigner
 
         #region Bindings
 
-
+        internal void BindText(TextBox tbox, INodeModel model, string name)
+        {
+            tbox.DataBindings.Clear();
+            tbox.DataBindings.Add("Text", model, name);
+        }
 
         #endregion
 
@@ -118,7 +123,7 @@ namespace CircuitDesigner
             ToolStripProjectName.Text = ProjectState.ProjectName;
         }
 
-        private void UpdateProject(ProjectState? state = null, bool organizeComponents=false)
+        private void UpdateProject(ProjectState? state = null, bool organizeComponents = false)
         {
             if (state != null) { ProjectState = state; }
             PersistState.SetRecent(ProjectState.ProjectName, ProjectState.ProjectDir);
@@ -130,7 +135,7 @@ namespace CircuitDesigner
             {
                 DesignBoard.RepositionComponents();
             }
-            
+
             PersistState.Save();
         }
 
@@ -160,7 +165,7 @@ namespace CircuitDesigner
                 InputListIds.Add((id, input.ID));
             }
 
-            foreach(var output in outputs)
+            foreach (var output in outputs)
             {
                 var id = OutputsList.Items.Add(output.Name, output.Enabled);
                 OutputListIds.Add((id, output.ID));
@@ -378,6 +383,7 @@ namespace CircuitDesigner
 
         private void UpdateModelProperties(object sender, INodeModel model)
         {
+            LastUpdateModel = model;
             var currTab = PropertiesTabs.SelectedTab;
             TabPage? selTab = null;
 
@@ -385,6 +391,27 @@ namespace CircuitDesigner
             {
                 InputPropertiesName.Text = input.Name;
                 selTab = PropertiesReference.FirstOrDefault(x => (string?)x.Tag == "InputTag");
+            }
+            else if (model is OutputModel output)
+            {
+                OutputPropertiesName.Text = output.Name;
+                selTab = PropertiesReference.FirstOrDefault(x => (string?)x.Tag == "OutputTag");
+            }
+            else if (model is NeuronModel neuron)
+            {
+                BindText(NeuronNameInput, neuron, nameof(neuron.Name));
+                BindText(NeuronBiasInput, neuron, nameof(neuron.Bias));
+                BindText(NeuronDecayInput, neuron, nameof(neuron.Decay));
+                //NeuronNameInput.Text = neuron.Name;
+                //NeuronBiasInput.Text = neuron.Bias.ToString();
+                //NeuronDecayInput.Text = neuron.Decay.ToString();
+                UpdateTransmitterList(NeuronTransmittersInput, neuron);
+                selTab = PropertiesReference.FirstOrDefault(x => (string?)x.Tag == "NeuronTag");
+            }
+            else if (model is CircuitModel circuit)
+            {
+                CircuitPropertiesName.Text = circuit.Name;
+                selTab = PropertiesReference.FirstOrDefault(x => (string?)x.Tag == "CircuitTag");
             }
 
             if (selTab == null || currTab == selTab) { return; }
@@ -395,7 +422,7 @@ namespace CircuitDesigner
         internal void OnZoomableDoubleClick(object sender, EventArgs e)
         {
             if (sender is not CheckedListBox) { return; }
-            var ioList = (CheckedListBox) sender;
+            var ioList = (CheckedListBox)sender;
             var idList = ioList == InputsList ? InputListIds : OutputListIds;
 
             var idx = ioList.SelectedIndex;
@@ -406,6 +433,19 @@ namespace CircuitDesigner
         #endregion
 
         #region Helpers
+
+        private void UpdateTransmitterList(CheckedListBox listbox, NeuronModel model)
+        {
+            var view = (ListBox)listbox;
+            view.DataSource = ProjectState.Transmitters;
+            view.DisplayMember = "Name";
+
+            for(var i =0; i < listbox.Items.Count; i++)
+            {
+                var trans = (Transmitter)view.Items[i];
+                listbox.SetItemChecked(i, model.Transmitters.Any(x => x.ID == trans.ID));
+            }
+        }
 
         private void UpdateModel<T>(INodeModel model, Point? pos = null, bool delete = false)
         {
@@ -422,5 +462,26 @@ namespace CircuitDesigner
         }
 
         #endregion
+
+        private void NeuronTransmittersInput_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (LastUpdateModel is not NeuronModel) { return; }
+            var neuron = (NeuronModel) LastUpdateModel;
+            var view = NeuronTransmittersInput;
+            if (view == null) { return; }
+
+            for(var i = 0; i < view.Items.Count; ++i)
+            {
+                var trans = (Transmitter)view.Items[i];
+                var isChecked = view.GetItemChecked(i);
+                if (isChecked && !neuron.Transmitters.Contains(trans))
+                {
+                    neuron.Transmitters.Add(trans);
+                } else if (neuron.Transmitters.Contains(trans))
+                {
+                    neuron.Transmitters.Remove(trans);
+                }
+            }
+        }
     }
 }

@@ -13,6 +13,11 @@ namespace CircuitDesigner.Models
         public Guid ID { get; set; }
         public Point Pos { get; set; }
 
+
+        public List<Transmitter> Transmitters { get; set; } = [];
+        public float Bias { get; set; } = 0.0f;
+        public float Decay { get; set; } = 0.95f;
+
         [JsonConstructor]
         public NeuronModel() {
             Name = string.Empty;

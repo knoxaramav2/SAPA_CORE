@@ -13,8 +13,6 @@ namespace CircuitDesigner.Models
         public Guid ID { get; set; }
 
         public float Weight { get; set; }
-        public Transmitter[] Transmitters { get; set; }
-
     }
 
     class DendriteModel : IDendriteModel
@@ -23,7 +21,6 @@ namespace CircuitDesigner.Models
         public INodeModel Sender { get; set; }
         public Guid ID { get; set; } = Guid.NewGuid();
         public float Weight { get; set; } = 1.0f;
-        public Transmitter[] Transmitters { get; set; } = [];
 
         public DendriteModel() { }
 
