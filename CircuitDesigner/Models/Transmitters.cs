@@ -1,18 +1,29 @@
-﻿namespace CircuitDesigner.Models
+﻿using System.Text.Json.Serialization;
+
+namespace CircuitDesigner.Models
 {
-    internal enum TransmitterFX
+    public enum TransmitterFX
     {
         EXCITE,
         INHIBIT
     }
 
-    internal class Transmitter(string name, TransmitterFX effect,
-        float? chargeCoef=null)
+    public class Transmitter
     {
-        public string Name { get; set; } = name;
+        public string Name { get; set; }
         public Guid ID { get; set; } = Guid.NewGuid();
 
-        public float ChargeMultipler { get; set; } = chargeCoef ?? 0.0f;
-        public TransmitterFX Effect = effect;
+        public float ChargeMultipler { get; set; }
+        public TransmitterFX Effect;
+
+        [JsonConstructor]
+        public Transmitter() { }
+
+        public Transmitter(string name, TransmitterFX effect, float chargeCoef = 0.0f)
+        {
+            Name = name;
+            Effect = effect;
+            ChargeMultipler = chargeCoef;
+        }
     }
 }

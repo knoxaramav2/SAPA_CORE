@@ -440,6 +440,7 @@ namespace CircuitDesigner
             view.DataSource = ProjectState.Transmitters;
             view.DisplayMember = "Name";
 
+
             for(var i =0; i < listbox.Items.Count; i++)
             {
                 var trans = (Transmitter)view.Items[i];

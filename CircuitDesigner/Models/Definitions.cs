@@ -5,18 +5,19 @@ namespace CircuitDesigner.Models
     internal class Definitions
     {
         private static readonly string __filepath = Path.Join(FileUtil.ProgramDataUri, $"definitions{FileUtil.InternalDataExt}");
-        private static Definitions? __instance = null;           
-        
+        private static Definitions? __instance = null;
+
         public List<Transmitter> Transmitters { get; private set; }
 
-        private Definitions()
+        public Definitions()
         {
             Transmitters = [];
         }
-        
-        public static Definitions GetInstance()
+
+        internal static Definitions GetInstance()
         {
             __instance ??= Load();
+
             return __instance;
         }
 
@@ -28,6 +29,7 @@ namespace CircuitDesigner.Models
 
         public static void Save()
         {
+            if (__instance == null) { return; }
             FileUtil.Save(__filepath, __instance);
         }
     }

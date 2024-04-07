@@ -13,7 +13,7 @@ namespace CircuitDesigner.Models
         [JsonProperty]
         public string ProjectDir { get; internal set; } = "";
 
-        [JsonProperty]
+        [JsonIgnore]
         public List<Transmitter> Transmitters { get; set; } = [];
 
         [JsonProperty]
@@ -36,6 +36,7 @@ namespace CircuitDesigner.Models
             RootModel = new(RootCircuitName, setupIO: false);
             CurrentCircuit = RootModel;
             var projectPath = Path.Join(FileUtil.ProjectsUri, $"{DefaultProjectName}{FileUtil.ProjectExt}");
+            Transmitters = Definitions.GetInstance().Transmitters;
             Rename(projectPath);
         }
 
@@ -44,6 +45,7 @@ namespace CircuitDesigner.Models
             RootModel = new(RootCircuitName, setupIO:populateDefaults);
             CurrentCircuit = RootModel;
             var projectPath = Path.Join(FileUtil.ProjectsUri, $"{DefaultProjectName}{FileUtil.ProjectExt}");
+            Transmitters = Definitions.GetInstance().Transmitters;
             Rename(projectPath);
         }
 
@@ -52,6 +54,7 @@ namespace CircuitDesigner.Models
             RootModel = new(RootCircuitName, setupIO:true);
             CurrentCircuit = RootModel;
             projectPath ??= Path.Join(FileUtil.ProjectsUri, $"{DefaultProjectName}{FileUtil.ProjectExt}");
+            Transmitters = Definitions.GetInstance().Transmitters;
             Rename(projectPath);
         }
 

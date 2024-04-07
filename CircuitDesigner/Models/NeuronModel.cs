@@ -30,6 +30,8 @@ namespace CircuitDesigner.Models
             Name = name;
             ID = Guid.NewGuid();
             Pos = pos ?? new();
+            //TODO replace with default transmitter setting
+            Transmitters = [Definitions.GetInstance().Transmitters[0]];
         }
 
     }
