@@ -30,11 +30,11 @@ namespace CircuitDesigner.Forms
             EnabledCheckbox.Checked = model.Enabled;
             NameInput.Text = model.Name;
 
-            ConnectionsLabel.Text = $"Connections ({model.Connections.Count})";
-            foreach (var cnn in model.Connections)
-            {
-                ConnectionList.Items.Add(cnn.Name);
-            }
+            //ConnectionsLabel.Text = $"Connections ({model.Connections.Count})";
+            //foreach (var cnn in model.Connections)
+            //{
+            //    ConnectionList.Items.Add(cnn.Name);
+            //}
         }
 
         public InputOutputForm(ConnectorModel model, List<InputModel> connectors)

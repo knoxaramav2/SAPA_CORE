@@ -9,6 +9,7 @@ namespace CircuitDesigner.Util
         public static string BaseUri = AppDomain.CurrentDomain.BaseDirectory;
         public static string ProjectsUri = Path.Join(BaseUri, "Projects");
         public static string ProgramDataUri = Path.Join(BaseUri, "ProgramData");
+        public static string BuildUri = Path.Join(BaseUri, "Build");
         public static string LogUri = Path.Join(BaseUri, "Logs");
 
 
@@ -31,6 +32,7 @@ namespace CircuitDesigner.Util
         {
             AssurePath(ProjectsUri);
             AssurePath(ProgramDataUri);
+            AssurePath(BuildUri);
             AssurePath(LogUri);
         }
 
@@ -121,9 +123,9 @@ namespace CircuitDesigner.Util
 
     internal static class AgnosticModelUtil
     {
-        public static string AutoModelName<T>(string[] existing) where T : INodeModel
+        public static string NodeTypeName<T>() where T: INodeModel
         {
-            string rName = typeof(T) switch
+            return typeof(T) switch
             {
                 Type a when a == typeof(InputModel) => "Input",
                 Type a when a == typeof(OutputModel) => "Output",
@@ -131,6 +133,11 @@ namespace CircuitDesigner.Util
                 Type a when a == typeof(NeuronModel) => "Neuron",
                 _ => throw new NotImplementedException(nameof(AutoModelName)),
             };
+        }
+
+        public static string AutoModelName<T>(string[] existing) where T : INodeModel
+        {
+            string rName = NodeTypeName<T>();
             string name = rName;
 
             uint i = 0;

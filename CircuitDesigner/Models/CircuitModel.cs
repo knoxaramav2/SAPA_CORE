@@ -31,12 +31,6 @@ namespace CircuitDesigner.Models
             Name = string.Empty;
             ID = Guid.Empty;
             Pos = new();
-
-            //SubCircuits = subCircuits;
-            //Inputs = inputs;
-            //Outputs = outputs;
-            //Neurons = neurons;
-            //Dendrites = dendrites;
         }
 
         public CircuitModel(string name, bool setupIO=false)
@@ -83,6 +77,29 @@ namespace CircuitDesigner.Models
                 Inputs.Count +
                 Outputs.Count +
                 Neurons.Count;
+        }
+
+        public int ComponentCountRec()
+        {
+            var ret = ComponentCount();
+            foreach(var subcirc in SubCircuits)
+            {
+                ret += subcirc.ComponentCountRec();
+            }
+
+            return ret;
+        }
+
+        public int CountCircuits()
+        {
+            var ret = 1;
+
+            foreach(var circ in SubCircuits)
+            {
+                ret += circ.CountCircuits();
+            }
+
+            return ret;
         }
 
         public void BasicStartup()

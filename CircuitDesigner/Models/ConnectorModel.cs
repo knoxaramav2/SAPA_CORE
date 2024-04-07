@@ -9,7 +9,7 @@ namespace CircuitDesigner.Models
         public Point Pos { get; set; }
         public bool Enabled { get; set; }
 
-        public List<INodeModel> Connections { get; set; }
+        //public List<INodeModel> Connections { get; set; }
 
         [JsonConstructor]
         public ConnectorModel() { }
@@ -20,20 +20,20 @@ namespace CircuitDesigner.Models
             ID = Guid.NewGuid();
             Pos = pos ?? new();
 
-            Connections = [];
+            //Connections = [];
             Enabled = true;
         }
 
-        public bool InsertConnection(INodeModel model)
-        {
-            if (Connections.FirstOrDefault(x => x.ID == model.ID) != null) { return false; }
-            Connections.Add(model);
-            return true;
-        }
+        //public bool InsertConnection(INodeModel model)
+        //{
+        //    if (Connections.FirstOrDefault(x => x.ID == model.ID) != null) { return false; }
+        //    Connections.Add(model);
+        //    return true;
+        //}
 
-        public bool RemoveConnection(INodeModel model)
-        {
-            return Connections.Remove(model);
-        }
+        //public bool RemoveConnection(INodeModel model)
+        //{
+        //    return Connections.Remove(model);
+        //}
     }
 }

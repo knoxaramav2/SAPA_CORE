@@ -1,3 +1,4 @@
+using CircuitDesigner.BuildEngine;
 using CircuitDesigner.Forms;
 using CircuitDesigner.Models;
 using CircuitDesigner.Util;
@@ -88,7 +89,7 @@ namespace CircuitDesigner
         {
             CircuitTree.Nodes.Clear();
 
-            var root = ProjectState.RootModel;
+            var root = ProjectState.RootCircuit;
             AddCircuitTreeLeaf(null, root);
         }
 
@@ -130,7 +131,7 @@ namespace CircuitDesigner
 
             UpdateProjectLabel();
             UpdateStatus();
-            NavigateToCircuit(ProjectState.RootModel.ID);
+            NavigateToCircuit(ProjectState.RootCircuit.ID);
             if (organizeComponents)
             {
                 DesignBoard.RepositionComponents();
@@ -430,6 +431,51 @@ namespace CircuitDesigner
             DesignBoard.ZoomTo(sel.Item2);
         }
 
+        private void NeuronTransmittersInput_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (LastUpdateModel is not NeuronModel) { return; }
+            var neuron = (NeuronModel)LastUpdateModel;
+            var view = NeuronTransmittersInput;
+            if (view == null) { return; }
+
+            for (var i = 0; i < view.Items.Count; ++i)
+            {
+                var trans = (Transmitter)view.Items[i];
+                var isChecked = view.GetItemChecked(i);
+                if (isChecked && !neuron.Transmitters.Contains(trans))
+                {
+                    neuron.Transmitters.Add(trans);
+                }
+                else if (neuron.Transmitters.Contains(trans))
+                {
+                    neuron.Transmitters.Remove(trans);
+                }
+            }
+        }
+
+        private void ToolStripBuild_Click(object sender, EventArgs e)
+        {
+            ToolStripStatusText.Text = $"Building";
+
+            var engine = new CircuitEngine(ProjectState, ToolStripProgressBar);
+            var buildString = engine.Build();
+            if (buildString == null)
+            {
+                ToolStripStatusText.Text = $"Build Failure";
+                MessageBox.Show("Build errors, see log", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            ToolStripStatusText.Text = $"Build Success";
+            var path = Path.Join(FileUtil.BuildUri, $"{ProjectState.ProjectName}{FileUtil.CircuitExt}");
+
+            FileUtil.Save(path, buildString);
+        }
+
+        private void ToolStripVerify_Click(object sender, EventArgs e)
+        {
+
+        }
         #endregion
 
         #region Helpers
@@ -441,7 +487,7 @@ namespace CircuitDesigner
             view.DisplayMember = "Name";
 
 
-            for(var i =0; i < listbox.Items.Count; i++)
+            for (var i = 0; i < listbox.Items.Count; i++)
             {
                 var trans = (Transmitter)view.Items[i];
                 listbox.SetItemChecked(i, model.Transmitters.Any(x => x.ID == trans.ID));
@@ -463,26 +509,5 @@ namespace CircuitDesigner
         }
 
         #endregion
-
-        private void NeuronTransmittersInput_SelectedValueChanged(object sender, EventArgs e)
-        {
-            if (LastUpdateModel is not NeuronModel) { return; }
-            var neuron = (NeuronModel) LastUpdateModel;
-            var view = NeuronTransmittersInput;
-            if (view == null) { return; }
-
-            for(var i = 0; i < view.Items.Count; ++i)
-            {
-                var trans = (Transmitter)view.Items[i];
-                var isChecked = view.GetItemChecked(i);
-                if (isChecked && !neuron.Transmitters.Contains(trans))
-                {
-                    neuron.Transmitters.Add(trans);
-                } else if (neuron.Transmitters.Contains(trans))
-                {
-                    neuron.Transmitters.Remove(trans);
-                }
-            }
-        }
     }
 }

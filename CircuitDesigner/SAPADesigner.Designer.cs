@@ -246,12 +246,14 @@
             ToolStripVerify.Name = "ToolStripVerify";
             ToolStripVerify.Size = new Size(103, 22);
             ToolStripVerify.Text = "Verify";
+            ToolStripVerify.Click += ToolStripVerify_Click;
             // 
             // ToolStripBuild
             // 
             ToolStripBuild.Name = "ToolStripBuild";
             ToolStripBuild.Size = new Size(103, 22);
             ToolStripBuild.Text = "Build";
+            ToolStripBuild.Click += ToolStripBuild_Click;
             // 
             // ToolStripAbout
             // 
@@ -443,7 +445,7 @@
             CircuitProperties.Location = new Point(4, 24);
             CircuitProperties.Name = "CircuitProperties";
             CircuitProperties.Padding = new Padding(3);
-            CircuitProperties.Size = new Size(398, 135);
+            CircuitProperties.Size = new Size(398, 187);
             CircuitProperties.TabIndex = 0;
             CircuitProperties.Tag = "CircuitTab";
             CircuitProperties.Text = "Circuit Properties";
@@ -558,7 +560,7 @@
             InputProperties.Location = new Point(4, 24);
             InputProperties.Name = "InputProperties";
             InputProperties.Padding = new Padding(3);
-            InputProperties.Size = new Size(398, 135);
+            InputProperties.Size = new Size(398, 187);
             InputProperties.TabIndex = 2;
             InputProperties.Tag = "InputTag";
             InputProperties.Text = "Input Properties";
@@ -589,7 +591,7 @@
             OutputProperties.Location = new Point(4, 24);
             OutputProperties.Name = "OutputProperties";
             OutputProperties.Padding = new Padding(3);
-            OutputProperties.Size = new Size(398, 135);
+            OutputProperties.Size = new Size(398, 187);
             OutputProperties.TabIndex = 3;
             OutputProperties.Tag = "OutputTag";
             OutputProperties.Text = "Output Properties";

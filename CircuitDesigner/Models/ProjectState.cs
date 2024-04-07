@@ -17,7 +17,7 @@ namespace CircuitDesigner.Models
         public List<Transmitter> Transmitters { get; set; } = [];
 
         [JsonProperty]
-        public CircuitModel RootModel { get; private set; }
+        public CircuitModel RootCircuit { get; private set; }
 
         [JsonProperty]
         public CircuitModel CurrentCircuit { get; private set; }
@@ -33,8 +33,8 @@ namespace CircuitDesigner.Models
         [JsonConstructor]
         public ProjectState()
         {
-            RootModel = new(RootCircuitName, setupIO: false);
-            CurrentCircuit = RootModel;
+            RootCircuit = new(RootCircuitName, setupIO: false);
+            CurrentCircuit = RootCircuit;
             var projectPath = Path.Join(FileUtil.ProjectsUri, $"{DefaultProjectName}{FileUtil.ProjectExt}");
             Transmitters = Definitions.GetInstance().Transmitters;
             Rename(projectPath);
@@ -42,8 +42,8 @@ namespace CircuitDesigner.Models
 
         public ProjectState(bool populateDefaults)
         {
-            RootModel = new(RootCircuitName, setupIO:populateDefaults);
-            CurrentCircuit = RootModel;
+            RootCircuit = new(RootCircuitName, setupIO:populateDefaults);
+            CurrentCircuit = RootCircuit;
             var projectPath = Path.Join(FileUtil.ProjectsUri, $"{DefaultProjectName}{FileUtil.ProjectExt}");
             Transmitters = Definitions.GetInstance().Transmitters;
             Rename(projectPath);
@@ -51,8 +51,8 @@ namespace CircuitDesigner.Models
 
         public ProjectState(string? projectPath = null)
         {
-            RootModel = new(RootCircuitName, setupIO:true);
-            CurrentCircuit = RootModel;
+            RootCircuit = new(RootCircuitName, setupIO:true);
+            CurrentCircuit = RootCircuit;
             projectPath ??= Path.Join(FileUtil.ProjectsUri, $"{DefaultProjectName}{FileUtil.ProjectExt}");
             Transmitters = Definitions.GetInstance().Transmitters;
             Rename(projectPath);
@@ -87,11 +87,11 @@ namespace CircuitDesigner.Models
 
         public CircuitModel NavigateToCircuit(Guid id)
         {
-            CircuitModel ret = RootModel;
+            CircuitModel ret = RootCircuit;
 
-            if (RootModel.ID != id) 
+            if (RootCircuit.ID != id) 
             {
-                ret = RootModel.SearchSubCircuits(id) ?? RootModel;
+                ret = RootCircuit.SearchSubCircuits(id) ?? RootCircuit;
                 //CurrentID = ret.ID;
             }
 

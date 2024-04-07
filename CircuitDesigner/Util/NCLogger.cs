@@ -11,12 +11,12 @@ namespace CircuitDesigner.Util
 
         private static readonly string LogPath = Path.Join(FileUtil.LogUri, $"LOG_{DateTime.Now:dd/MM/yy}{FileUtil.LogExt}");
 
-        public static void Log(string msg, LogType logType)
+        public static void Log(string msg, LogType logType, bool print=false)
         {
             var currentTime = DateTime.Now.ToString("HH:mm:ss");
             var errTxt = Enum.GetName(logType);
             var text = $"{errTxt} {currentTime}:: {msg}";
-            Debug.WriteLine(text);
+            if (print) { Debug.WriteLine(text); }
             LogStack.Add(text);
 
             if (LogStack.Count >= MAX_LOG_SIZE) { Flush(); }
