@@ -7,6 +7,7 @@ class SapaException : public std::exception {
 public:
 	SapaException() :msg() {};
 	SapaException(const char* message) :msg(message) {};
+	SapaException(std::string message) :msg(message.c_str()) {};
 
 	const char* what() { return msg; }
 };
