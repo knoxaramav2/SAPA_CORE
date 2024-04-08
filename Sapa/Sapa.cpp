@@ -1,22 +1,22 @@
 
 #include <iostream>
 #include <vector>
-#include "sapi.hpp"
-#include "Prototypes.hpp"
 
-SAPI::Blueprint CreateBlueprint() {
-    SAPI::Blueprint bp("base");
+#include "ProcessManager.h"
+#include "NrnStructures.hpp"
+#include "SNCFileIO.h"
+#include "../SapaCore/SNCFileIO.h"
 
-    
-
-    return bp;
-}
+using namespace SAPACORE;
+using namespace SAPACORE::File;
 
 int main()
 {
-    SAPI::Init();
-    SAPI::Blueprint bp = CreateBlueprint();
-    SAPI::BuildFromBlueprint(bp);
+    std::string prjPath = "G:\\Dev\\SapaCore\\CircuitDesigner\\bin\\Debug\\net8.0-windows\\Build\\LayeredNet.snc";
+    
+    //SAPACORE::File NetworkSetupDetails params = SAPACORE::File::load(prjPath);
+    NetworkSetupDetails params = Load(prjPath);
+    SAPA::ProcessManager pMan;
 }
 
 

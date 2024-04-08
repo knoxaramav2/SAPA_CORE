@@ -112,6 +112,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -140,11 +141,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="commondef.hpp" />
+    <ClInclude Include="Error.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="NrnStructures.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Prototypes.hpp" />
     <ClInclude Include="sapi.hpp" />
+    <ClInclude Include="SNCFileIO.h" />
+    <ClInclude Include="Transmitters.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -157,6 +161,7 @@
     </ClCompile>
     <ClCompile Include="Prototypes.cpp" />
     <ClCompile Include="sapi.cpp" />
+    <ClCompile Include="SNCFileIO.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -22,13 +22,13 @@ namespace CircuitDesigner.BuildEngine
 
         readonly ProjectState Project;
 
-        readonly Dictionary<Guid, (string, INodeModel)> AllNodes = [];
+        readonly Dictionary<Guid, (int, INodeModel)> AllNodes = [];
         readonly List<InputModel> SysInputs = [];
         readonly List<OutputModel> SysOutputs = [];
         readonly Dictionary<Guid, List<INodeModel>> SubInputs = [];
         readonly Dictionary<Guid, List<INodeModel>> SubOutputs = [];
         readonly List<IDendriteModel> Dendrites = [];
-        readonly Dictionary<Guid, (string, NeuronModel)> Neurons = [];
+        readonly Dictionary<Guid, (int, NeuronModel)> Neurons = [];
         private List<CircuitError> Errors = [];
 
         public CircuitEngine(ProjectState project, ToolStripProgressBar? progress)
@@ -105,7 +105,7 @@ $@"{prj}
             for (var i = 0; i < Neurons.Count; ++i)
             {
                 var neuron = Neurons.ElementAt(i).Value;
-                ret += $"N{neuron.Item1}, {neuron.Item2.Name}, {neuron.Item2.Bias}, {neuron.Item2.Decay}\n";
+                ret += $"{neuron.Item1}, {neuron.Item2.Name}, 0, {neuron.Item2.Bias}, {neuron.Item2.Decay}\n";
             }
 
             return ret;
@@ -118,7 +118,8 @@ $@"{prj}
             for (var i = 0; i < SysInputs.Count; ++i)
             {
                 var input = SysInputs[i];
-                ret += $"I{i}, {input.Name}, {input.Enabled}\n";
+                var idx = AllNodes[input.ID].Item1;
+                ret += $"{idx}, {input.Name}, {input.Enabled}\n";
             }
 
             return ret;
@@ -130,8 +131,9 @@ $@"{prj}
 
             for (var i = 0; i < SysOutputs.Count; ++i)
             {
-                var input = SysOutputs[i];
-                ret += $"O{i}, {input.Name}, {input.Enabled}\n";
+                var output = SysOutputs[i];
+                var idx = AllNodes[output.ID].Item1;
+                ret += $"{i}, {output.Name}, {output.Enabled}\n";
             }
 
             return ret;
@@ -213,7 +215,7 @@ $@"{prj}
                 SubInputs[input.ID] = [];
             }
 
-            AllNodes[input.ID] = ($"I{AllNodes.Count}", input);
+            AllNodes[input.ID] = (AllNodes.Count, input);
             Progress?.PerformStep();
         }
 
@@ -228,7 +230,7 @@ $@"{prj}
                 SubOutputs[output.ID] = [];
             }
 
-            AllNodes[output.ID] = ($"O{AllNodes.Count}", output);
+            AllNodes[output.ID] = (AllNodes.Count, output);
             Progress?.PerformStep();
         }
 
@@ -256,7 +258,7 @@ $@"{prj}
 
         private void RegisterNeuron(NeuronModel neuron, CircuitModel circuit)
         {
-            var nid = $"N{AllNodes.Count}";
+            var nid = AllNodes.Count;
             Neurons[neuron.ID] = (nid, neuron);
             AllNodes[neuron.ID] = (nid, neuron);
 
