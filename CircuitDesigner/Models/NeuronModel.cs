@@ -15,7 +15,7 @@ namespace CircuitDesigner.Models
 
 
         public List<Transmitter> Transmitters { get; set; } = [];
-        public float Bias { get; set; } = 0.0f;
+        public float Bias { get; set; } = 1.0f;
         public float Decay { get; set; } = 0.95f;
 
         [JsonConstructor]

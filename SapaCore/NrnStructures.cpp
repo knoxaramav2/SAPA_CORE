@@ -14,11 +14,28 @@ SAPACORE::Neuron::Neuron(int index, float charge, float bias, float decay)
 	__decayRate = decay;
 }
 
-void SAPACORE::Neuron::Update()
+void SAPACORE::Neuron::UpdateLocalState()
 {
+	__charge *= __decayRate;
 }
 
-void SAPACORE::IOCell::Update()
+void SAPACORE::Neuron::UpdateStimuliState()
+{
+	for (int i = 0; i < __dendrites.size(); ++i) {
+		auto sig = __dendrites[i].sender->GetSignal();
+		auto fx = get<1>(sig);
+		auto active = get<0>(sig);
+		//TODO Resolve transmitter effect
+		__charge += (active * __dendrites[i].weight);
+	}
+}
+
+void SAPACORE::IOCell::UpdateLocalState()
+{
+	__charge *= __decayRate;
+}
+
+void SAPACORE::IOCell::UpdateStimuliState()
 {
 }
 
@@ -150,11 +167,32 @@ void SAPACORE::SapaNetwork::SetInput(size_t index, float value)
 	__inputs[index]->Excite(value);
 }
 
-void SAPACORE::SapaNetwork::Update()
+void SAPACORE::SapaNetwork::LocalUpdatePass()
 {
-	for (int i = 0; i < __numInputs; ++i) { __inputs[i]->Update(); }
-	for (int i = 0; i < __numNeurons; ++i) { __network[i]->Update(); }
-	for (int i = 0; i < __numOutputs; ++i) { __outputs[i]->Update(); }
+	for (int i = 0; i < __numInputs; ++i) { __inputs[i]->UpdateLocalState(); }
+	for (int i = 0; i < __numNeurons; ++i) { __network[i]->UpdateLocalState(); }
+	for (int i = 0; i < __numOutputs; ++i) { __outputs[i]->UpdateLocalState(); }
+}
+
+void SAPACORE::SapaNetwork::StimuliUpdatePass()
+{
+	for (int i = 0; i < __numNeurons; ++i) {
+		__network[i]->UpdateStimuliState();
+	}
+}
+
+void SAPACORE::SapaNetwork::InputUpdatePass()
+{
+	for (int i = 0; i < __numInputs; ++i) {
+		__inputs[i]->UpdateStimuliState();
+	}
+}
+
+void SAPACORE::SapaNetwork::OutputUpdatePass()
+{
+	for (int i = 0; i < __numOutputs; ++i) {
+		__outputs[i]->UpdateStimuliState();
+	}
 }
 
 void SAPACORE::QCell::AddConnection(QCell* sender, float weight)
@@ -169,4 +207,9 @@ void SAPACORE::QCell::PruneConnection(QCell* sender)
 	auto i = find_if(__dendrites.begin(), __dendrites.end(), [sender](Dendrite x) {return x.sender == sender; });
 	if (i == __dendrites.end()) { return; }
 	__dendrites.erase(i);
+}
+
+std::tuple<bool, UINT32> SAPACORE::QCell::GetSignal()
+{
+	return std::tuple<bool, UINT32>(__charge>=__bias, __transmitter);
 }

@@ -23,18 +23,22 @@ namespace SAPACORE {
 		float __bias;
 		float __decayRate;//__decay illegal for some reason
 		int __index;
+		UINT32 __transmitter;
 		std::vector<Dendrite> __dendrites;
 		friend class SapaNetwork;
 	public:
-		virtual void Update() = 0;
+		virtual void UpdateLocalState() = 0;
+		virtual void UpdateStimuliState() = 0;
 		void AddConnection(QCell* sender, float weight);
 		void PruneConnection(QCell* sender);
+		std::tuple<bool, UINT32> GetSignal();//TODO- Apply transmitter effects
 	};
 	
 	class Neuron: public QCell {
 	public:
 		Neuron(int index, float charge, float bias, float decay);
-		void Update();
+		void UpdateLocalState();
+		void UpdateStimuliState();
 	};
 
 	struct Dendrite {
@@ -55,7 +59,8 @@ namespace SAPACORE {
 		float __max;
 		float __min;
 	public:
-		void Update();
+		void UpdateLocalState();
+		void UpdateStimuliState();
 	};
 
 	class Input: public IOCell {
@@ -93,6 +98,11 @@ namespace SAPACORE {
 
 		SAPICORE_API float GetOutput(size_t index);
 		SAPICORE_API void SetInput(size_t index, float value);
-		SAPICORE_API void Update();
+		SAPICORE_API void LocalUpdatePass();
+		SAPICORE_API void StimuliUpdatePass();
+		SAPICORE_API void InputUpdatePass();
+		SAPICORE_API void OutputUpdatePass();
+
+		friend class NetworkIOAdapter;
 	};
 }
