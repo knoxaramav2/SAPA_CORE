@@ -149,6 +149,7 @@
     <ClInclude Include="Prototypes.hpp" />
     <ClInclude Include="sapi.hpp" />
     <ClInclude Include="SNCFileIO.h" />
+    <ClInclude Include="StringUtils.h" />
     <ClInclude Include="Transmitters.h" />
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +164,7 @@
     <ClCompile Include="Prototypes.cpp" />
     <ClCompile Include="sapi.cpp" />
     <ClCompile Include="SNCFileIO.cpp" />
+    <ClCompile Include="StringUtils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

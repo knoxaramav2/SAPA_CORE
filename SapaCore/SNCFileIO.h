@@ -6,12 +6,13 @@
 
 namespace SAPACORE::File {
 
-	extern struct NetworkSetupDetails {
+	struct NetworkSetupDetails {
 		std::vector<InputDef> InputParam;
 		std::vector<OutputDef> OutputParam;
 		std::vector<NeuronDef> NeuronParam;
+		std::vector<CircuitDef> CircuitParam;
 	};
 
-	extern "C" SAPICORE_API NetworkSetupDetails Load(std::string path);
-	extern "C" SAPICORE_API std::string Save(std::string path, SapaNetwork& network);
+	extern SAPICORE_API NetworkSetupDetails Load(std::string path);
+	extern SAPICORE_API std::string Save(std::string path, SapaNetwork& network);
 }

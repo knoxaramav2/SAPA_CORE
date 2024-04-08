@@ -6,16 +6,6 @@ using System.ComponentModel.Design;
 
 namespace CircuitDesigner.BuildEngine
 {
-    struct DendriteBridge
-    {
-        private List<Guid> Outputs = [];
-        private List<Guid> Inputs = [];
-        public DendriteBridge()
-        {
-
-        }
-    }
-
     internal class CircuitEngine : ICircuitEngine
     {
         private ToolStripProgressBar? Progress;
@@ -65,16 +55,12 @@ namespace CircuitDesigner.BuildEngine
 
         private string Compose()
         {
-            string prj = $"#PROJECT={Project.ProjectName}";
-            string cmps = $"COMPONENTS={Project.RootCircuit.ComponentCountRec()}";
-            string inps = $"INPUTS={Project.RootCircuit.Inputs.Count}";
-            string outs = $"OUTPUTS={Project.RootCircuit.Outputs.Count}";
-
             return
-$@"{prj}
-{cmps}
-{inps}
-{outs}
+$@"#PROJECT={Project.ProjectName}
+#COMPONENTS={Project.RootCircuit.ComponentCountRec()}
+#INPUTS={Project.RootCircuit.Inputs.Count}
+#OUTPUTS={Project.RootCircuit.Outputs.Count}
+#CIRCUITS={Project.RootCircuit.CountCircuits()}
 
 {ComposeInputs()}
 {ComposeOutputs()}
@@ -105,7 +91,7 @@ $@"{prj}
             for (var i = 0; i < Neurons.Count; ++i)
             {
                 var neuron = Neurons.ElementAt(i).Value;
-                ret += $"{neuron.Item1}, {neuron.Item2.Name}, 0, {neuron.Item2.Bias}, {neuron.Item2.Decay}\n";
+                ret += $"{neuron.Item1},{neuron.Item2.Name},0,{neuron.Item2.Bias},{neuron.Item2.Decay}\n";
             }
 
             return ret;
@@ -119,7 +105,7 @@ $@"{prj}
             {
                 var input = SysInputs[i];
                 var idx = AllNodes[input.ID].Item1;
-                ret += $"{idx}, {input.Name}, {input.Enabled}\n";
+                ret += $"{idx},{input.Name},{input.Enabled}\n";
             }
 
             return ret;
@@ -133,7 +119,7 @@ $@"{prj}
             {
                 var output = SysOutputs[i];
                 var idx = AllNodes[output.ID].Item1;
-                ret += $"{i}, {output.Name}, {output.Enabled}\n";
+                ret += $"{i},{output.Name},{output.Enabled}\n";
             }
 
             return ret;

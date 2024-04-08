@@ -4,12 +4,14 @@
 #include <vector>
 #include <tuple>
 
+#include "commondef.hpp"
+
 namespace SAPACORE {
 
 	typedef std::tuple<int, std::string, bool> InputDef;
 	typedef std::tuple<int, std::string, bool> OutputDef;
 	typedef std::tuple<int, std::string, float, float, float> NeuronDef;
-
+	typedef std::tuple<int, float, int> CircuitDef;
 
 	class QCell {
 	protected:
@@ -57,16 +59,17 @@ namespace SAPACORE {
 		bool __running;
 	public:
 		
-		SapaNetwork(
+		SAPICORE_API SapaNetwork(
 			std::vector<InputDef> inputs, 
 			std::vector<OutputDef> outputs,
-			std::vector<NeuronDef> neurons);
-		~SapaNetwork();
+			std::vector<NeuronDef> neurons,
+			std::vector<CircuitDef> connections);
+		SAPICORE_API ~SapaNetwork();
 
-		float GetOutput(size_t index);
-		void SetInput(size_t index, float value);
-		void Update();
-		void Start();
-		void Stop();
+		SAPICORE_API float GetOutput(size_t index);
+		SAPICORE_API void SetInput(size_t index, float value);
+		SAPICORE_API void Update();
+		SAPICORE_API void Start();
+		SAPICORE_API void Stop();
 	};
 }

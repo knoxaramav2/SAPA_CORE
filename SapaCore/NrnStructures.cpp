@@ -2,6 +2,7 @@
 
 #include "NrnStructures.hpp"
 #include "Error.hpp"
+#include "SNCFileIO.h"
 
 SAPACORE::Neuron::Neuron(int index, float charge, float bias, float decay)
 {
@@ -52,7 +53,8 @@ void SAPACORE::Input::Excite(float value)
 //Input/output values not used
 SAPACORE::SapaNetwork::SapaNetwork(
 	std::vector<InputDef> inputs, std::vector<OutputDef> outputs, 
-	std::vector<NeuronDef> neurons)
+	std::vector<NeuronDef> neurons,
+	std::vector<CircuitDef> connections)
 {
 	__numInputs = inputs.size();
 	__numOutputs = outputs.size();
