@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include <Bits.h>
+
 #include "NrnStructures.hpp"
 #include "Error.hpp"
 #include "SNCFileIO.h"
@@ -50,6 +52,36 @@ void SAPACORE::Input::Excite(float value)
 	__charge = __max;
 }
 
+SAPACORE::Neuron* SAPACORE::SapaNetwork::__findNeuronByIdx(int idx)
+{
+	return INRANGE(__netIdxRng, idx) ?
+		__network[idx - get<0>(__netIdxRng)] :
+		nullptr;
+}
+
+SAPACORE::Input* SAPACORE::SapaNetwork::__findInputByIdx(int idx)
+{
+	return INRANGE(__inIdxRng, idx) ?
+		__inputs[idx - get<0>(__inIdxRng)] :
+		nullptr;
+}
+
+SAPACORE::Output* SAPACORE::SapaNetwork::__findOutputByIdx(int idx)
+{
+	return INRANGE(__outIdxRng, idx) ?
+		__outputs[idx - get<0>(__outIdxRng)] :
+		nullptr;
+}
+
+SAPACORE::QCell* SAPACORE::SapaNetwork::__findByIdx(int idx)
+{
+	QCell* ret = __findNeuronByIdx(idx);
+	ret = ret == nullptr ? __findInputByIdx(idx) : ret;
+	ret = ret == nullptr ? __findOutputByIdx(idx): ret;
+
+	return ret;
+}
+
 //Input/output values not used
 SAPACORE::SapaNetwork::SapaNetwork(
 	std::vector<InputDef> inputs, std::vector<OutputDef> outputs, 
@@ -59,25 +91,41 @@ SAPACORE::SapaNetwork::SapaNetwork(
 	__numInputs = inputs.size();
 	__numOutputs = outputs.size();
 	__numNeurons = neurons.size();
-	__running = false;
 
 	__inputs = new Input*[__numInputs];
+	int minIdx, maxIdx;
 	for(size_t i=0; i<__numInputs; ++i)
 	{
 		const auto& [idx, name, enabled] = inputs[i];
 		__inputs[i] = new Input(idx);
 	}
+	minIdx = __inputs[0]->__index;
+	maxIdx = __inputs[__numInputs - 1]->__index;
+	__inIdxRng = std::make_tuple(minIdx, maxIdx);
 
 	__outputs = new Output*[__numOutputs];
 	for (size_t i = 0; i < __numOutputs; ++i) {
 		const auto& [idx, name, enabled] = outputs[i];
 		__outputs[i] = new Output(idx);
 	}
+	minIdx = __outputs[0]->__index;
+	maxIdx = __outputs[__numOutputs - 1]->__index;
+	__outIdxRng = std::make_tuple(minIdx, maxIdx);
 
 	__network = new Neuron * [__numNeurons];
 	for (size_t i = 0; i < __numNeurons; ++i) {
 		const auto& [idx, name, charge, bias, decay] = neurons[i];
 		__network[i] = new Neuron(idx, charge, bias, decay);
+	}
+	minIdx = __network[0]->__index;
+	maxIdx = __network[__numNeurons - 1]->__index;
+	__netIdxRng = std::make_tuple(minIdx, maxIdx);
+
+	for (size_t i = 0; i < __dendrites.size(); ++i) {
+		const auto& [sidx, weight, ridx] = connections[i];
+		QCell* sender = __findByIdx(sidx);
+		QCell* receiver = __findByIdx(ridx);
+		receiver->AddConnection(sender, weight);
 	}
 }
 
@@ -104,14 +152,21 @@ void SAPACORE::SapaNetwork::SetInput(size_t index, float value)
 
 void SAPACORE::SapaNetwork::Update()
 {
+	for (int i = 0; i < __numInputs; ++i) { __inputs[i]->Update(); }
+	for (int i = 0; i < __numNeurons; ++i) { __network[i]->Update(); }
+	for (int i = 0; i < __numOutputs; ++i) { __outputs[i]->Update(); }
 }
 
-void SAPACORE::SapaNetwork::Start()
+void SAPACORE::QCell::AddConnection(QCell* sender, float weight)
 {
-	__running = true;
+	auto i = find_if(__dendrites.begin(), __dendrites.end(), [sender](Dendrite x) {return x.sender == sender; });
+	if (i != __dendrites.end()) { return; }
+	__dendrites.push_back(Dendrite(sender, weight));
 }
 
-void SAPACORE::SapaNetwork::Stop()
+void SAPACORE::QCell::PruneConnection(QCell* sender)
 {
-	__running = false;
+	auto i = find_if(__dendrites.begin(), __dendrites.end(), [sender](Dendrite x) {return x.sender == sender; });
+	if (i == __dendrites.end()) { return; }
+	__dendrites.erase(i);
 }
