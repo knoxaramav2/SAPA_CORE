@@ -77,9 +77,13 @@
             label2 = new Label();
             NeuronPropertiesName = new Label();
             InputProperties = new TabPage();
+            InputDecayInput = new TextBox();
+            label5 = new Label();
             InputPropertiesInputsList = new ListBox();
             InputPropertiesName = new Label();
             OutputProperties = new TabPage();
+            OutputDecayInput = new TextBox();
+            label6 = new Label();
             OutputPropertiesName = new Label();
             statusStrip1.SuspendLayout();
             menuStrip1.SuspendLayout();
@@ -113,7 +117,7 @@
             statusStrip1.Items.AddRange(new ToolStripItem[] { ToolStripProgressBar, toolStripStatusLabel1, ToolStripStatusText, ToolStripProjectName });
             statusStrip1.Location = new Point(0, 560);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(1016, 22);
+            statusStrip1.Size = new Size(1023, 22);
             statusStrip1.TabIndex = 0;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -137,7 +141,7 @@
             // 
             ToolStripProjectName.Name = "ToolStripProjectName";
             ToolStripProjectName.RightToLeft = RightToLeft.No;
-            ToolStripProjectName.Size = new Size(882, 17);
+            ToolStripProjectName.Size = new Size(889, 17);
             ToolStripProjectName.Spring = true;
             ToolStripProjectName.Text = "Unnamed Project";
             ToolStripProjectName.TextAlign = ContentAlignment.MiddleRight;
@@ -147,7 +151,7 @@
             menuStrip1.Items.AddRange(new ToolStripItem[] { MenuStripFile, MenuStripSettings, MenuStripBuild, ToolStripAbout });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(1016, 24);
+            menuStrip1.Size = new Size(1023, 24);
             menuStrip1.TabIndex = 1;
             menuStrip1.Text = "MenuStrip";
             // 
@@ -284,8 +288,8 @@
             // SplitContainer1.Panel2
             // 
             SplitContainer1.Panel2.Controls.Add(SplitContainer2);
-            SplitContainer1.Size = new Size(1016, 536);
-            SplitContainer1.SplitterDistance = 173;
+            SplitContainer1.Size = new Size(1023, 536);
+            SplitContainer1.SplitterDistance = 174;
             SplitContainer1.TabIndex = 2;
             // 
             // CircuitTree
@@ -293,7 +297,7 @@
             CircuitTree.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             CircuitTree.Location = new Point(3, 321);
             CircuitTree.Name = "CircuitTree";
-            CircuitTree.Size = new Size(165, 209);
+            CircuitTree.Size = new Size(166, 209);
             CircuitTree.TabIndex = 3;
             // 
             // ProjectNameLabel
@@ -304,7 +308,7 @@
             ProjectNameLabel.Enabled = false;
             ProjectNameLabel.Location = new Point(62, 11);
             ProjectNameLabel.Name = "ProjectNameLabel";
-            ProjectNameLabel.Size = new Size(106, 16);
+            ProjectNameLabel.Size = new Size(107, 16);
             ProjectNameLabel.TabIndex = 2;
             ProjectNameLabel.TextAlign = HorizontalAlignment.Right;
             // 
@@ -331,8 +335,8 @@
             // SplitContainer2.Panel2
             // 
             SplitContainer2.Panel2.Controls.Add(SplitContainer3);
-            SplitContainer2.Size = new Size(839, 536);
-            SplitContainer2.SplitterDistance = 427;
+            SplitContainer2.Size = new Size(845, 536);
+            SplitContainer2.SplitterDistance = 430;
             SplitContainer2.TabIndex = 0;
             // 
             // DesignBoard
@@ -341,7 +345,7 @@
             DesignBoard.Dock = DockStyle.Fill;
             DesignBoard.Location = new Point(0, 0);
             DesignBoard.Name = "DesignBoard";
-            DesignBoard.Size = new Size(425, 534);
+            DesignBoard.Size = new Size(428, 534);
             DesignBoard.TabIndex = 0;
             // 
             // SplitContainer3
@@ -359,7 +363,7 @@
             // SplitContainer3.Panel2
             // 
             SplitContainer3.Panel2.Controls.Add(PropertiesTabs);
-            SplitContainer3.Size = new Size(408, 536);
+            SplitContainer3.Size = new Size(411, 536);
             SplitContainer3.SplitterDistance = 315;
             SplitContainer3.TabIndex = 0;
             // 
@@ -377,7 +381,7 @@
             // splitContainer4.Panel2
             // 
             splitContainer4.Panel2.Controls.Add(OutputListGroup);
-            splitContainer4.Size = new Size(406, 313);
+            splitContainer4.Size = new Size(409, 313);
             splitContainer4.SplitterDistance = 134;
             splitContainer4.TabIndex = 0;
             // 
@@ -388,7 +392,7 @@
             InputListGroup.Dock = DockStyle.Fill;
             InputListGroup.Location = new Point(0, 0);
             InputListGroup.Name = "InputListGroup";
-            InputListGroup.Size = new Size(406, 134);
+            InputListGroup.Size = new Size(409, 134);
             InputListGroup.TabIndex = 5;
             InputListGroup.TabStop = false;
             InputListGroup.Text = "Inputs";
@@ -399,7 +403,7 @@
             InputsList.FormattingEnabled = true;
             InputsList.Location = new Point(3, 19);
             InputsList.Name = "InputsList";
-            InputsList.Size = new Size(400, 112);
+            InputsList.Size = new Size(403, 112);
             InputsList.TabIndex = 0;
             InputsList.DoubleClick += OnZoomableDoubleClick;
             InputsList.KeyUp += InputsList_KeyUp;
@@ -410,7 +414,7 @@
             OutputListGroup.Dock = DockStyle.Fill;
             OutputListGroup.Location = new Point(0, 0);
             OutputListGroup.Name = "OutputListGroup";
-            OutputListGroup.Size = new Size(406, 175);
+            OutputListGroup.Size = new Size(409, 175);
             OutputListGroup.TabIndex = 6;
             OutputListGroup.TabStop = false;
             OutputListGroup.Text = "Outputs";
@@ -421,7 +425,7 @@
             OutputsList.FormattingEnabled = true;
             OutputsList.Location = new Point(3, 19);
             OutputsList.Name = "OutputsList";
-            OutputsList.Size = new Size(400, 153);
+            OutputsList.Size = new Size(403, 153);
             OutputsList.TabIndex = 0;
             OutputsList.DoubleClick += OnZoomableDoubleClick;
             OutputsList.KeyUp += OutputsLists_KeyUp;
@@ -436,7 +440,7 @@
             PropertiesTabs.Location = new Point(0, 0);
             PropertiesTabs.Name = "PropertiesTabs";
             PropertiesTabs.SelectedIndex = 0;
-            PropertiesTabs.Size = new Size(406, 215);
+            PropertiesTabs.Size = new Size(409, 215);
             PropertiesTabs.TabIndex = 0;
             // 
             // CircuitProperties
@@ -445,7 +449,7 @@
             CircuitProperties.Location = new Point(4, 24);
             CircuitProperties.Name = "CircuitProperties";
             CircuitProperties.Padding = new Padding(3);
-            CircuitProperties.Size = new Size(398, 187);
+            CircuitProperties.Size = new Size(401, 187);
             CircuitProperties.TabIndex = 0;
             CircuitProperties.Tag = "CircuitTab";
             CircuitProperties.Text = "Circuit Properties";
@@ -474,7 +478,7 @@
             NeuronProperties.Location = new Point(4, 24);
             NeuronProperties.Name = "NeuronProperties";
             NeuronProperties.Padding = new Padding(3);
-            NeuronProperties.Size = new Size(398, 187);
+            NeuronProperties.Size = new Size(401, 187);
             NeuronProperties.TabIndex = 1;
             NeuronProperties.Tag = "NeuronTag";
             NeuronProperties.Text = "Neuron Properties";
@@ -485,7 +489,7 @@
             NeuronNameInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             NeuronNameInput.Location = new Point(58, 3);
             NeuronNameInput.Name = "NeuronNameInput";
-            NeuronNameInput.Size = new Size(317, 23);
+            NeuronNameInput.Size = new Size(320, 23);
             NeuronNameInput.TabIndex = 8;
             // 
             // NeuronTransmittersInput
@@ -494,15 +498,14 @@
             NeuronTransmittersInput.FormattingEnabled = true;
             NeuronTransmittersInput.Location = new Point(58, 105);
             NeuronTransmittersInput.Name = "NeuronTransmittersInput";
-            NeuronTransmittersInput.Size = new Size(317, 76);
+            NeuronTransmittersInput.Size = new Size(320, 76);
             NeuronTransmittersInput.TabIndex = 7;
-            NeuronTransmittersInput.SelectedValueChanged += NeuronTransmittersInput_SelectedValueChanged;
             // 
             // label4
             // 
             label4.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label4.AutoSize = true;
-            label4.Location = new Point(304, 87);
+            label4.Location = new Point(307, 87);
             label4.Name = "label4";
             label4.Size = new Size(71, 15);
             label4.TabIndex = 6;
@@ -513,7 +516,7 @@
             NeuronDecayInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             NeuronDecayInput.Location = new Point(58, 61);
             NeuronDecayInput.Name = "NeuronDecayInput";
-            NeuronDecayInput.Size = new Size(317, 23);
+            NeuronDecayInput.Size = new Size(320, 23);
             NeuronDecayInput.TabIndex = 5;
             // 
             // label3
@@ -531,7 +534,7 @@
             NeuronBiasInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             NeuronBiasInput.Location = new Point(58, 32);
             NeuronBiasInput.Name = "NeuronBiasInput";
-            NeuronBiasInput.Size = new Size(317, 23);
+            NeuronBiasInput.Size = new Size(320, 23);
             NeuronBiasInput.TabIndex = 3;
             // 
             // label2
@@ -555,25 +558,45 @@
             // InputProperties
             // 
             InputProperties.AutoScroll = true;
+            InputProperties.Controls.Add(InputDecayInput);
+            InputProperties.Controls.Add(label5);
             InputProperties.Controls.Add(InputPropertiesInputsList);
             InputProperties.Controls.Add(InputPropertiesName);
             InputProperties.Location = new Point(4, 24);
             InputProperties.Name = "InputProperties";
             InputProperties.Padding = new Padding(3);
-            InputProperties.Size = new Size(398, 187);
+            InputProperties.Size = new Size(401, 187);
             InputProperties.TabIndex = 2;
             InputProperties.Tag = "InputTag";
             InputProperties.Text = "Input Properties";
             InputProperties.UseVisualStyleBackColor = true;
+            // 
+            // InputDecayInput
+            // 
+            InputDecayInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            InputDecayInput.Location = new Point(51, 17);
+            InputDecayInput.Name = "InputDecayInput";
+            InputDecayInput.Size = new Size(343, 23);
+            InputDecayInput.TabIndex = 7;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(6, 20);
+            label5.Name = "label5";
+            label5.RightToLeft = RightToLeft.No;
+            label5.Size = new Size(39, 15);
+            label5.TabIndex = 6;
+            label5.Text = "Decay";
             // 
             // InputPropertiesInputsList
             // 
             InputPropertiesInputsList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             InputPropertiesInputsList.FormattingEnabled = true;
             InputPropertiesInputsList.ItemHeight = 15;
-            InputPropertiesInputsList.Location = new Point(6, 21);
+            InputPropertiesInputsList.Location = new Point(3, 87);
             InputPropertiesInputsList.Name = "InputPropertiesInputsList";
-            InputPropertiesInputsList.Size = new Size(527, 94);
+            InputPropertiesInputsList.Size = new Size(530, 94);
             InputPropertiesInputsList.TabIndex = 1;
             // 
             // InputPropertiesName
@@ -587,15 +610,35 @@
             // 
             // OutputProperties
             // 
+            OutputProperties.Controls.Add(OutputDecayInput);
+            OutputProperties.Controls.Add(label6);
             OutputProperties.Controls.Add(OutputPropertiesName);
             OutputProperties.Location = new Point(4, 24);
             OutputProperties.Name = "OutputProperties";
             OutputProperties.Padding = new Padding(3);
-            OutputProperties.Size = new Size(398, 187);
+            OutputProperties.Size = new Size(401, 187);
             OutputProperties.TabIndex = 3;
             OutputProperties.Tag = "OutputTag";
             OutputProperties.Text = "Output Properties";
             OutputProperties.UseVisualStyleBackColor = true;
+            // 
+            // OutputDecayInput
+            // 
+            OutputDecayInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            OutputDecayInput.Location = new Point(48, 18);
+            OutputDecayInput.Name = "OutputDecayInput";
+            OutputDecayInput.Size = new Size(346, 23);
+            OutputDecayInput.TabIndex = 9;
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(3, 21);
+            label6.Name = "label6";
+            label6.RightToLeft = RightToLeft.No;
+            label6.Size = new Size(39, 15);
+            label6.TabIndex = 8;
+            label6.Text = "Decay";
             // 
             // OutputPropertiesName
             // 
@@ -610,7 +653,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1016, 582);
+            ClientSize = new Size(1023, 582);
             Controls.Add(SplitContainer1);
             Controls.Add(statusStrip1);
             Controls.Add(menuStrip1);
@@ -710,5 +753,9 @@
         private Label label4;
         private CheckedListBox NeuronTransmittersInput;
         private TextBox NeuronNameInput;
+        private TextBox InputDecayInput;
+        private Label label5;
+        private TextBox OutputDecayInput;
+        private Label label6;
     }
 }

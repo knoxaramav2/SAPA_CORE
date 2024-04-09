@@ -2,7 +2,7 @@
 #include "NetworkIOAdapter.h"
 
 SAPACORE::NetworkIOAdapter::NetworkIOAdapter(SapaNetwork& network, InputFnc ifnc, OutputFnc ofnc):
-	__inputs(network.__numInputs, ifnc), __outputs(__network->__numOutputs, ofnc)
+	__inputs(network.__numInputs, ifnc, network.__inputs), __outputs(network.__numOutputs, ofnc, network.__outputs)
 {
 	__network = &network;
 }
@@ -17,40 +17,57 @@ SAPACORE::OutputAdapter* SAPACORE::NetworkIOAdapter::GetOutputAdapter()
 	return &__outputs;
 }
 
-SAPACORE::InputAdapter::InputAdapter(int size, InputFnc ifnc)
+SAPACORE::InputAdapter::InputAdapter(int size, InputFnc ifnc, Input** inputs)
 {
 	__size = size;
-	__inputThread = ifnc;
-	__values = new float[size];
-	for (int i = 0; i < size; ++i) { __values = 0; }
+	__inputFunc = ifnc;
+	__inputs = inputs;
 }
 
 SAPACORE::InputAdapter::~InputAdapter()
 {
-	delete __values;
 }
 
 void SAPACORE::InputAdapter::SetValue(float value, int idx)
 {
 	if (idx >= __size) { return; }
-	__values[idx] = value;
+	__inputs[idx]->Excite(value);
 }
 
-SAPACORE::OutputAdapter::OutputAdapter(int size, OutputFnc ofnc)
+void SAPACORE::InputAdapter::Update()
+{
+	__inputFunc(this);
+}
+
+SAPICORE_API int SAPACORE::InputAdapter::Size()
+{
+	return __size;
+}
+
+SAPACORE::OutputAdapter::OutputAdapter(int size, OutputFnc ofnc, Output** outputs)
 {
 	__size = size;
-	__outputThread = ofnc;
-	__values = new float[size];
-	for (int i = 0; i < size; ++i) { __values = 0; }
+	__outputFunc = ofnc;
+	__outputs = outputs;
 }
 
 SAPACORE::OutputAdapter::~OutputAdapter()
 {
-	delete __values;
+	
 }
 
-float SAPACORE::OutputAdapter::GetValue(float value, int idx)
+float SAPACORE::OutputAdapter::GetValue(int idx)
 {
 	if (idx >= __size) { return -1; }
-	return __values[idx];
+	return __outputs[idx]->Retreive();
+}
+
+void SAPACORE::OutputAdapter::Update()
+{
+	__outputFunc(this);
+}
+
+SAPICORE_API int SAPACORE::OutputAdapter::Size()
+{
+	return __size;
 }

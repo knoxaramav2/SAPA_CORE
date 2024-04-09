@@ -21,6 +21,15 @@ namespace CircuitDesigner.Models
             return __instance;
         }
 
+        internal static List<Pair<bool, Transmitter>> TransmittersListInst()
+        {
+            var inst = GetInstance();
+            var transmitters =
+                inst.Transmitters.Select(x => new Pair<bool, Transmitter>(false, x)).ToList();
+
+            return transmitters;
+        }
+
         private static Definitions Load()
         {
             var defs = FileUtil.Load<Definitions>(__filepath);

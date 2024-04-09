@@ -87,11 +87,18 @@ $@"#PROJECT={Project.ProjectName}
         private string ComposeNeurons()
         {
             string ret = "$TABLE:NEURONS\n";
-
             for (var i = 0; i < Neurons.Count; ++i)
             {
                 var neuron = Neurons.ElementAt(i).Value;
-                ret += $"{neuron.Item1},{neuron.Item2.Name},0,{neuron.Item2.Bias},{neuron.Item2.Decay}\n";
+                UInt64 ntb = 0;
+
+                for (var j = 0; j < neuron.Item2.Transmitters.Count(); ++j)
+                {
+                    ntb |= (uint)(neuron.Item2.Transmitters[j].Item1?1:0)<<j;
+                }
+
+                var idx = neuron.Item1;
+                ret += $"{idx},{neuron.Item2.Name},0,{neuron.Item2.Bias},{neuron.Item2.Decay},{ntb}\n";
             }
 
             return ret;
@@ -105,7 +112,7 @@ $@"#PROJECT={Project.ProjectName}
             {
                 var input = SysInputs[i];
                 var idx = AllNodes[input.ID].Item1;
-                ret += $"{idx},{input.Name},{input.Enabled}\n";
+                ret += $"{idx},{input.Name},{input.Enabled},{input.Decay}\n";
             }
 
             return ret;
@@ -119,7 +126,7 @@ $@"#PROJECT={Project.ProjectName}
             {
                 var output = SysOutputs[i];
                 var idx = AllNodes[output.ID].Item1;
-                ret += $"{i},{output.Name},{output.Enabled}\n";
+                ret += $"{idx},{output.Name},{output.Enabled},{output.Decay}\n";
             }
 
             return ret;

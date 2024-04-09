@@ -26,6 +26,11 @@ namespace CircuitDesigner
             tbox.DataBindings.Clear();
             tbox.DataBindings.Add("Text", model, name);
         }
+        internal void BindTransmitterList(CheckedListBox cbox, NeuronModel model, string name)
+        {
+            ((ListBox)cbox).DataSource = model.Transmitters;
+            //cbox.CheckedItems = model.Transmitters;
+        }
 
         #endregion
 
@@ -392,20 +397,20 @@ namespace CircuitDesigner
             {
                 InputPropertiesName.Text = input.Name;
                 selTab = PropertiesReference.FirstOrDefault(x => (string?)x.Tag == "InputTag");
+                BindText(InputDecayInput, input, nameof(input.Decay));
             }
             else if (model is OutputModel output)
             {
                 OutputPropertiesName.Text = output.Name;
                 selTab = PropertiesReference.FirstOrDefault(x => (string?)x.Tag == "OutputTag");
+                BindText(OutputDecayInput, output, nameof(output.Decay));
             }
             else if (model is NeuronModel neuron)
             {
                 BindText(NeuronNameInput, neuron, nameof(neuron.Name));
                 BindText(NeuronBiasInput, neuron, nameof(neuron.Bias));
                 BindText(NeuronDecayInput, neuron, nameof(neuron.Decay));
-                //NeuronNameInput.Text = neuron.Name;
-                //NeuronBiasInput.Text = neuron.Bias.ToString();
-                //NeuronDecayInput.Text = neuron.Decay.ToString();
+                BindTransmitterList(NeuronTransmittersInput, neuron, nameof(neuron.Transmitters));
                 UpdateTransmitterList(NeuronTransmittersInput, neuron);
                 selTab = PropertiesReference.FirstOrDefault(x => (string?)x.Tag == "NeuronTag");
             }
@@ -431,27 +436,27 @@ namespace CircuitDesigner
             DesignBoard.ZoomTo(sel.Item2);
         }
 
-        private void NeuronTransmittersInput_SelectedValueChanged(object sender, EventArgs e)
-        {
-            if (LastUpdateModel is not NeuronModel) { return; }
-            var neuron = (NeuronModel)LastUpdateModel;
-            var view = NeuronTransmittersInput;
-            if (view == null) { return; }
+        //private void NeuronTransmittersInput_SelectedValueChanged(object sender, EventArgs e)
+        //{
+        //    if (LastUpdateModel is not NeuronModel) { return; }
+        //    var neuron = (NeuronModel)LastUpdateModel;
+        //    var view = NeuronTransmittersInput;
+        //    if (view == null) { return; }
 
-            for (var i = 0; i < view.Items.Count; ++i)
-            {
-                var trans = (Transmitter)view.Items[i];
-                var isChecked = view.GetItemChecked(i);
-                if (isChecked && !neuron.Transmitters.Contains(trans))
-                {
-                    neuron.Transmitters.Add(trans);
-                }
-                else if (neuron.Transmitters.Contains(trans))
-                {
-                    neuron.Transmitters.Remove(trans);
-                }
-            }
-        }
+        //    for (var i = 0; i < view.Items.Count; ++i)
+        //    {
+        //        var trans = (Transmitter)view.Items[i];
+        //        var isChecked = view.GetItemChecked(i);
+        //        if (isChecked && !neuron.Transmitters.Contains(trans))
+        //        {
+        //            neuron.Transmitters.Add(trans);
+        //        }
+        //        else if (neuron.Transmitters.Contains(trans))
+        //        {
+        //            neuron.Transmitters.Remove(trans);
+        //        }
+        //    }
+        //}
 
         private void ToolStripBuild_Click(object sender, EventArgs e)
         {
@@ -483,14 +488,15 @@ namespace CircuitDesigner
         private void UpdateTransmitterList(CheckedListBox listbox, NeuronModel model)
         {
             var view = (ListBox)listbox;
-            view.DataSource = ProjectState.Transmitters;
-            view.DisplayMember = "Name";
-
+            //view.DataSource = ProjectState.Transmitters;
+            //view.DisplayMember = "Name";
+            //view.ValueMember = nameof(Pair<bool, Transmitter>.Item1);
 
             for (var i = 0; i < listbox.Items.Count; i++)
             {
-                var trans = (Transmitter)view.Items[i];
-                listbox.SetItemChecked(i, model.Transmitters.Any(x => x.ID == trans.ID));
+                listbox.SetItemChecked(i, model.Transmitters[i].Item1);
+                //var trans = view.Items[i] as Pair<bool, Transmitter>;
+                //listbox.SetItemChecked(i, model.Transmitters.Any(x => x.Item1));
             }
         }
 

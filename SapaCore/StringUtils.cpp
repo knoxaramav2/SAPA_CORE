@@ -3,13 +3,14 @@
 
 std::vector<std::string> SAPACORE::StringUtils::strsplit(std::string string, std::string delim)
 {
+    delim += '\0';
     std::vector<std::string> terms;
     size_t tpos = 0;
 
     for (size_t i = 0; i <= string.length(); i++) {
         char cc = string[i];
 
-        if (delim.find(string[i]) != delim.npos || i+1==string.length()) {
+        if (delim.find(string[i]) != delim.npos) {
             if (i-tpos>0) {
                 std::string term = string.substr(tpos, (i - tpos)+(i+1==string.length()));
                 term = strtrim(term);
@@ -18,6 +19,10 @@ std::vector<std::string> SAPACORE::StringUtils::strsplit(std::string string, std
             }
             tpos = i+1;
         }
+    }
+
+    if (tpos < string.length()) {
+        terms.push_back(string.substr(tpos, string.size()));
     }
 
     return terms;

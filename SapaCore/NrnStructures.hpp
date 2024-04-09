@@ -10,33 +10,37 @@
 namespace SAPACORE {
 
 	class SapaNetwork;
+	class SapaDiagnostic;
+	struct Dendrite;
 
-	typedef std::tuple<int, std::string, bool> InputDef;
-	typedef std::tuple<int, std::string, bool> OutputDef;
-	typedef std::tuple<int, std::string, float, float, float> NeuronDef;
+	typedef std::tuple<int, std::string, bool, float> InputDef;
+	typedef std::tuple<int, std::string, bool, float> OutputDef;
+	typedef std::tuple<int, std::string, float, float, float, UINT64> NeuronDef;
 	typedef std::tuple<int, float, int> CircuitDef;
 
-	struct Dendrite;
 	class QCell {
 	protected:
 		float __charge;
 		float __bias;
 		float __decayRate;//__decay illegal for some reason
 		int __index;
+		UINT64 __transCode;
 		UINT32 __transmitter;
 		std::vector<Dendrite> __dendrites;
 		friend class SapaNetwork;
 	public:
 		virtual void UpdateLocalState() = 0;
 		virtual void UpdateStimuliState() = 0;
-		void AddConnection(QCell* sender, float weight);
-		void PruneConnection(QCell* sender);
+		virtual void AddConnection(QCell* sender, float weight);
+		virtual void PruneConnection(QCell* sender);
 		std::tuple<bool, UINT32> GetSignal();//TODO- Apply transmitter effects
+	
+		friend class SapaDiagnostic;
 	};
 	
 	class Neuron: public QCell {
 	public:
-		Neuron(int index, float charge, float bias, float decay);
+		Neuron(int index, float charge, float bias, float decay, UINT64 transcode);
 		void UpdateLocalState();
 		void UpdateStimuliState();
 	};
@@ -52,12 +56,15 @@ namespace SAPACORE {
 			this->sender = sender;
 			weight = w;
 		}
+
+		float GetCharge();
 	};
 
 	class IOCell: public QCell {
 	protected:
 		float __max;
 		float __min;
+		bool __enabled;
 	public:
 		void UpdateLocalState();
 		void UpdateStimuliState();
@@ -65,13 +72,15 @@ namespace SAPACORE {
 
 	class Input: public IOCell {
 	public:
-		Input(int index);
+		Input(int index, bool enabled, float decay);
 		void Excite(float value);
+		void AddConnection(QCell* sender, float weight);
+		void PruneConnection(QCell* sender);
 	};
 
 	class Output: public IOCell {
 	public:
-		Output(int index);
+		Output(int index, bool enabled, float decay);
 		float Retreive();
 	};
 
@@ -81,14 +90,15 @@ namespace SAPACORE {
 		Input** __inputs; size_t __numInputs; std::tuple<int, int> __inIdxRng;
 		Output** __outputs; size_t __numOutputs; std::tuple<int, int> __outIdxRng;
 		Neuron** __network; size_t __numNeurons; std::tuple<int, int> __netIdxRng;
-		std::vector<Dendrite> __dendrites;
+		//std::vector<Dendrite*> __dendrites;
 
 		Neuron* __findNeuronByIdx(int idx);
 		Input* __findInputByIdx(int idx);
 		Output* __findOutputByIdx(int idx);
 		QCell* __findByIdx(int idx);
 	public:
-		
+		//DEV-- Remove
+		SAPICORE_API void DevPrint();
 		SAPICORE_API SapaNetwork(
 			std::vector<InputDef> inputs, 
 			std::vector<OutputDef> outputs,
@@ -100,9 +110,16 @@ namespace SAPACORE {
 		SAPICORE_API void SetInput(size_t index, float value);
 		SAPICORE_API void LocalUpdatePass();
 		SAPICORE_API void StimuliUpdatePass();
-		SAPICORE_API void InputUpdatePass();
 		SAPICORE_API void OutputUpdatePass();
 
 		friend class NetworkIOAdapter;
+		friend class SapaDiagnostic;
+	};
+
+	class SapaDiagnostic {
+		SapaNetwork* __network;
+	public:
+		SAPICORE_API SapaDiagnostic(SapaNetwork& network);
+		SAPICORE_API void PrintActivity();
 	};
 }

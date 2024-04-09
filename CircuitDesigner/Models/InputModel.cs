@@ -10,7 +10,7 @@ namespace CircuitDesigner.Models
 
         public InputModel(string name, Point? pos = null) : base(name, pos)
         {
-
+            
         }
     }
 }

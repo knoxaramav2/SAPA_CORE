@@ -40,29 +40,33 @@ SAPACORE::File::NetworkSetupDetails SAPACORE::File::Load(std::string path)
 		switch (mode) {
 			case RM_HEADER: continue;
 			case RM_INPUTS: {
-				if (terms.size() != 3) { throw SapaException(std::format("Invalid input definition: line {}", lineno)); }
+				if (terms.size() != 4) { throw SapaException(std::format("Invalid input definition: line {}", lineno)); }
 				int idx = stoi(terms[0]);
 				std::string name = terms[1];
 				bool enabled = terms[2] == "True";
-				ret.InputParam.push_back({ idx, name, enabled });
+				float decay = stof(terms[3]);
+				ret.InputParam.push_back({ idx, name, enabled, decay });
 				}
 			break;
 			case RM_OUTPUTS: {
-				if (terms.size() != 3) { throw SapaException(std::format("Invalid output definition: line {}", lineno)); }
+				if (terms.size() != 4) { throw SapaException(std::format("Invalid output definition: line {}", lineno)); }
 				int idx = stoi(terms[0]);
 				std::string name = terms[1];
 				bool enabled = terms[2] == "True";
-				ret.OutputParam.push_back({ idx, name, enabled });
+				float decay = stof(terms[3]);
+				ret.OutputParam.push_back({ idx, name, enabled, decay });
 			}
 			break;
 			case RM_NEURONS: {
-				if (terms.size() != 5) { throw SapaException(std::format("Invalid input definition: line {}", lineno)); }
+				if (terms.size() != 6) { throw SapaException(std::format("Invalid input definition: line {}", lineno)); }
 				int idx = stoi(terms[0]);
 				std::string name = terms[1];
 				float charge = stof(terms[2]);
 				float bias = stof(terms[3]);
 				float decay = stof(terms[4]);
-				NeuronDef value = { idx, name, charge, bias, decay };
+				char* ss;
+				UINT64 transcode = strtoul(terms[5].c_str(), &ss, 10);
+				NeuronDef value = { idx, name, charge, bias, decay, transcode };
 				ret.NeuronParam.push_back(value);
 			}
 			break;
@@ -70,7 +74,7 @@ SAPACORE::File::NetworkSetupDetails SAPACORE::File::Load(std::string path)
 				for (size_t i = 0; i < terms.size(); i += 3) {
 					int sendIdx = stoi(terms[i]);
 					float weight = stof(terms[i + 1]);
-					int recIdx = stoi(terms[i]);
+					int recIdx = stoi(terms[i+2]);
 					ret.CircuitParam.push_back({sendIdx, weight, recIdx});
 				}
 			default:break;

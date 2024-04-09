@@ -5,27 +5,31 @@ namespace SAPACORE {
 	struct InputAdapter;
 	struct OutputAdapter;
 
-	typedef void(*InputFnc)(InputAdapter&);
-	typedef void(*OutputFnc)(OutputAdapter&);
+	typedef void(*InputFnc)(InputAdapter*);
+	typedef void(*OutputFnc)(OutputAdapter*);
 
 	struct InputAdapter {
-		SAPICORE_API InputAdapter(int size, InputFnc ifnc);
+		SAPICORE_API InputAdapter(int size, InputFnc ifnc, Input**inputs);
 		SAPICORE_API ~InputAdapter();
 		SAPICORE_API void SetValue(float value, int idx);
+		SAPICORE_API void Update();
+		SAPICORE_API int Size();
 	private:
 		int __size;
-		float* __values;
-		InputFnc __inputThread;
+		InputFnc __inputFunc;
+		Input** __inputs;
 	};
 
 	struct OutputAdapter {
-		SAPICORE_API OutputAdapter(int size, OutputFnc ofnc);
+		SAPICORE_API OutputAdapter(int size, OutputFnc ofnc, Output**outputs);
 		SAPICORE_API ~OutputAdapter();
-		SAPICORE_API float GetValue(float value, int idx);
+		SAPICORE_API float GetValue(int idx);
+		SAPICORE_API void Update();
+		SAPICORE_API int Size();
 	private:
 		int __size;
-		float* __values;
-		OutputFnc __outputThread;
+		OutputFnc __outputFunc;
+		Output** __outputs;
 	};
 
 	class NetworkIOAdapter {

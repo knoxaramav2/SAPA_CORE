@@ -8,6 +8,7 @@ namespace CircuitDesigner.Models
         public Guid ID { get; set; }
         public Point Pos { get; set; }
         public bool Enabled { get; set; }
+        public float Decay { get; set; } = 0.0f;
 
         //public List<INodeModel> Connections { get; set; }
 
