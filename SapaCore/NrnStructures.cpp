@@ -7,26 +7,39 @@
 #include "SNCFileIO.h"
 #include "iostream"
 
-SAPACORE::Neuron::Neuron(int index, float charge, float bias, float decay, UINT64 transcode)
+SAPACORE::Neuron::Neuron(int index, float charge, float bias, float decay, UINT64 transcode, bool refactory)
 {
 	__index = index;
 	__charge = charge;
 	__bias = bias;
 	__decayRate = decay;
 	__transCode = transcode;
+	__refactory = refactory;
+	__hCharge = __refactory ? -bias : 0;
 }
 
 void SAPACORE::Neuron::UpdateLocalState()
 {
-	__charge *= __decayRate;
+	if (__refactory) {
+
+	}
+	else {
+		__refactory = __charge >= __bias;
+		__charge *= __decayRate;
+	}
 }
 
 void SAPACORE::Neuron::UpdateStimuliState()
 {
-	for (size_t i = 0; i < __dendrites.size(); ++i) {
+	for (size_t i = 0; i < __dendrites.size() && !__refactory; ++i) {
 		//TODO Resolve transmitter effect
 		__charge += __dendrites[i].GetCharge();
 	}
+}
+
+std::tuple<bool, UINT32> SAPACORE::Neuron::GetSignal()
+{
+	return std::tuple<bool, UINT32>(!__refactory && __charge >= __bias, __transmitter);
 }
 
 void SAPACORE::IOCell::UpdateLocalState()
@@ -87,7 +100,7 @@ void SAPACORE::Input::PruneConnection(QCell* sender)
 SAPACORE::Neuron* SAPACORE::SapaNetwork::__findNeuronByIdx(int idx)
 {
 	return INRANGE(__netIdxRng, idx) ?
-		__network[idx - get<0>(__netIdxRng)] :
+		__neurons[idx - get<0>(__netIdxRng)] :
 		nullptr;
 }
 
@@ -114,49 +127,42 @@ SAPACORE::QCell* SAPACORE::SapaNetwork::__findByIdx(int idx)
 	return ret;
 }
 
-#define BC(x) (get<0>(x) ? '+':'-')
+#define BC(x) (x ? '+':'-')
 void SAPACORE::SapaNetwork::DevPrint()
 {
-	auto i0 = __inputs[0]->GetSignal();
-	auto i0q = __inputs[0]->__charge;
-	auto i1 = __inputs[1]->GetSignal();
-	auto i1q = __inputs[1]->__charge;
-	auto i2 = __inputs[2]->GetSignal();
-	auto i2q = __inputs[2]->__charge;
-	auto i3 = __inputs[3]->GetSignal();
-	auto i3q = __inputs[3]->__charge;
+	auto inputs = __inputs;
+	auto outputs = __outputs;
+	auto neurons = __neurons;
+	printf("\r\033[%dA", 9);
 
-	auto o0 = __outputs[0]->GetSignal();
-	auto o0q = __outputs[0]->__charge;
-	auto o1 = __outputs[1]->GetSignal();
-	auto o1q = __outputs[1]->__charge;
-	auto o2 = __outputs[2]->GetSignal();
-	auto o2q = __outputs[2]->__charge;
-	auto o3 = __outputs[3]->GetSignal();
-	auto o3q = __outputs[3]->__charge;
+	for (size_t i = 0; i < __numInputs; ++i) {
+		auto inp = __inputs[i];
+		auto sig = inp->GetSignal();
+		auto act = get<0>(sig);
+		printf("I%-2d %6.3f (%c) ", inp->__index, inp->__charge, BC(act));
+	}
 
-	auto n0 = __network[0]->GetSignal();
-	auto n0q = __network[0]->__charge;
-	auto n1 = __network[1]->GetSignal();
-	auto n1q = __network[1]->__charge;
-	auto n2 = __network[2]->GetSignal();
-	auto n2q = __network[2]->__charge;
-	auto n3 = __network[3]->GetSignal();
-	auto n3q = __network[3]->__charge;
-	auto n4 = __network[0]->GetSignal();
-	auto n4q = __network[0]->__charge;
-	auto n5 = __network[1]->GetSignal();
-	auto n5q = __network[1]->__charge;
-	auto n6 = __network[2]->GetSignal();
-	auto n6q = __network[2]->__charge;
-	auto n7 = __network[3]->GetSignal();
-	auto n7q = __network[3]->__charge;
+	printf("\r\n");
 
-	printf("I0 %.3f (%c)  %.3f(%c)   %.3f(%c)   O0 %.3f (%c)\r\n", i0q, BC(i0), n0q, BC(n0), n4q, BC(n4), o0q, BC(o0));
-	printf("I1 %.3f (%c)  %.3f(%c)   %.3f(%c)   O1 %.3f (%c)\r\n", i1q, BC(i1), n1q, BC(n1), n5q, BC(n5), o1q, BC(o1));
-	printf("I2 %.3f (%c)  %.3f(%c)   %.3f(%c)   O2 %.3f (%c)\r\n", i2q, BC(i2), n2q, BC(n2), n6q, BC(n6), o2q, BC(o2));
-	printf("I3 %.3f (%c)  %.3f(%c)   %.3f(%c)   O3 %.3f (%c)\r\n", i3q, BC(i3), n3q, BC(n3), n7q, BC(n7), o3q, BC(o3));
-	printf("__________\r\n");
+	for (size_t i = 0; i < __numNeurons; ++i) {
+		auto nrn = __neurons[i];
+		auto sig = nrn->GetSignal();
+		auto act = get<0>(sig);
+		printf("N%-2d %6.3f (%c) ", nrn->__index, nrn->__charge, BC(act));
+		if ((i + 1) % 5 == 0) 
+			{ printf("\r\n"); }
+	}
+
+	printf("\r\n");
+
+	for (size_t i = 0; i < __numOutputs; ++i) {
+		auto out = __outputs[i];
+		auto sig = out->GetSignal();
+		auto act = get<0>(sig);
+		printf("O%2d %6.3f (%c) ", out->__index, out->__charge, BC(act));
+	}
+
+	printf("\r\n__________________________\r\n");
 }
 
 //Input/output values not used
@@ -189,13 +195,13 @@ SAPACORE::SapaNetwork::SapaNetwork(
 	maxIdx = __outputs[__numOutputs - 1]->__index;
 	__outIdxRng = std::make_tuple(minIdx, maxIdx);
 
-	__network = new Neuron * [__numNeurons];
+	__neurons = new Neuron * [__numNeurons];
 	for (size_t i = 0; i < __numNeurons; ++i) {
-		const auto& [idx, name, charge, bias, decay, transcode] = neurons[i];
-		__network[i] = new Neuron(idx, charge, bias, decay, transcode);
+		const auto& [idx, name, charge, bias, decay, transcode, refactory] = neurons[i];
+		__neurons[i] = new Neuron(idx, charge, bias, decay, transcode, refactory);
 	}
-	minIdx = __network[0]->__index;
-	maxIdx = __network[__numNeurons - 1]->__index;
+	minIdx = __neurons[0]->__index;
+	maxIdx = __neurons[__numNeurons - 1]->__index;
 	__netIdxRng = std::make_tuple(minIdx, maxIdx);
 
 	for (size_t i = 0; i < connections.size(); ++i) {
@@ -210,7 +216,7 @@ SAPACORE::SapaNetwork::~SapaNetwork()
 {
 	for (size_t i = 0; i < __numInputs; ++i) { delete __inputs[i]; }
 	for (size_t i = 0; i < __numOutputs; ++i) { delete __outputs[i]; }
-	for (size_t i = 0; i < __numNeurons; ++i) { delete __network[i]; }
+	for (size_t i = 0; i < __numNeurons; ++i) { delete __neurons[i]; }
 }
 
 float SAPACORE::SapaNetwork::GetOutput(size_t index)
@@ -230,14 +236,14 @@ void SAPACORE::SapaNetwork::SetInput(size_t index, float value)
 void SAPACORE::SapaNetwork::LocalUpdatePass()
 {
 	for (size_t i = 0; i < __numInputs; ++i) { __inputs[i]->UpdateLocalState(); }
-	for (size_t i = 0; i < __numNeurons; ++i) { __network[i]->UpdateLocalState(); }
+	for (size_t i = 0; i < __numNeurons; ++i) { __neurons[i]->UpdateLocalState(); }
 	for (size_t i = 0; i < __numOutputs; ++i) { __outputs[i]->UpdateLocalState(); }
 }
 
 void SAPACORE::SapaNetwork::StimuliUpdatePass()
 {
 	for (size_t i = 0; i < __numNeurons; ++i) {
-		__network[i]->UpdateStimuliState();
+		__neurons[i]->UpdateStimuliState();
 	}
 }
 
@@ -275,82 +281,39 @@ SAPACORE::SapaDiagnostic::SapaDiagnostic(SapaNetwork& network)
 	__network = &network;
 }
 
+#define CB(x)(x?'+':'-')
 void SAPACORE::SapaDiagnostic::PrintActivity()
 {
-	auto i0 = __network->__inputs[0]->GetSignal();
-	auto i0q = __network->__inputs[0]->__charge;
-	auto i1 = __network->__inputs[1]->GetSignal();
-	auto i1q = __network->__inputs[1]->__charge;
-	auto i2 = __network->__inputs[2]->GetSignal();
-	auto i2q = __network->__inputs[2]->__charge;
-	auto i3 = __network->__inputs[3]->GetSignal();
-	auto i3q = __network->__inputs[3]->__charge;
-
-	auto o0 = __network->__outputs[0]->GetSignal();
-	auto o0q = __network->__outputs[0]->__charge;
-	auto o1 = __network->__outputs[1]->GetSignal();
-	auto o1q = __network->__outputs[1]->__charge;
-	auto o2 = __network->__outputs[2]->GetSignal();
-	auto o2q = __network->__outputs[2]->__charge;
-	auto o3 = __network->__outputs[3]->GetSignal();
-	auto o3q = __network->__outputs[3]->__charge;
-
-	auto n0 = __network->__network[0]->GetSignal();
-	auto n0q = __network->__network[0]->__charge;
-	auto n1 = __network->__network[1]->GetSignal();
-	auto n1q = __network->__network[1]->__charge;
-	auto n2 = __network->__network[2]->GetSignal();
-	auto n2q = __network->__network[2]->__charge;
-	auto n3 = __network->__network[3]->GetSignal();
-	auto n3q = __network->__network[3]->__charge;
-	auto n4 = __network->__network[0]->GetSignal();
-	auto n4q = __network->__network[0]->__charge;
-	auto n5 = __network->__network[1]->GetSignal();
-	auto n5q = __network->__network[1]->__charge;
-	auto n6 = __network->__network[2]->GetSignal();
-	auto n6q = __network->__network[2]->__charge;
-	auto n7 = __network->__network[3]->GetSignal();
-	auto n7q = __network->__network[3]->__charge;
-
-	printf("I0 %.3f (%c)  %.3f(%c)   %.3f(%c)   O0 %.3f (%c)\r\n", i0q, get<0>(i0), n0q, get<0>(n0), n4q, get<0>(n4), o0q, get<0>(o0));
-	printf("I0 %.3f (%c)  %.3f(%c)   %.3f(%c)   O0 %.3f (%c)\r\n", i1q, get<0>(i1), n1q, get<0>(n1), n5q, get<0>(n5), o1q, get<0>(o1));
-	printf("I0 %.3f (%c)  %.3f(%c)   %.3f(%c)   O0 %.3f (%c)\r\n", i2q, get<0>(i2), n2q, get<0>(n2), n6q, get<0>(n6), o2q, get<0>(o2));
-	printf("I0 %.3f (%c)  %.3f(%c)   %.3f(%c)   O0 %.3f (%c)\r\n", i3q, get<0>(i3), n3q, get<0>(n3), n7q, get<0>(n7), o3q, get<0>(o3));
-
-	return;
-	/*auto i0 = __network->__inputs[0]->GetSignal();
-	auto iq = __network->__inputs[0]->__charge;
-	auto o0 = __network->__outputs[0]->GetSignal();
-	auto oq = __network->__outputs[0]->__charge;
-	auto n0 = __network->__network[0]->GetSignal();
-	auto nq = __network->__network[0]->__charge;
-	std::cout << 
-		"I0: " << get<0>(i0) << " " << get<1>(i0) << " " << iq << " || " <<
-		"N0: " << get<0>(n0) << " " << get<1>(n0) << " " << nq << " || " <<
-		"I0: " << get<0>(o0) << " " << get<1>(o0) << " " << oq << " || "
-		<< "______________________" << std::endl;
-	
-	
-	
-	return;
-	std::string inputs;
-	std::string outputs;
-	std::string neurons;
+	auto inputs = __network->__inputs;
+	auto outputs = __network->__outputs;
+	auto neurons = __network->__neurons;
 
 	for (size_t i = 0; i < __network->__numInputs; ++i) {
-		inputs += get<0>(__network->__inputs[i]->GetSignal()) ? '+':'-';
+		auto inp = __network->__inputs[i];
+		auto sig = inp->GetSignal();
+		auto act = get<0>(sig);
+		printf("I%-2d %.3f (%c) | ", inp->__index, inp->__charge, CB(act));
 	}
 
-	for (size_t i = 0; i < __network->__numOutputs; ++i) {
-		outputs += get<0>(__network->__outputs[i]->GetSignal()) ? '+' : '-';
-		if (i % 20 == 0) { outputs += "\r\n"; }
-	}
+	printf("\r\n");
 
 	for (size_t i = 0; i < __network->__numNeurons; ++i) {
-		neurons += get<0>(__network->__network[i]->GetSignal()) ? '+' : '-';
+		auto nrn = __network->__neurons[i];
+		auto sig = nrn->GetSignal();
+		auto act = get<0>(sig);
+		printf("N%-2d %.3f (%c) | ", nrn->__index, nrn->__charge, CB(act));
+	}
+	
+	printf("\r\n");
+
+	for (size_t i = 0; i < __network->__numOutputs; ++i) {
+		auto out = __network->__outputs[i];
+		auto sig = out->GetSignal();
+		auto act = get<0>(sig);
+		printf("O%-2d %.3f (%c) | ", out->__index, out->__charge, CB(act));
 	}
 
-	printf("\r\nSCAN\nIN\r\n%s\r\nNRN\r\n%s\r\nOUT\r\n%s\r\n________________________________\r\n", inputs.c_str(), neurons.c_str(), outputs.c_str());*/
+	printf("\r\n__________________________\r\n");
 }
 
 float SAPACORE::Dendrite::GetCharge()

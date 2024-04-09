@@ -58,7 +58,7 @@ SAPACORE::File::NetworkSetupDetails SAPACORE::File::Load(std::string path)
 			}
 			break;
 			case RM_NEURONS: {
-				if (terms.size() != 6) { throw SapaException(std::format("Invalid input definition: line {}", lineno)); }
+				if (terms.size() != 7) { throw SapaException(std::format("Invalid input definition: line {}", lineno)); }
 				int idx = stoi(terms[0]);
 				std::string name = terms[1];
 				float charge = stof(terms[2]);
@@ -66,7 +66,8 @@ SAPACORE::File::NetworkSetupDetails SAPACORE::File::Load(std::string path)
 				float decay = stof(terms[4]);
 				char* ss;
 				UINT64 transcode = strtoul(terms[5].c_str(), &ss, 10);
-				NeuronDef value = { idx, name, charge, bias, decay, transcode };
+				bool refactory = terms[6] == "True";
+				NeuronDef value = { idx, name, charge, bias, decay, transcode, refactory };
 				ret.NeuronParam.push_back(value);
 			}
 			break;

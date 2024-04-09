@@ -33,7 +33,7 @@ namespace SAPACORE {
 	};
 
 	class NetworkIOAdapter {
-		SapaNetwork* __network;
+		SapaNetwork* __neurons;
 	
 		InputAdapter __inputs;
 		OutputAdapter __outputs;

@@ -5,7 +5,7 @@
 
 namespace SAPA {
 	class NetworkProcessManager {
-		SAPACORE::SapaNetwork* __network;
+		SAPACORE::SapaNetwork* __neurons;
 		SAPACORE::NetworkIOAdapter* __adapter;
 		SAPACORE::InputAdapter* __iAdapter;
 		SAPACORE::OutputAdapter* __oAdapter;

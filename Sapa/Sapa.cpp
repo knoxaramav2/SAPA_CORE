@@ -42,7 +42,7 @@ void RunNetwork(SAPACORE::SapaNetwork& network) {
 
 int main()
 {
-    std::string prjPath = "G:\\Dev\\SapaCore\\CircuitDesigner\\bin\\Debug\\net8.0-windows\\Build\\BridgeTest.snc";
+    std::string prjPath = "G:\\Dev\\SapaCore\\CircuitDesigner\\bin\\Debug\\net8.0-windows\\Build\\fibertest.snc";
     auto params = SAPACORE::File::Load(prjPath);
     SAPACORE::SapaNetwork network(params.InputParam, params.OutputParam, params.NeuronParam, params.CircuitParam);
     

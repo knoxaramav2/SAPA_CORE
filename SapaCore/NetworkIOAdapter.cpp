@@ -4,7 +4,7 @@
 SAPACORE::NetworkIOAdapter::NetworkIOAdapter(SapaNetwork& network, InputFnc ifnc, OutputFnc ofnc):
 	__inputs(network.__numInputs, ifnc, network.__inputs), __outputs(network.__numOutputs, ofnc, network.__outputs)
 {
-	__network = &network;
+	__neurons = &network;
 }
 
 SAPACORE::InputAdapter* SAPACORE::NetworkIOAdapter::GetInputAdapter()

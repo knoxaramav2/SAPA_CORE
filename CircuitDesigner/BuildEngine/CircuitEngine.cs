@@ -98,7 +98,7 @@ $@"#PROJECT={Project.ProjectName}
                 }
 
                 var idx = neuron.Item1;
-                ret += $"{idx},{neuron.Item2.Name},0,{neuron.Item2.Bias},{neuron.Item2.Decay},{ntb}\n";
+                ret += $"{idx},{neuron.Item2.Name},0,{neuron.Item2.Bias},{neuron.Item2.Decay},{ntb},False\n";
             }
 
             return ret;

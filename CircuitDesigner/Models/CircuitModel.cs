@@ -15,6 +15,8 @@ namespace CircuitDesigner.Models
         public int Scale { get; private set; }
 
         [JsonProperty]
+        public IonState Ions { get; private set; }
+        [JsonProperty]
         public List<CircuitModel> SubCircuits { get; private set; } = [];
         [JsonProperty]
         public List<InputModel> Inputs { get; private set; } = [];
@@ -42,6 +44,7 @@ namespace CircuitDesigner.Models
             {
                 InitIO(DefaultInputSize, DefaultOutputSize);
             }
+            Ions = IonState.DefaultExternalState();
         }
 
         public CircuitModel(

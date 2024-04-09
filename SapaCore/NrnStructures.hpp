@@ -15,7 +15,7 @@ namespace SAPACORE {
 
 	typedef std::tuple<int, std::string, bool, float> InputDef;
 	typedef std::tuple<int, std::string, bool, float> OutputDef;
-	typedef std::tuple<int, std::string, float, float, float, UINT64> NeuronDef;
+	typedef std::tuple<int, std::string, float, float, float, UINT64, bool> NeuronDef;
 	typedef std::tuple<int, float, int> CircuitDef;
 
 	class QCell {
@@ -33,16 +33,19 @@ namespace SAPACORE {
 		virtual void UpdateStimuliState() = 0;
 		virtual void AddConnection(QCell* sender, float weight);
 		virtual void PruneConnection(QCell* sender);
-		std::tuple<bool, UINT32> GetSignal();//TODO- Apply transmitter effects
+		virtual std::tuple<bool, UINT32> GetSignal();//TODO- Apply transmitter effects
 	
 		friend class SapaDiagnostic;
 	};
 	
 	class Neuron: public QCell {
+		bool __refactory;
+		float __hCharge;
 	public:
-		Neuron(int index, float charge, float bias, float decay, UINT64 transcode);
+		Neuron(int index, float charge, float bias, float decay, UINT64 transcode, bool refactory);
 		void UpdateLocalState();
 		void UpdateStimuliState();
+		std::tuple<bool, UINT32> GetSignal();
 	};
 
 	struct Dendrite {
@@ -89,7 +92,7 @@ namespace SAPACORE {
 	class SapaNetwork {
 		Input** __inputs; size_t __numInputs; std::tuple<int, int> __inIdxRng;
 		Output** __outputs; size_t __numOutputs; std::tuple<int, int> __outIdxRng;
-		Neuron** __network; size_t __numNeurons; std::tuple<int, int> __netIdxRng;
+		Neuron** __neurons; size_t __numNeurons; std::tuple<int, int> __netIdxRng;
 		//std::vector<Dendrite*> __dendrites;
 
 		Neuron* __findNeuronByIdx(int idx);

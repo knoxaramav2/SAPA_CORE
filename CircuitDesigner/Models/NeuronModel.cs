@@ -16,14 +16,19 @@ namespace CircuitDesigner.Models
 
 
         public List<Pair<bool, Transmitter>> Transmitters { get; set; } = [];
+        public IonState Ions;
         public float Bias { get; set; } = 1.0f;
         public float Decay { get; set; } = 0.75f;
+
+        public float RestingPotential { get; private set; } = 0.0f;
 
         [JsonConstructor]
         public NeuronModel() {
             Name = string.Empty;
             ID = Guid.Empty;
             Pos = new();
+            Ions = IonState.DefaultInternalState();
+            RecalculateIonicState();
         }
 
         public NeuronModel(string name, Point? pos = null)
@@ -34,7 +39,29 @@ namespace CircuitDesigner.Models
             //TODO replace with default transmitter setting
             Transmitters = Definitions.TransmittersListInst();
             if (Transmitters.Count > 0) { Transmitters[0].Item1 = true; }
+            Ions = IonState.DefaultInternalState();
+            RecalculateIonicState();
         }
 
+        public void RecalculateIonicState()
+        {
+            RestingPotential = CalcRestingPotential(Ions.Na, Ions.K, Ions.Ca, Ions.Cl);
+        }
+
+        private float CalcRestingPotential(
+            Sodium na,
+            Potassium k,
+            Calcium ca,
+            Chloride cl
+            )
+        {
+            int parts = na.Parts + k.Parts + ca.Parts + cl.Parts;
+            float kq = k.Concentraion * (k.Parts/parts);
+            float naq = na.Concentraion * (na.Parts/parts);
+            float clq = cl.Concentraion * (cl.Parts/parts);
+            float caq = ca.Concentraion * (ca.Parts/parts);
+
+            return kq + naq + clq + caq;
+        }
     }
 }
