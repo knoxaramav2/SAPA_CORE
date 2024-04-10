@@ -15,7 +15,7 @@ namespace CircuitDesigner.Models
         public int Scale { get; private set; }
 
         [JsonProperty]
-        public IonState Ions { get; private set; }
+        public IonState Ions { get; set; }
         [JsonProperty]
         public List<CircuitModel> SubCircuits { get; private set; } = [];
         [JsonProperty]

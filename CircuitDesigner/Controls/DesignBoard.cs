@@ -163,7 +163,7 @@ namespace CircuitDesigner.Controls
                 {
                     model = new NeuronModel(
                         AgnosticModelUtil.AutoModelName<NeuronModel>(RootCircuit.Neurons.Select
-                        (x => x.Name).ToArray()));
+                        (x => x.Name).ToArray()), RootCircuit.Ions);
                 } else if (ctrl && !alt)
                 {
                     model = new CircuitModel(
@@ -330,6 +330,9 @@ namespace CircuitDesigner.Controls
                 {
                     BroadcastModel?.Invoke(node, model);
                 }
+            } else
+            {
+                BroadcastModel?.Invoke(null, RootCircuit);
             }
 
             UpdateDrawing();
@@ -517,6 +520,14 @@ namespace CircuitDesigner.Controls
             UpdateDrawing();
         }
 
+        public void RecalculateNeuron(CircuitModel circuit)
+        {
+            if(SelectedNode is not NeuronNode neuron) { return; }
+            var model = neuron.Model;
+            model.RecalculateIonicState(circuit.Ions);
+            Debug.WriteLine($"REST={model.RestingPotential}");
+            BroadcastModel?.Invoke(this, model);
+        }
         #endregion
     }
 }

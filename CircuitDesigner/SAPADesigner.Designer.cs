@@ -66,14 +66,52 @@
             OutputsList = new CheckedListBox();
             PropertiesTabs = new TabControl();
             CircuitProperties = new TabPage();
+            label27 = new Label();
+            CircuitIonPanel = new SplitContainer();
+            label11 = new Label();
+            ClMolInput_Circ = new TextBox();
+            label9 = new Label();
+            CaMolInput_Circ = new TextBox();
+            label8 = new Label();
+            KMolInput_Circ = new TextBox();
+            label7 = new Label();
+            NaMolInput_Circ = new TextBox();
+            label12 = new Label();
+            ClPartInput_Circ = new TextBox();
+            label13 = new Label();
+            CaPartInput_Circ = new TextBox();
+            label15 = new Label();
+            KPartInput_Circ = new TextBox();
+            label16 = new Label();
+            NaPartInput_Circ = new TextBox();
             CircuitPropertiesName = new Label();
             NeuronProperties = new TabPage();
+            NrnRestVLabel = new Label();
+            RPlbl = new Label();
+            label25 = new Label();
+            NeuronIonPanel = new SplitContainer();
+            label17 = new Label();
+            ClMolInput_Nrn = new TextBox();
+            label18 = new Label();
+            CaMolInput_Nrn = new TextBox();
+            label19 = new Label();
+            KMolInput_Nrn = new TextBox();
+            label20 = new Label();
+            NaMolInput_Nrn = new TextBox();
+            label21 = new Label();
+            ClPartInput_Nrn = new TextBox();
+            label22 = new Label();
+            CaPartInput_Nrn = new TextBox();
+            label23 = new Label();
+            KPartInput_Nrn = new TextBox();
+            label24 = new Label();
+            NaPartInput_Nrn = new TextBox();
             NeuronNameInput = new TextBox();
             NeuronTransmittersInput = new CheckedListBox();
             label4 = new Label();
-            NeuronDecayInput = new TextBox();
+            NeuronResistanceInput = new TextBox();
             label3 = new Label();
-            NeuronBiasInput = new TextBox();
+            NeuronThresholdInput = new TextBox();
             label2 = new Label();
             NeuronPropertiesName = new Label();
             InputProperties = new TabPage();
@@ -107,7 +145,15 @@
             OutputListGroup.SuspendLayout();
             PropertiesTabs.SuspendLayout();
             CircuitProperties.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)CircuitIonPanel).BeginInit();
+            CircuitIonPanel.Panel1.SuspendLayout();
+            CircuitIonPanel.Panel2.SuspendLayout();
+            CircuitIonPanel.SuspendLayout();
             NeuronProperties.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)NeuronIonPanel).BeginInit();
+            NeuronIonPanel.Panel1.SuspendLayout();
+            NeuronIonPanel.Panel2.SuspendLayout();
+            NeuronIonPanel.SuspendLayout();
             InputProperties.SuspendLayout();
             OutputProperties.SuspendLayout();
             SuspendLayout();
@@ -117,7 +163,7 @@
             statusStrip1.Items.AddRange(new ToolStripItem[] { ToolStripProgressBar, toolStripStatusLabel1, ToolStripStatusText, ToolStripProjectName });
             statusStrip1.Location = new Point(0, 560);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(1023, 22);
+            statusStrip1.Size = new Size(1123, 22);
             statusStrip1.TabIndex = 0;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -141,7 +187,7 @@
             // 
             ToolStripProjectName.Name = "ToolStripProjectName";
             ToolStripProjectName.RightToLeft = RightToLeft.No;
-            ToolStripProjectName.Size = new Size(889, 17);
+            ToolStripProjectName.Size = new Size(989, 17);
             ToolStripProjectName.Spring = true;
             ToolStripProjectName.Text = "Unnamed Project";
             ToolStripProjectName.TextAlign = ContentAlignment.MiddleRight;
@@ -151,7 +197,7 @@
             menuStrip1.Items.AddRange(new ToolStripItem[] { MenuStripFile, MenuStripSettings, MenuStripBuild, ToolStripAbout });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(1023, 24);
+            menuStrip1.Size = new Size(1123, 24);
             menuStrip1.TabIndex = 1;
             menuStrip1.Text = "MenuStrip";
             // 
@@ -288,8 +334,8 @@
             // SplitContainer1.Panel2
             // 
             SplitContainer1.Panel2.Controls.Add(SplitContainer2);
-            SplitContainer1.Size = new Size(1023, 536);
-            SplitContainer1.SplitterDistance = 174;
+            SplitContainer1.Size = new Size(1123, 536);
+            SplitContainer1.SplitterDistance = 187;
             SplitContainer1.TabIndex = 2;
             // 
             // CircuitTree
@@ -297,7 +343,7 @@
             CircuitTree.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             CircuitTree.Location = new Point(3, 321);
             CircuitTree.Name = "CircuitTree";
-            CircuitTree.Size = new Size(166, 209);
+            CircuitTree.Size = new Size(179, 209);
             CircuitTree.TabIndex = 3;
             // 
             // ProjectNameLabel
@@ -308,7 +354,7 @@
             ProjectNameLabel.Enabled = false;
             ProjectNameLabel.Location = new Point(62, 11);
             ProjectNameLabel.Name = "ProjectNameLabel";
-            ProjectNameLabel.Size = new Size(107, 16);
+            ProjectNameLabel.Size = new Size(120, 16);
             ProjectNameLabel.TabIndex = 2;
             ProjectNameLabel.TextAlign = HorizontalAlignment.Right;
             // 
@@ -335,8 +381,8 @@
             // SplitContainer2.Panel2
             // 
             SplitContainer2.Panel2.Controls.Add(SplitContainer3);
-            SplitContainer2.Size = new Size(845, 536);
-            SplitContainer2.SplitterDistance = 430;
+            SplitContainer2.Size = new Size(932, 536);
+            SplitContainer2.SplitterDistance = 590;
             SplitContainer2.TabIndex = 0;
             // 
             // DesignBoard
@@ -345,7 +391,7 @@
             DesignBoard.Dock = DockStyle.Fill;
             DesignBoard.Location = new Point(0, 0);
             DesignBoard.Name = "DesignBoard";
-            DesignBoard.Size = new Size(428, 534);
+            DesignBoard.Size = new Size(588, 534);
             DesignBoard.TabIndex = 0;
             // 
             // SplitContainer3
@@ -363,8 +409,8 @@
             // SplitContainer3.Panel2
             // 
             SplitContainer3.Panel2.Controls.Add(PropertiesTabs);
-            SplitContainer3.Size = new Size(411, 536);
-            SplitContainer3.SplitterDistance = 315;
+            SplitContainer3.Size = new Size(338, 536);
+            SplitContainer3.SplitterDistance = 210;
             SplitContainer3.TabIndex = 0;
             // 
             // splitContainer4
@@ -381,8 +427,8 @@
             // splitContainer4.Panel2
             // 
             splitContainer4.Panel2.Controls.Add(OutputListGroup);
-            splitContainer4.Size = new Size(409, 313);
-            splitContainer4.SplitterDistance = 134;
+            splitContainer4.Size = new Size(336, 208);
+            splitContainer4.SplitterDistance = 104;
             splitContainer4.TabIndex = 0;
             // 
             // InputListGroup
@@ -392,7 +438,7 @@
             InputListGroup.Dock = DockStyle.Fill;
             InputListGroup.Location = new Point(0, 0);
             InputListGroup.Name = "InputListGroup";
-            InputListGroup.Size = new Size(409, 134);
+            InputListGroup.Size = new Size(336, 104);
             InputListGroup.TabIndex = 5;
             InputListGroup.TabStop = false;
             InputListGroup.Text = "Inputs";
@@ -403,7 +449,7 @@
             InputsList.FormattingEnabled = true;
             InputsList.Location = new Point(3, 19);
             InputsList.Name = "InputsList";
-            InputsList.Size = new Size(403, 112);
+            InputsList.Size = new Size(330, 82);
             InputsList.TabIndex = 0;
             InputsList.DoubleClick += OnZoomableDoubleClick;
             InputsList.KeyUp += InputsList_KeyUp;
@@ -414,7 +460,7 @@
             OutputListGroup.Dock = DockStyle.Fill;
             OutputListGroup.Location = new Point(0, 0);
             OutputListGroup.Name = "OutputListGroup";
-            OutputListGroup.Size = new Size(409, 175);
+            OutputListGroup.Size = new Size(336, 100);
             OutputListGroup.TabIndex = 6;
             OutputListGroup.TabStop = false;
             OutputListGroup.Text = "Outputs";
@@ -425,7 +471,7 @@
             OutputsList.FormattingEnabled = true;
             OutputsList.Location = new Point(3, 19);
             OutputsList.Name = "OutputsList";
-            OutputsList.Size = new Size(403, 153);
+            OutputsList.Size = new Size(330, 78);
             OutputsList.TabIndex = 0;
             OutputsList.DoubleClick += OnZoomableDoubleClick;
             OutputsList.KeyUp += OutputsLists_KeyUp;
@@ -440,20 +486,200 @@
             PropertiesTabs.Location = new Point(0, 0);
             PropertiesTabs.Name = "PropertiesTabs";
             PropertiesTabs.SelectedIndex = 0;
-            PropertiesTabs.Size = new Size(409, 215);
+            PropertiesTabs.Size = new Size(336, 320);
             PropertiesTabs.TabIndex = 0;
             // 
             // CircuitProperties
             // 
+            CircuitProperties.AutoScroll = true;
+            CircuitProperties.Controls.Add(label27);
+            CircuitProperties.Controls.Add(CircuitIonPanel);
             CircuitProperties.Controls.Add(CircuitPropertiesName);
             CircuitProperties.Location = new Point(4, 24);
             CircuitProperties.Name = "CircuitProperties";
             CircuitProperties.Padding = new Padding(3);
-            CircuitProperties.Size = new Size(401, 187);
+            CircuitProperties.Size = new Size(328, 292);
             CircuitProperties.TabIndex = 0;
             CircuitProperties.Tag = "CircuitTab";
             CircuitProperties.Text = "Circuit Properties";
             CircuitProperties.UseVisualStyleBackColor = true;
+            // 
+            // label27
+            // 
+            label27.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            label27.AutoSize = true;
+            label27.Location = new Point(6, 27);
+            label27.Name = "label27";
+            label27.Size = new Size(29, 15);
+            label27.TabIndex = 23;
+            label27.Text = "Ions";
+            // 
+            // CircuitIonPanel
+            // 
+            CircuitIonPanel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            CircuitIonPanel.Location = new Point(6, 45);
+            CircuitIonPanel.Name = "CircuitIonPanel";
+            // 
+            // CircuitIonPanel.Panel1
+            // 
+            CircuitIonPanel.Panel1.Controls.Add(label11);
+            CircuitIonPanel.Panel1.Controls.Add(ClMolInput_Circ);
+            CircuitIonPanel.Panel1.Controls.Add(label9);
+            CircuitIonPanel.Panel1.Controls.Add(CaMolInput_Circ);
+            CircuitIonPanel.Panel1.Controls.Add(label8);
+            CircuitIonPanel.Panel1.Controls.Add(KMolInput_Circ);
+            CircuitIonPanel.Panel1.Controls.Add(label7);
+            CircuitIonPanel.Panel1.Controls.Add(NaMolInput_Circ);
+            // 
+            // CircuitIonPanel.Panel2
+            // 
+            CircuitIonPanel.Panel2.Controls.Add(label12);
+            CircuitIonPanel.Panel2.Controls.Add(ClPartInput_Circ);
+            CircuitIonPanel.Panel2.Controls.Add(label13);
+            CircuitIonPanel.Panel2.Controls.Add(CaPartInput_Circ);
+            CircuitIonPanel.Panel2.Controls.Add(label15);
+            CircuitIonPanel.Panel2.Controls.Add(KPartInput_Circ);
+            CircuitIonPanel.Panel2.Controls.Add(label16);
+            CircuitIonPanel.Panel2.Controls.Add(NaPartInput_Circ);
+            CircuitIonPanel.Size = new Size(319, 136);
+            CircuitIonPanel.SplitterDistance = 165;
+            CircuitIonPanel.TabIndex = 19;
+            // 
+            // label11
+            // 
+            label11.AutoSize = true;
+            label11.Location = new Point(3, 99);
+            label11.Name = "label11";
+            label11.Size = new Size(64, 15);
+            label11.TabIndex = 7;
+            label11.Text = "Cl mmol/L";
+            // 
+            // ClMolInput_Circ
+            // 
+            ClMolInput_Circ.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            ClMolInput_Circ.Location = new Point(77, 96);
+            ClMolInput_Circ.Name = "ClMolInput_Circ";
+            ClMolInput_Circ.Size = new Size(85, 23);
+            ClMolInput_Circ.TabIndex = 6;
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new Point(3, 70);
+            label9.Name = "label9";
+            label9.Size = new Size(67, 15);
+            label9.TabIndex = 5;
+            label9.Text = "Ca mmol/L";
+            // 
+            // CaMolInput_Circ
+            // 
+            CaMolInput_Circ.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            CaMolInput_Circ.Location = new Point(77, 67);
+            CaMolInput_Circ.Name = "CaMolInput_Circ";
+            CaMolInput_Circ.Size = new Size(85, 23);
+            CaMolInput_Circ.TabIndex = 4;
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(3, 41);
+            label8.Name = "label8";
+            label8.Size = new Size(66, 15);
+            label8.TabIndex = 3;
+            label8.Text = "K   mmol/L";
+            // 
+            // KMolInput_Circ
+            // 
+            KMolInput_Circ.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            KMolInput_Circ.Location = new Point(77, 38);
+            KMolInput_Circ.Name = "KMolInput_Circ";
+            KMolInput_Circ.Size = new Size(85, 23);
+            KMolInput_Circ.TabIndex = 2;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(3, 12);
+            label7.Name = "label7";
+            label7.Size = new Size(68, 15);
+            label7.TabIndex = 1;
+            label7.Text = "Na mmol/L";
+            // 
+            // NaMolInput_Circ
+            // 
+            NaMolInput_Circ.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            NaMolInput_Circ.Location = new Point(77, 9);
+            NaMolInput_Circ.Name = "NaMolInput_Circ";
+            NaMolInput_Circ.Size = new Size(85, 23);
+            NaMolInput_Circ.TabIndex = 0;
+            // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new Point(3, 99);
+            label12.Name = "label12";
+            label12.Size = new Size(47, 15);
+            label12.TabIndex = 15;
+            label12.Text = "Cl Parts";
+            // 
+            // ClPartInput_Circ
+            // 
+            ClPartInput_Circ.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            ClPartInput_Circ.Location = new Point(60, 96);
+            ClPartInput_Circ.Name = "ClPartInput_Circ";
+            ClPartInput_Circ.Size = new Size(87, 23);
+            ClPartInput_Circ.TabIndex = 14;
+            // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new Point(3, 70);
+            label13.Name = "label13";
+            label13.Size = new Size(50, 15);
+            label13.TabIndex = 13;
+            label13.Text = "Ca Parts";
+            // 
+            // CaPartInput_Circ
+            // 
+            CaPartInput_Circ.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            CaPartInput_Circ.Location = new Point(60, 67);
+            CaPartInput_Circ.Name = "CaPartInput_Circ";
+            CaPartInput_Circ.Size = new Size(87, 23);
+            CaPartInput_Circ.TabIndex = 12;
+            // 
+            // label15
+            // 
+            label15.AutoSize = true;
+            label15.Location = new Point(3, 41);
+            label15.Name = "label15";
+            label15.Size = new Size(49, 15);
+            label15.TabIndex = 11;
+            label15.Text = "K   Parts";
+            // 
+            // KPartInput_Circ
+            // 
+            KPartInput_Circ.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            KPartInput_Circ.Location = new Point(60, 38);
+            KPartInput_Circ.Name = "KPartInput_Circ";
+            KPartInput_Circ.Size = new Size(87, 23);
+            KPartInput_Circ.TabIndex = 10;
+            // 
+            // label16
+            // 
+            label16.AutoSize = true;
+            label16.Location = new Point(3, 12);
+            label16.Name = "label16";
+            label16.Size = new Size(51, 15);
+            label16.TabIndex = 9;
+            label16.Text = "Na Parts";
+            // 
+            // NaPartInput_Circ
+            // 
+            NaPartInput_Circ.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            NaPartInput_Circ.Location = new Point(60, 9);
+            NaPartInput_Circ.Name = "NaPartInput_Circ";
+            NaPartInput_Circ.Size = new Size(87, 23);
+            NaPartInput_Circ.TabIndex = 8;
             // 
             // CircuitPropertiesName
             // 
@@ -467,57 +693,265 @@
             // NeuronProperties
             // 
             NeuronProperties.AutoScroll = true;
+            NeuronProperties.Controls.Add(NrnRestVLabel);
+            NeuronProperties.Controls.Add(RPlbl);
+            NeuronProperties.Controls.Add(label25);
+            NeuronProperties.Controls.Add(NeuronIonPanel);
             NeuronProperties.Controls.Add(NeuronNameInput);
             NeuronProperties.Controls.Add(NeuronTransmittersInput);
             NeuronProperties.Controls.Add(label4);
-            NeuronProperties.Controls.Add(NeuronDecayInput);
+            NeuronProperties.Controls.Add(NeuronResistanceInput);
             NeuronProperties.Controls.Add(label3);
-            NeuronProperties.Controls.Add(NeuronBiasInput);
+            NeuronProperties.Controls.Add(NeuronThresholdInput);
             NeuronProperties.Controls.Add(label2);
             NeuronProperties.Controls.Add(NeuronPropertiesName);
             NeuronProperties.Location = new Point(4, 24);
             NeuronProperties.Name = "NeuronProperties";
             NeuronProperties.Padding = new Padding(3);
-            NeuronProperties.Size = new Size(401, 187);
+            NeuronProperties.Size = new Size(328, 187);
             NeuronProperties.TabIndex = 1;
             NeuronProperties.Tag = "NeuronTag";
             NeuronProperties.Text = "Neuron Properties";
             NeuronProperties.UseVisualStyleBackColor = true;
             // 
+            // NrnRestVLabel
+            // 
+            NrnRestVLabel.AutoSize = true;
+            NrnRestVLabel.Location = new Point(6, 207);
+            NrnRestVLabel.Name = "NrnRestVLabel";
+            NrnRestVLabel.Size = new Size(22, 15);
+            NrnRestVLabel.TabIndex = 24;
+            NrnRestVLabel.Text = "---";
+            // 
+            // RPlbl
+            // 
+            RPlbl.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            RPlbl.AutoSize = true;
+            RPlbl.Location = new Point(-237, 207);
+            RPlbl.Name = "RPlbl";
+            RPlbl.Size = new Size(125, 15);
+            RPlbl.TabIndex = 23;
+            RPlbl.Text = "Resting Potential (mV)";
+            // 
+            // label25
+            // 
+            label25.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            label25.AutoSize = true;
+            label25.Location = new Point(9, 2712);
+            label25.Name = "label25";
+            label25.Size = new Size(78, 15);
+            label25.TabIndex = 21;
+            label25.Text = "Ionic Settings";
+            // 
+            // NeuronIonPanel
+            // 
+            NeuronIonPanel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            NeuronIonPanel.Location = new Point(6, 225);
+            NeuronIonPanel.Name = "NeuronIonPanel";
+            // 
+            // NeuronIonPanel.Panel1
+            // 
+            NeuronIonPanel.Panel1.Controls.Add(label17);
+            NeuronIonPanel.Panel1.Controls.Add(ClMolInput_Nrn);
+            NeuronIonPanel.Panel1.Controls.Add(label18);
+            NeuronIonPanel.Panel1.Controls.Add(CaMolInput_Nrn);
+            NeuronIonPanel.Panel1.Controls.Add(label19);
+            NeuronIonPanel.Panel1.Controls.Add(KMolInput_Nrn);
+            NeuronIonPanel.Panel1.Controls.Add(label20);
+            NeuronIonPanel.Panel1.Controls.Add(NaMolInput_Nrn);
+            // 
+            // NeuronIonPanel.Panel2
+            // 
+            NeuronIonPanel.Panel2.Controls.Add(label21);
+            NeuronIonPanel.Panel2.Controls.Add(ClPartInput_Nrn);
+            NeuronIonPanel.Panel2.Controls.Add(label22);
+            NeuronIonPanel.Panel2.Controls.Add(CaPartInput_Nrn);
+            NeuronIonPanel.Panel2.Controls.Add(label23);
+            NeuronIonPanel.Panel2.Controls.Add(KPartInput_Nrn);
+            NeuronIonPanel.Panel2.Controls.Add(label24);
+            NeuronIonPanel.Panel2.Controls.Add(NaPartInput_Nrn);
+            NeuronIonPanel.Size = new Size(296, 131);
+            NeuronIonPanel.SplitterDistance = 159;
+            NeuronIonPanel.TabIndex = 20;
+            // 
+            // label17
+            // 
+            label17.AutoSize = true;
+            label17.Location = new Point(3, 99);
+            label17.Name = "label17";
+            label17.Size = new Size(64, 15);
+            label17.TabIndex = 7;
+            label17.Text = "Cl mmol/L";
+            // 
+            // ClMolInput_Nrn
+            // 
+            ClMolInput_Nrn.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            ClMolInput_Nrn.Location = new Point(77, 96);
+            ClMolInput_Nrn.Name = "ClMolInput_Nrn";
+            ClMolInput_Nrn.Size = new Size(79, 23);
+            ClMolInput_Nrn.TabIndex = 6;
+            ClMolInput_Nrn.Validated += NrnIonChanged;
+            // 
+            // label18
+            // 
+            label18.AutoSize = true;
+            label18.Location = new Point(3, 70);
+            label18.Name = "label18";
+            label18.Size = new Size(67, 15);
+            label18.TabIndex = 5;
+            label18.Text = "Ca mmol/L";
+            // 
+            // CaMolInput_Nrn
+            // 
+            CaMolInput_Nrn.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            CaMolInput_Nrn.Location = new Point(77, 67);
+            CaMolInput_Nrn.Name = "CaMolInput_Nrn";
+            CaMolInput_Nrn.Size = new Size(79, 23);
+            CaMolInput_Nrn.TabIndex = 4;
+            CaMolInput_Nrn.Validated += NrnIonChanged;
+            // 
+            // label19
+            // 
+            label19.AutoSize = true;
+            label19.Location = new Point(3, 41);
+            label19.Name = "label19";
+            label19.Size = new Size(66, 15);
+            label19.TabIndex = 3;
+            label19.Text = "K   mmol/L";
+            // 
+            // KMolInput_Nrn
+            // 
+            KMolInput_Nrn.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            KMolInput_Nrn.Location = new Point(77, 38);
+            KMolInput_Nrn.Name = "KMolInput_Nrn";
+            KMolInput_Nrn.Size = new Size(79, 23);
+            KMolInput_Nrn.TabIndex = 2;
+            KMolInput_Nrn.Validated += NrnIonChanged;
+            // 
+            // label20
+            // 
+            label20.AutoSize = true;
+            label20.Location = new Point(3, 12);
+            label20.Name = "label20";
+            label20.Size = new Size(68, 15);
+            label20.TabIndex = 1;
+            label20.Text = "Na mmol/L";
+            // 
+            // NaMolInput_Nrn
+            // 
+            NaMolInput_Nrn.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            NaMolInput_Nrn.Location = new Point(77, 9);
+            NaMolInput_Nrn.Name = "NaMolInput_Nrn";
+            NaMolInput_Nrn.Size = new Size(79, 23);
+            NaMolInput_Nrn.TabIndex = 0;
+            NaMolInput_Nrn.Validated += NrnIonChanged;
+            // 
+            // label21
+            // 
+            label21.AutoSize = true;
+            label21.Location = new Point(3, 99);
+            label21.Name = "label21";
+            label21.Size = new Size(47, 15);
+            label21.TabIndex = 15;
+            label21.Text = "Cl Parts";
+            // 
+            // ClPartInput_Nrn
+            // 
+            ClPartInput_Nrn.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            ClPartInput_Nrn.Location = new Point(60, 96);
+            ClPartInput_Nrn.Name = "ClPartInput_Nrn";
+            ClPartInput_Nrn.Size = new Size(70, 23);
+            ClPartInput_Nrn.TabIndex = 14;
+            ClPartInput_Nrn.Validated += NrnIonChanged;
+            // 
+            // label22
+            // 
+            label22.AutoSize = true;
+            label22.Location = new Point(3, 70);
+            label22.Name = "label22";
+            label22.Size = new Size(50, 15);
+            label22.TabIndex = 13;
+            label22.Text = "Ca Parts";
+            // 
+            // CaPartInput_Nrn
+            // 
+            CaPartInput_Nrn.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            CaPartInput_Nrn.Location = new Point(60, 67);
+            CaPartInput_Nrn.Name = "CaPartInput_Nrn";
+            CaPartInput_Nrn.Size = new Size(70, 23);
+            CaPartInput_Nrn.TabIndex = 12;
+            CaPartInput_Nrn.Validated += NrnIonChanged;
+            // 
+            // label23
+            // 
+            label23.AutoSize = true;
+            label23.Location = new Point(3, 41);
+            label23.Name = "label23";
+            label23.Size = new Size(49, 15);
+            label23.TabIndex = 11;
+            label23.Text = "K   Parts";
+            // 
+            // KPartInput_Nrn
+            // 
+            KPartInput_Nrn.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            KPartInput_Nrn.Location = new Point(60, 38);
+            KPartInput_Nrn.Name = "KPartInput_Nrn";
+            KPartInput_Nrn.Size = new Size(70, 23);
+            KPartInput_Nrn.TabIndex = 10;
+            KPartInput_Nrn.Validated += NrnIonChanged;
+            // 
+            // label24
+            // 
+            label24.AutoSize = true;
+            label24.Location = new Point(3, 12);
+            label24.Name = "label24";
+            label24.Size = new Size(51, 15);
+            label24.TabIndex = 9;
+            label24.Text = "Na Parts";
+            // 
+            // NaPartInput_Nrn
+            // 
+            NaPartInput_Nrn.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            NaPartInput_Nrn.Location = new Point(60, 9);
+            NaPartInput_Nrn.Name = "NaPartInput_Nrn";
+            NaPartInput_Nrn.Size = new Size(70, 23);
+            NaPartInput_Nrn.TabIndex = 8;
+            NaPartInput_Nrn.Validated += NrnIonChanged;
+            // 
             // NeuronNameInput
             // 
             NeuronNameInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            NeuronNameInput.Location = new Point(58, 3);
+            NeuronNameInput.Location = new Point(105, 6);
             NeuronNameInput.Name = "NeuronNameInput";
-            NeuronNameInput.Size = new Size(320, 23);
+            NeuronNameInput.Size = new Size(200, 23);
             NeuronNameInput.TabIndex = 8;
+            NeuronNameInput.TextChanged += NeuronNameInput_TextChanged;
             // 
             // NeuronTransmittersInput
             // 
-            NeuronTransmittersInput.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            NeuronTransmittersInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             NeuronTransmittersInput.FormattingEnabled = true;
-            NeuronTransmittersInput.Location = new Point(58, 105);
+            NeuronTransmittersInput.Location = new Point(6, 110);
             NeuronTransmittersInput.Name = "NeuronTransmittersInput";
-            NeuronTransmittersInput.Size = new Size(320, 76);
+            NeuronTransmittersInput.Size = new Size(299, 94);
             NeuronTransmittersInput.TabIndex = 7;
             // 
             // label4
             // 
-            label4.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label4.AutoSize = true;
-            label4.Location = new Point(307, 87);
+            label4.Location = new Point(3, 87);
             label4.Name = "label4";
             label4.Size = new Size(71, 15);
             label4.TabIndex = 6;
             label4.Text = "Transmitters";
             // 
-            // NeuronDecayInput
+            // NeuronResistanceInput
             // 
-            NeuronDecayInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            NeuronDecayInput.Location = new Point(58, 61);
-            NeuronDecayInput.Name = "NeuronDecayInput";
-            NeuronDecayInput.Size = new Size(320, 23);
-            NeuronDecayInput.TabIndex = 5;
+            NeuronResistanceInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            NeuronResistanceInput.Location = new Point(105, 61);
+            NeuronResistanceInput.Name = "NeuronResistanceInput";
+            NeuronResistanceInput.Size = new Size(200, 23);
+            NeuronResistanceInput.TabIndex = 5;
             // 
             // label3
             // 
@@ -525,26 +959,26 @@
             label3.Location = new Point(3, 61);
             label3.Name = "label3";
             label3.RightToLeft = RightToLeft.No;
-            label3.Size = new Size(39, 15);
+            label3.Size = new Size(62, 15);
             label3.TabIndex = 4;
-            label3.Text = "Decay";
+            label3.Text = "Resistance";
             // 
-            // NeuronBiasInput
+            // NeuronThresholdInput
             // 
-            NeuronBiasInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            NeuronBiasInput.Location = new Point(58, 32);
-            NeuronBiasInput.Name = "NeuronBiasInput";
-            NeuronBiasInput.Size = new Size(320, 23);
-            NeuronBiasInput.TabIndex = 3;
+            NeuronThresholdInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            NeuronThresholdInput.Location = new Point(105, 32);
+            NeuronThresholdInput.Name = "NeuronThresholdInput";
+            NeuronThresholdInput.Size = new Size(200, 23);
+            NeuronThresholdInput.TabIndex = 3;
             // 
             // label2
             // 
             label2.AutoSize = true;
             label2.Location = new Point(3, 32);
             label2.Name = "label2";
-            label2.Size = new Size(28, 15);
+            label2.Size = new Size(59, 15);
             label2.TabIndex = 2;
-            label2.Text = "Bias";
+            label2.Text = "Threshold";
             // 
             // NeuronPropertiesName
             // 
@@ -565,7 +999,7 @@
             InputProperties.Location = new Point(4, 24);
             InputProperties.Name = "InputProperties";
             InputProperties.Padding = new Padding(3);
-            InputProperties.Size = new Size(401, 187);
+            InputProperties.Size = new Size(311, 187);
             InputProperties.TabIndex = 2;
             InputProperties.Tag = "InputTag";
             InputProperties.Text = "Input Properties";
@@ -616,7 +1050,7 @@
             OutputProperties.Location = new Point(4, 24);
             OutputProperties.Name = "OutputProperties";
             OutputProperties.Padding = new Padding(3);
-            OutputProperties.Size = new Size(401, 187);
+            OutputProperties.Size = new Size(311, 187);
             OutputProperties.TabIndex = 3;
             OutputProperties.Tag = "OutputTag";
             OutputProperties.Text = "Output Properties";
@@ -653,7 +1087,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1023, 582);
+            ClientSize = new Size(1123, 582);
             Controls.Add(SplitContainer1);
             Controls.Add(statusStrip1);
             Controls.Add(menuStrip1);
@@ -688,8 +1122,20 @@
             PropertiesTabs.ResumeLayout(false);
             CircuitProperties.ResumeLayout(false);
             CircuitProperties.PerformLayout();
+            CircuitIonPanel.Panel1.ResumeLayout(false);
+            CircuitIonPanel.Panel1.PerformLayout();
+            CircuitIonPanel.Panel2.ResumeLayout(false);
+            CircuitIonPanel.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)CircuitIonPanel).EndInit();
+            CircuitIonPanel.ResumeLayout(false);
             NeuronProperties.ResumeLayout(false);
             NeuronProperties.PerformLayout();
+            NeuronIonPanel.Panel1.ResumeLayout(false);
+            NeuronIonPanel.Panel1.PerformLayout();
+            NeuronIonPanel.Panel2.ResumeLayout(false);
+            NeuronIonPanel.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)NeuronIonPanel).EndInit();
+            NeuronIonPanel.ResumeLayout(false);
             InputProperties.ResumeLayout(false);
             InputProperties.PerformLayout();
             OutputProperties.ResumeLayout(false);
@@ -746,9 +1192,9 @@
         private Label CircuitPropertiesName;
         private Label NeuronPropertiesName;
         private Label OutputPropertiesName;
-        private TextBox NeuronDecayInput;
+        private TextBox NeuronResistanceInput;
         private Label label3;
-        private TextBox NeuronBiasInput;
+        private TextBox NeuronThresholdInput;
         private Label label2;
         private Label label4;
         private CheckedListBox NeuronTransmittersInput;
@@ -757,5 +1203,43 @@
         private Label label5;
         private TextBox OutputDecayInput;
         private Label label6;
+        private SplitContainer CircuitIonPanel;
+        private Label label7;
+        private TextBox NaMolInput_Circ;
+        private Label label11;
+        private TextBox ClMolInput_Circ;
+        private Label label9;
+        private TextBox CaMolInput_Circ;
+        private Label label8;
+        private TextBox KMolInput_Circ;
+        private Label label12;
+        private TextBox ClPartInput_Circ;
+        private Label label13;
+        private TextBox CaPartInput_Circ;
+        private Label label15;
+        private TextBox KPartInput_Circ;
+        private Label label16;
+        private TextBox NaPartInput_Circ;
+        private SplitContainer NeuronIonPanel;
+        private Label label17;
+        private TextBox ClMolInput_Nrn;
+        private Label label18;
+        private TextBox CaMolInput_Nrn;
+        private Label label19;
+        private TextBox KMolInput_Nrn;
+        private Label label20;
+        private TextBox NaMolInput_Nrn;
+        private Label label21;
+        private TextBox ClPartInput_Nrn;
+        private Label label22;
+        private TextBox CaPartInput_Nrn;
+        private Label label23;
+        private TextBox KPartInput_Nrn;
+        private Label label24;
+        private TextBox NaPartInput_Nrn;
+        private Label label25;
+        private Label label27;
+        private Label RPlbl;
+        private Label NrnRestVLabel;
     }
 }

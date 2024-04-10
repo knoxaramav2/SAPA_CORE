@@ -16,9 +16,11 @@ namespace CircuitDesigner.Models
 
 
         public List<Pair<bool, Transmitter>> Transmitters { get; set; } = [];
-        public IonState Ions;
-        public float Bias { get; set; } = 1.0f;
-        public float Decay { get; set; } = 0.75f;
+        public IonState Ions { get; set; }
+        public float Threshold { get; set; } = -70.0f;
+        //public float Decay { get; set; } = 0.75f;
+        //public float Capacitance { get; set; } = 0.9f;
+        public float Resistance { get; set; } = 200;
 
         public float RestingPotential { get; private set; } = 0.0f;
 
@@ -28,10 +30,10 @@ namespace CircuitDesigner.Models
             ID = Guid.Empty;
             Pos = new();
             Ions = IonState.DefaultInternalState();
-            RecalculateIonicState();
+            //RecalculateIonicState();
         }
 
-        public NeuronModel(string name, Point? pos = null)
+        public NeuronModel(string name, IonState ionState, Point? pos = null)
         {
             Name = name;
             ID = Guid.NewGuid();
@@ -40,28 +42,37 @@ namespace CircuitDesigner.Models
             Transmitters = Definitions.TransmittersListInst();
             if (Transmitters.Count > 0) { Transmitters[0].Item1 = true; }
             Ions = IonState.DefaultInternalState();
-            RecalculateIonicState();
+            RecalculateIonicState(ionState);
         }
 
-        public void RecalculateIonicState()
+        public void RecalculateIonicState(IonState ionState)
         {
-            RestingPotential = CalcRestingPotential(Ions.Na, Ions.K, Ions.Ca, Ions.Cl);
+            RestingPotential = CalcRestingPotential(ionState.Na, ionState.K, ionState.Ca, ionState.Cl);
         }
 
-        private float CalcRestingPotential(
+        public float CalcRestingPotential(
             Sodium na,
             Potassium k,
             Calcium ca,
             Chloride cl
             )
         {
-            int parts = na.Parts + k.Parts + ca.Parts + cl.Parts;
-            float kq = k.Concentraion * (k.Parts/parts);
-            float naq = na.Concentraion * (na.Parts/parts);
-            float clq = cl.Concentraion * (cl.Parts/parts);
-            float caq = ca.Concentraion * (ca.Parts/parts);
+            int parts = Ions.K.Parts + Ions.Na.Parts + Ions.Ca.Parts + Ions.Cl.Parts;
+            float kq = Ion.ConcentrationCharge(Ion.IonType.POTASSIUM, Ions.K.Concentration, k.Concentration);
+            float kp = ((float)Ions.K.Parts / parts);
+            float naq = Ion.ConcentrationCharge(Ion.IonType.SODIUM, Ions.Na.Concentration, na.Concentration);
+            float np = ((float)Ions.Na.Parts / parts);
+            float clq = Ion.ConcentrationCharge(Ion.IonType.CHLORIDE, Ions.Cl.Concentration, cl.Concentration);
+            float clp = ((float)Ions.Cl.Parts / parts);
+            float caq = Ion.ConcentrationCharge(Ion.IonType.CALCIUM, Ions.Ca.Concentration, ca.Concentration);
+            float cap = ((float)Ions.Ca.Parts / parts);
 
-            return kq + naq + clq + caq;
+            float vk = kq * kp;
+            float vna = naq * np;
+            float vcl = clq * clp;
+            float vca = caq * cap;
+
+            return vk + vna + vcl + vca;
         }
     }
 }

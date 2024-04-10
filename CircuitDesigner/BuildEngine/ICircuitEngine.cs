@@ -18,6 +18,7 @@ namespace CircuitDesigner.BuildEngine
         Misc,
         NullConnector,
         NullNode,
+        OutOfSpec,
     }
 
     struct CircuitError

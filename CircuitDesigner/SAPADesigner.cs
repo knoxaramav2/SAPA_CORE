@@ -2,6 +2,7 @@ using CircuitDesigner.BuildEngine;
 using CircuitDesigner.Forms;
 using CircuitDesigner.Models;
 using CircuitDesigner.Util;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using static CircuitDesigner.Util.NCLogger;
 
@@ -21,14 +22,14 @@ namespace CircuitDesigner
 
         #region Bindings
 
-        internal void BindText(TextBox tbox, INodeModel model, string name)
+        internal void BindText(TextBox tbox, object model, string name)
         {
             tbox.DataBindings.Clear();
             tbox.DataBindings.Add("Text", model, name);
         }
         internal void BindTransmitterList(CheckedListBox cbox, NeuronModel model, string name)
         {
-            ((ListBox)cbox).DataSource = model.Transmitters;
+            ((ListBox)cbox).DataSource = model.Transmitters.Select(x => x.Item2.Name).ToList();
             //cbox.CheckedItems = model.Transmitters;
         }
 
@@ -387,7 +388,7 @@ namespace CircuitDesigner
             e.NewValue = e.CurrentValue;
         }
 
-        private void UpdateModelProperties(object sender, INodeModel model)
+        private void UpdateModelProperties(object? sender, INodeModel model)
         {
             LastUpdateModel = model;
             var currTab = PropertiesTabs.SelectedTab;
@@ -408,16 +409,33 @@ namespace CircuitDesigner
             else if (model is NeuronModel neuron)
             {
                 BindText(NeuronNameInput, neuron, nameof(neuron.Name));
-                BindText(NeuronBiasInput, neuron, nameof(neuron.Bias));
-                BindText(NeuronDecayInput, neuron, nameof(neuron.Decay));
+                BindText(NeuronThresholdInput, neuron, nameof(neuron.Threshold));
+                BindText(NeuronResistanceInput, neuron, nameof(neuron.Resistance));
                 BindTransmitterList(NeuronTransmittersInput, neuron, nameof(neuron.Transmitters));
                 UpdateTransmitterList(NeuronTransmittersInput, neuron);
+                BindText(NaMolInput_Nrn, neuron.Ions.Na, nameof(neuron.Ions.Na.Concentration));
+                BindText(NaPartInput_Nrn, neuron.Ions.Na, nameof(neuron.Ions.Na.Parts));
+                BindText(KMolInput_Nrn, neuron.Ions.K, nameof(neuron.Ions.K.Concentration));
+                BindText(KPartInput_Nrn, neuron.Ions.K, nameof(neuron.Ions.K.Parts));
+                BindText(ClMolInput_Nrn, neuron.Ions.Cl, nameof(neuron.Ions.Cl.Concentration));
+                BindText(ClPartInput_Nrn, neuron.Ions.Cl, nameof(neuron.Ions.Cl.Parts));
+                BindText(CaMolInput_Nrn, neuron.Ions.Ca, nameof(neuron.Ions.Ca.Concentration));
+                BindText(CaPartInput_Nrn, neuron.Ions.Ca, nameof(neuron.Ions.Ca.Parts));
+                NrnRestVLabel.Text = $"{neuron.RestingPotential:0.0000}";
                 selTab = PropertiesReference.FirstOrDefault(x => (string?)x.Tag == "NeuronTag");
             }
             else if (model is CircuitModel circuit)
             {
                 CircuitPropertiesName.Text = circuit.Name;
-                selTab = PropertiesReference.FirstOrDefault(x => (string?)x.Tag == "CircuitTag");
+                selTab = PropertiesReference.FirstOrDefault(x => (string?)x.Tag == "CircuitTab");
+                BindText(NaMolInput_Circ, circuit.Ions.Na, nameof(circuit.Ions.Na.Concentration));
+                BindText(NaPartInput_Circ, circuit.Ions.Na, nameof(circuit.Ions.Na.Parts));
+                BindText(KMolInput_Circ, circuit.Ions.K, nameof(circuit.Ions.K.Concentration));
+                BindText(KPartInput_Circ, circuit.Ions.K, nameof(circuit.Ions.K.Parts));
+                BindText(ClMolInput_Circ, circuit.Ions.Cl, nameof(circuit.Ions.Cl.Concentration));
+                BindText(ClPartInput_Circ, circuit.Ions.Cl, nameof(circuit.Ions.Cl.Parts));
+                BindText(CaMolInput_Circ, circuit.Ions.Ca, nameof(circuit.Ions.Ca.Concentration));
+                BindText(CaPartInput_Circ, circuit.Ions.Ca, nameof(circuit.Ions.Ca.Parts));
             }
 
             if (selTab == null || currTab == selTab) { return; }
@@ -435,28 +453,6 @@ namespace CircuitDesigner
             var sel = idList.First(x => x.Item1 == idx);
             DesignBoard.ZoomTo(sel.Item2);
         }
-
-        //private void NeuronTransmittersInput_SelectedValueChanged(object sender, EventArgs e)
-        //{
-        //    if (LastUpdateModel is not NeuronModel) { return; }
-        //    var neuron = (NeuronModel)LastUpdateModel;
-        //    var view = NeuronTransmittersInput;
-        //    if (view == null) { return; }
-
-        //    for (var i = 0; i < view.Items.Count; ++i)
-        //    {
-        //        var trans = (Transmitter)view.Items[i];
-        //        var isChecked = view.GetItemChecked(i);
-        //        if (isChecked && !neuron.Transmitters.Contains(trans))
-        //        {
-        //            neuron.Transmitters.Add(trans);
-        //        }
-        //        else if (neuron.Transmitters.Contains(trans))
-        //        {
-        //            neuron.Transmitters.Remove(trans);
-        //        }
-        //    }
-        //}
 
         private void ToolStripBuild_Click(object sender, EventArgs e)
         {
@@ -487,16 +483,9 @@ namespace CircuitDesigner
 
         private void UpdateTransmitterList(CheckedListBox listbox, NeuronModel model)
         {
-            var view = (ListBox)listbox;
-            //view.DataSource = ProjectState.Transmitters;
-            //view.DisplayMember = "Name";
-            //view.ValueMember = nameof(Pair<bool, Transmitter>.Item1);
-
             for (var i = 0; i < listbox.Items.Count; i++)
             {
                 listbox.SetItemChecked(i, model.Transmitters[i].Item1);
-                //var trans = view.Items[i] as Pair<bool, Transmitter>;
-                //listbox.SetItemChecked(i, model.Transmitters.Any(x => x.Item1));
             }
         }
 
@@ -515,5 +504,15 @@ namespace CircuitDesigner
         }
 
         #endregion
+
+        private void NrnIonChanged(object sender, EventArgs e)
+        {
+            DesignBoard.RecalculateNeuron(ProjectState.CurrentCircuit);
+        }
+
+        private void NeuronNameInput_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

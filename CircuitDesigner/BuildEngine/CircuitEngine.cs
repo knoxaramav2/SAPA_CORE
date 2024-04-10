@@ -18,7 +18,9 @@ namespace CircuitDesigner.BuildEngine
         readonly Dictionary<Guid, List<INodeModel>> SubInputs = [];
         readonly Dictionary<Guid, List<INodeModel>> SubOutputs = [];
         readonly List<IDendriteModel> Dendrites = [];
-        readonly Dictionary<Guid, (int, NeuronModel)> Neurons = [];
+        readonly Dictionary<Guid, (int, int, CircuitModel)> Circuits = [];
+        readonly Dictionary<Guid, (int, int, NeuronModel, CircuitModel)> Neurons = [];
+        readonly Dictionary<(int, float, int, float, int, float, int, float), (int, IonState)> Ions = [];
         private List<CircuitError> Errors = [];
 
         public CircuitEngine(ProjectState project, ToolStripProgressBar? progress)
@@ -30,6 +32,7 @@ namespace CircuitDesigner.BuildEngine
                 Progress.Minimum = 0;
                 Progress.Maximum = Project.RootCircuit.ComponentCountRec();
                 Progress.Step = 1;
+                Progress.ForeColor = default;
             }
         }
 
@@ -64,6 +67,8 @@ $@"#PROJECT={Project.ProjectName}
 
 {ComposeInputs()}
 {ComposeOutputs()}
+{ComposeIons()}
+{ComposeCircuits()}
 {ComposeNeurons()}
 {Compose(Project.RootCircuit)}
 ";
@@ -72,7 +77,7 @@ $@"#PROJECT={Project.ProjectName}
         private string Compose(CircuitModel circuit)
         {
             Dictionary<Guid, int> idxDict = [];
-            string ret = "$CIRCUIT\n";
+            string ret = "NETWORK\n";
 
             foreach (var ddr in Dendrites)
             {
@@ -84,21 +89,65 @@ $@"#PROJECT={Project.ProjectName}
             return ret;
         }
 
+        private string ComposeCircuits()
+        {
+            string ret = $"TABLE:CIRCUIT\n";
+
+            for(var i = 0; i < Circuits.Count; ++i)
+            {
+                var data = Circuits.ElementAt(i);
+                var idx = data.Value.Item1;
+                var iidx = data.Value.Item2;
+                var circ = data.Value.Item3;
+                ret += $"{idx},{iidx}\n";
+            }
+
+            return ret;
+        }
+
+        private string ComposeIons()
+        {
+            string ret = "$TABLE:IONS\n";
+
+            foreach(var ion in Ions.Values)
+            {
+                var iid = ion.Item1;
+                var dat = ion.Item2;
+                ret += $"{iid}," +
+                    $"{dat.Na.Parts},{dat.Na.Concentration}," +
+                    $"{dat.K.Parts},{dat.K.Concentration}," +
+                    $"{dat.Ca.Parts},{dat.Ca.Concentration}," +
+                    $"{dat.Cl.Parts},{dat.Cl.Concentration}\n";
+            }
+
+            return ret;
+        }
+
         private string ComposeNeurons()
         {
             string ret = "$TABLE:NEURONS\n";
             for (var i = 0; i < Neurons.Count; ++i)
             {
                 var neuron = Neurons.ElementAt(i).Value;
+                var idx = neuron.Item1;
+                var iid = neuron.Item2;
+                var data = neuron.Item3;
+                var circuit = neuron.Item4;
+                Circuits.TryGetValue(circuit.ID, out var ctple);
                 UInt64 ntb = 0;
-
-                for (var j = 0; j < neuron.Item2.Transmitters.Count(); ++j)
+                if (data.Transmitters.Count >= 64)
                 {
-                    ntb |= (uint)(neuron.Item2.Transmitters[j].Item1?1:0)<<j;
+                    LogError($"Neuron({idx}) {data.Name} transmitter list out of range. ({data.Transmitters.Count}/64)", CircuitErrorCode.OutOfSpec);
+                }
+                for (var j = 0; j < data.Transmitters.Count() && j < 64; ++j)
+                {
+                    ntb |= (uint)(data.Transmitters[j].Item1?1:0)<<j;
                 }
 
-                var idx = neuron.Item1;
-                ret += $"{idx},{neuron.Item2.Name},0,{neuron.Item2.Bias},{neuron.Item2.Decay},{ntb},False\n";
+                
+                data.RecalculateIonicState(circuit.Ions);
+                //Index, Name, charge, threshold, resistance, resting potential, transmitters, refactory
+                ret += $"{idx},{iid},{data.Name},0,{data.Threshold},{data.Resistance},{data.RestingPotential},{ntb},False\n";
             }
 
             return ret;
@@ -190,6 +239,8 @@ $@"#PROJECT={Project.ProjectName}
 
         private void ConstructCircuit(CircuitModel circuit)
         {
+            var iid = RegisterIon(circuit.Ions);
+            Circuits.Add(circuit.ID, (Circuits.Count, iid, circuit));
             foreach(var neuron in circuit.Neurons) { RegisterNeuron(neuron, circuit); }
             foreach(var input in circuit.Inputs) { RegisterInput(input, circuit); }
             foreach(var output in circuit.Outputs) { RegisterOutput(output, circuit); }
@@ -249,12 +300,34 @@ $@"#PROJECT={Project.ProjectName}
             Progress?.PerformStep();
         }
 
+        private int RegisterIon(IonState state)
+        {
+            int iid;
+            var key = (
+                state.Na.Parts, state.Na.Concentration,
+                state.K.Parts, state.K.Concentration,
+                state.Ca.Parts, state.Ca.Concentration,
+                state.Cl.Parts, state.Cl.Concentration
+                );
+
+            if(Ions.TryGetValue(key, out var val))
+            {
+                iid = val.Item1;
+            } else
+            {
+                iid = Ions.Count;
+                Ions.Add(key, (iid, state));
+            }
+
+            return iid;
+        }
+
         private void RegisterNeuron(NeuronModel neuron, CircuitModel circuit)
         {
             var nid = AllNodes.Count;
-            Neurons[neuron.ID] = (nid, neuron);
+            var iid = RegisterIon(neuron.Ions);
+            Neurons[neuron.ID] = (nid, iid, neuron, circuit);
             AllNodes[neuron.ID] = (nid, neuron);
-
             Progress?.PerformStep();
         }
 
@@ -262,6 +335,7 @@ $@"#PROJECT={Project.ProjectName}
         {
             NCLogger.Log(msg, NCLogger.LogType.ERR, true);
             Errors.Add(new CircuitError(msg, errCode));
+            if(Progress != null) { Progress.ForeColor = Color.Red; }
         }
 
         #endregion

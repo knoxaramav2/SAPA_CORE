@@ -26,7 +26,7 @@ namespace CircuitDesigner.Controls
         public NeuronNode()
         {
             InitializeComponent();
-            Model = new("---");
+            Model = new("---", IonState.DefaultInternalState());
         }
 
         public NeuronNode(DesignBoard board, NeuronModel model) : base(board, model)

@@ -12,7 +12,7 @@ SAPACORE::File::NetworkSetupDetails SAPACORE::File::Load(std::string path)
 	ifile.open(path);
 	if (!ifile.is_open()) { throw SapaException(std::format("Unable to open project file at {}", path)); }
 
-	enum ReadMode{RM_HEADER, RM_INPUTS, RM_OUTPUTS, RM_NEURONS, RM_CIRCUIT};
+	enum ReadMode{RM_HEADER, RM_INPUTS, RM_OUTPUTS, RM_NEURONS, RM_NETWORK, RM_CIRCUIT};
 
 	NetworkSetupDetails ret;
 
@@ -27,13 +27,14 @@ SAPACORE::File::NetworkSetupDetails SAPACORE::File::Load(std::string path)
 		if (terms.size() == 0) { continue; }
 		
 		if (terms.size() == 1) {
-			if (terms[0] == "$CIRCUIT") { mode = RM_CIRCUIT; continue; }
+			if (terms[0] == "$NETWORK") { mode = RM_NETWORK; continue; }
 		}
 		else if (terms.size() == 2) {
 			if (terms[0] == "$TABLE") {
 				if (terms[1] == "INPUTS") { mode = RM_INPUTS; continue; }
 				else if (terms[1] == "OUTPUTS") { mode = RM_OUTPUTS; continue; }
 				else if (terms[1] == "NEURONS") { mode = RM_NEURONS; continue; }
+				else if (terms[1] == "CIRCUIT") { mode = RM_NETWORK; continue; }
 			}
 		}
 
@@ -72,13 +73,18 @@ SAPACORE::File::NetworkSetupDetails SAPACORE::File::Load(std::string path)
 			}
 			break;
 			case RM_CIRCUIT:
+
+				break;
+			case RM_NETWORK:
 				for (size_t i = 0; i < terms.size(); i += 3) {
 					int sendIdx = stoi(terms[i]);
 					float weight = stof(terms[i + 1]);
 					int recIdx = stoi(terms[i+2]);
 					ret.CircuitParam.push_back({sendIdx, weight, recIdx});
 				}
-			default:break;
+				break;
+			default:
+				break;
 		}
 	}
 

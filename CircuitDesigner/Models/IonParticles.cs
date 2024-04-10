@@ -57,8 +57,8 @@ namespace CircuitDesigner.Models
         }
 
         public IonType Type { get; protected set; }
-        public int Parts { get; protected set; }
-        public float Concentraion { get; protected set; }
+        public int Parts { get; set; }
+        public float Concentration { get; set; }
 
         [JsonConstructor]
         public Ion() { }
@@ -66,15 +66,16 @@ namespace CircuitDesigner.Models
         public Ion(IonType type, int parts, float concentraion) {
             Type = type;
             Parts = parts;
-            Concentraion = concentraion;
+            Concentration = concentraion;
         }
 
         //Nernst equation
-        public float ConcentrationCharge(IonType type, float inConcentration,  float outConcentration) {
+        public static float ConcentrationCharge(IonType type, float inConcentration,  float outConcentration) {
 
             float ionCharge = type == IonType.CALCIUM ? 30.75f : 61.5f;
-            var charge = (float)(ionCharge * Math.Log(inConcentration/outConcentration));
-            return type == IonType.CHLORIDE ? -charge : charge;
+            var charge = (float)(ionCharge * Math.Log10(inConcentration/outConcentration));
+            var ret = type == IonType.CHLORIDE ? -charge : charge;
+            return ret;
         }
     }
 
@@ -87,7 +88,7 @@ namespace CircuitDesigner.Models
         {
             Type = IonType.SODIUM;
             Parts = parts;
-            Concentraion = concentration;
+            Concentration = concentration;
         }
     
         public void SetParts(int value)
@@ -97,7 +98,7 @@ namespace CircuitDesigner.Models
 
         public void SetConcentration(float value)
         {
-            Concentraion = value;
+            Concentration = value;
         }
     }
 
@@ -110,7 +111,7 @@ namespace CircuitDesigner.Models
         {
             Type = IonType.POTASSIUM;
             Parts = parts;
-            Concentraion = concentration;
+            Concentration = concentration;
         }
     }
 
@@ -123,7 +124,7 @@ namespace CircuitDesigner.Models
         {
             Type = IonType.CHLORIDE;
             Parts = parts;
-            Concentraion = concentration;
+            Concentration = concentration;
         }
     }
 
@@ -136,16 +137,16 @@ namespace CircuitDesigner.Models
         {
             Type = IonType.SODIUM;
             Parts = parts;
-            Concentraion = concentration;
+            Concentration = concentration;
         }
     }
 
     public class IonState
     {
-        public Sodium Na { get; private set; }
-        public Potassium K { get; private set; }
-        public Calcium Ca { get; private set; }
-        public Chloride Cl { get; private set; }
+        public Sodium Na { get; set; }
+        public Potassium K { get; set; }
+        public Calcium Ca { get; set; }
+        public Chloride Cl { get; set; }
 
         [JsonConstructor]
         public IonState() { }
