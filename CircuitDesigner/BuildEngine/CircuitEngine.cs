@@ -64,6 +64,7 @@ $@"#PROJECT={Project.ProjectName}
 #INPUTS={Project.RootCircuit.Inputs.Count}
 #OUTPUTS={Project.RootCircuit.Outputs.Count}
 #CIRCUITS={Project.RootCircuit.CountCircuits()}
+#IONS={Ions.Count}
 
 {ComposeInputs()}
 {ComposeOutputs()}
@@ -99,7 +100,7 @@ $@"#PROJECT={Project.ProjectName}
                 var idx = data.Value.Item1;
                 var iidx = data.Value.Item2;
                 var circ = data.Value.Item3;
-                ret += $"{idx},{iidx}\n";
+                ret += $"{idx},{iidx},{circ.Name}\n";
             }
 
             return ret;
@@ -134,6 +135,7 @@ $@"#PROJECT={Project.ProjectName}
                 var data = neuron.Item3;
                 var circuit = neuron.Item4;
                 Circuits.TryGetValue(circuit.ID, out var ctple);
+                var ciid = ctple.Item2;
                 UInt64 ntb = 0;
                 if (data.Transmitters.Count >= 64)
                 {
@@ -143,11 +145,10 @@ $@"#PROJECT={Project.ProjectName}
                 {
                     ntb |= (uint)(data.Transmitters[j].Item1?1:0)<<j;
                 }
-
                 
                 data.RecalculateIonicState(circuit.Ions);
                 //Index, Name, charge, threshold, resistance, resting potential, transmitters, refactory
-                ret += $"{idx},{iid},{data.Name},0,{data.Threshold},{data.Resistance},{data.RestingPotential},{ntb},False\n";
+                ret += $"{idx},{iid},{ciid},{data.Name},0,{data.Threshold},{data.Resistance},{data.RestingPotential},{ntb},False\n";
             }
 
             return ret;

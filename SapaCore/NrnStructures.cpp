@@ -7,15 +7,20 @@
 #include "SNCFileIO.h"
 #include "iostream"
 
-SAPACORE::Neuron::Neuron(int index, float charge, float bias, float decay, UINT64 transcode, bool refactory)
+SAPACORE::Neuron::Neuron(int index, float charge, float bias, float resistance,
+	float resting, UINT64 transcode, bool refactory,
+	IonState* interIons, IonState* intraIons)
 {
 	__index = index;
 	__charge = charge;
 	__bias = bias;
-	__decayRate = decay;
+	__resistance = resistance;
+	__resting = resting;
 	__transCode = transcode;
 	__refactory = refactory;
 	__hCharge = __refactory ? -bias : 0;
+	__intercell = interIons;
+	__intracell = intraIons;
 }
 
 void SAPACORE::Neuron::UpdateLocalState()
@@ -25,7 +30,7 @@ void SAPACORE::Neuron::UpdateLocalState()
 	}
 	else {
 		__refactory = __charge >= __bias;
-		__charge *= __decayRate;
+		__charge *= __resistance;
 	}
 }
 
@@ -44,7 +49,7 @@ std::tuple<bool, UINT32> SAPACORE::Neuron::GetSignal()
 
 void SAPACORE::IOCell::UpdateLocalState()
 {
-	__charge *= __decayRate;
+	__charge *= __resistance;
 }
 
 void SAPACORE::IOCell::UpdateStimuliState()
@@ -60,7 +65,7 @@ SAPACORE::Output::Output(int index, bool enabled, float decay)
 	__index = index;
 	__charge = 0;
 	__enabled = enabled;
-	__decayRate = decay;
+	__resistance = decay;
 	__bias = 1;
 	__max = 1;
 	__min = 0;
@@ -76,7 +81,7 @@ SAPACORE::Input::Input(int index, bool enabled, float decay)
 	__index = index;
 	__charge = 0;
 	__enabled = enabled;
-	__decayRate = decay;
+	__resistance = decay;
 	__bias = 1;
 	__max = 1;
 	__min = 0;
@@ -169,11 +174,21 @@ void SAPACORE::SapaNetwork::DevPrint()
 SAPACORE::SapaNetwork::SapaNetwork(
 	std::vector<InputDef> inputs, std::vector<OutputDef> outputs, 
 	std::vector<NeuronDef> neurons,
-	std::vector<CircuitDef> connections)
+	std::vector<NetworkDef> connections,
+	std::vector<IonDef> ions,
+	std::vector<CircuitDef> circuits)
 {
 	__numInputs = inputs.size();
 	__numOutputs = outputs.size();
 	__numNeurons = neurons.size();
+	__numIonStates = ions.size();
+
+	__ionStates = new IonState*[__numIonStates ];
+	for (size_t i = 0; i < __numIonStates; ++i) {
+		const auto& [idx, nap, nac, kp, kc, cap, cac, clp, clc] = ions[i];
+		if (idx >= __numIonStates) { throw SapaException("Ion definition index out of range"); }
+		__ionStates[idx] = new IonState(nap, nac, kp, kc, cap, cac, clp, clc);
+	}
 
 	__inputs = new Input*[__numInputs];
 	int minIdx, maxIdx;
@@ -197,8 +212,10 @@ SAPACORE::SapaNetwork::SapaNetwork(
 
 	__neurons = new Neuron * [__numNeurons];
 	for (size_t i = 0; i < __numNeurons; ++i) {
-		const auto& [idx, name, charge, bias, decay, transcode, refactory] = neurons[i];
-		__neurons[i] = new Neuron(idx, charge, bias, decay, transcode, refactory);
+		const auto& [idx, ioni, ione, name, charge, bias, resistance, resting, transcode, refactory] = neurons[i];
+		IonState* inter = __ionStates[ioni];
+		IonState* intra = __ionStates[ione];
+		__neurons[i] = new Neuron(idx, charge, bias, resistance, resting, transcode, refactory, inter, intra);
 	}
 	minIdx = __neurons[0]->__index;
 	maxIdx = __neurons[__numNeurons - 1]->__index;

@@ -44,7 +44,9 @@ int main()
 {
     std::string prjPath = "G:\\Dev\\SapaCore\\CircuitDesigner\\bin\\Debug\\net8.0-windows\\Build\\fibertest.snc";
     auto params = SAPACORE::File::Load(prjPath);
-    SAPACORE::SapaNetwork network(params.InputParam, params.OutputParam, params.NeuronParam, params.CircuitParam);
+    SAPACORE::SapaNetwork network(
+        params.InputParam, params.OutputParam, params.NeuronParam, params.NetworkParam,
+        params.IonParam, params.CircuitParam);
     
     RunNetwork(network);
 }

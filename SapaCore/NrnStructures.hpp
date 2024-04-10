@@ -15,14 +15,40 @@ namespace SAPACORE {
 
 	typedef std::tuple<int, std::string, bool, float> InputDef;
 	typedef std::tuple<int, std::string, bool, float> OutputDef;
-	typedef std::tuple<int, std::string, float, float, float, UINT64, bool> NeuronDef;
-	typedef std::tuple<int, float, int> CircuitDef;
+	typedef std::tuple<int, int, int, std::string, float, float, float, float, UINT64, bool> NeuronDef;
+	typedef std::tuple<int, int, std::string>CircuitDef;
+	typedef std::tuple<int, int, float, int, float, int, float, int, float> IonDef;
+	typedef std::tuple<int, float, int> NetworkDef;
+
+	struct IonState {
+		int NaParts;
+		float NaConcentration;
+		int KParts;
+		float KConcenctration;
+		int CaParts;
+		float CaConcentration;
+		int ClParts;
+		float ClConcentration;
+
+		IonState(
+			int nap, float nac, int kp, float kc,
+			int cap, float cac, int clp, float clc) {
+			NaParts = nap;
+			NaConcentration = nac;
+			KParts = kp;
+			KConcenctration = kc;
+			CaParts = cap;
+			CaConcentration = cac;
+			ClParts = clp;
+			ClConcentration = clc;
+		}
+	};
 
 	class QCell {
 	protected:
 		float __charge;
 		float __bias;
-		float __decayRate;//__decay illegal for some reason
+		float __resistance;
 		int __index;
 		UINT64 __transCode;
 		UINT32 __transmitter;
@@ -41,8 +67,12 @@ namespace SAPACORE {
 	class Neuron: public QCell {
 		bool __refactory;
 		float __hCharge;
+		float __resting;
+		IonState* __intercell;
+		IonState* __intracell;
 	public:
-		Neuron(int index, float charge, float bias, float decay, UINT64 transcode, bool refactory);
+		Neuron(int index, float charge, float thresh, float resitance, 
+			float resting, UINT64 transcode, bool refactory, IonState* inter, IonState*intra);
 		void UpdateLocalState();
 		void UpdateStimuliState();
 		std::tuple<bool, UINT32> GetSignal();
@@ -93,7 +123,7 @@ namespace SAPACORE {
 		Input** __inputs; size_t __numInputs; std::tuple<int, int> __inIdxRng;
 		Output** __outputs; size_t __numOutputs; std::tuple<int, int> __outIdxRng;
 		Neuron** __neurons; size_t __numNeurons; std::tuple<int, int> __netIdxRng;
-		//std::vector<Dendrite*> __dendrites;
+		IonState** __ionStates; size_t __numIonStates;
 
 		Neuron* __findNeuronByIdx(int idx);
 		Input* __findInputByIdx(int idx);
@@ -106,7 +136,9 @@ namespace SAPACORE {
 			std::vector<InputDef> inputs, 
 			std::vector<OutputDef> outputs,
 			std::vector<NeuronDef> neurons,
-			std::vector<CircuitDef> connections);
+			std::vector<NetworkDef> connections,
+			std::vector<IonDef> ions,
+			std::vector<CircuitDef> circuits);
 		SAPICORE_API ~SapaNetwork();
 
 		SAPICORE_API float GetOutput(size_t index);
