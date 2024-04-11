@@ -12,6 +12,8 @@ namespace CircuitDesigner.Models
     {
         [JsonConstructor]
         public OutputModel() { }
-        public OutputModel(string name, Point? pos = null) : base(name, pos) { }
+        public OutputModel(string name, Point? pos = null) : base(name, pos) {
+            Decay = 0.0f;
+        }
     }
 }

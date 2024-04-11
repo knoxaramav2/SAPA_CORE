@@ -143,9 +143,11 @@
   <ItemGroup>
     <ClInclude Include="commondef.hpp" />
     <ClInclude Include="Error.hpp" />
+    <ClInclude Include="FileUtil.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="NetworkIOAdapter.h" />
     <ClInclude Include="NrnStructures.hpp" />
+    <ClInclude Include="OS.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Prototypes.hpp" />
     <ClInclude Include="sapi.hpp" />
@@ -155,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="FileUtil.cpp" />
     <ClCompile Include="NetworkIOAdapter.cpp" />
     <ClCompile Include="NrnStructures.cpp" />
     <ClCompile Include="pch.cpp">

@@ -1,36 +1,38 @@
 #include "pch.h"
 
 #include <Bits.h>
+#include <format>
+#include <iostream>
 
 #include "NrnStructures.hpp"
 #include "Error.hpp"
 #include "SNCFileIO.h"
-#include "iostream"
+#include "FileUtil.h"
 
-SAPACORE::Neuron::Neuron(int index, float charge, float bias, float resistance,
+SAPACORE::Neuron::Neuron(int index, float charge, float thresh, float resistance,
 	float resting, UINT64 transcode, bool refactory,
 	IonState* interIons, IonState* intraIons)
 {
 	__index = index;
 	__charge = charge;
-	__bias = bias;
+	__threshold = thresh;
 	__resistance = resistance;
 	__resting = resting;
 	__transCode = transcode;
 	__refactory = refactory;
-	__hCharge = __refactory ? -bias : 0;
+	__hCharge = __refactory ? -thresh : 0;
 	__intercell = interIons;
 	__intracell = intraIons;
 }
 
 void SAPACORE::Neuron::UpdateLocalState()
 {
+	__refactory = __charge >= __threshold;
 	if (__refactory) {
-
+		__charge -= (__charge-__resting)/2;
 	}
 	else {
-		__refactory = __charge >= __bias;
-		__charge *= __resistance;
+		__charge *= 0.8f;
 	}
 }
 
@@ -44,7 +46,12 @@ void SAPACORE::Neuron::UpdateStimuliState()
 
 std::tuple<bool, UINT32> SAPACORE::Neuron::GetSignal()
 {
-	return std::tuple<bool, UINT32>(!__refactory && __charge >= __bias, __transmitter);
+	return std::tuple<bool, UINT32>(!__refactory && __charge >= __threshold, __transmitter);
+}
+
+float SAPACORE::Dendrite::GetCharge()
+{
+	return weight * get<0>(sender->GetSignal());
 }
 
 void SAPACORE::IOCell::UpdateLocalState()
@@ -60,13 +67,18 @@ void SAPACORE::IOCell::UpdateStimuliState()
 	}
 }
 
+float SAPACORE::IOCell::GetCharge()
+{
+	return __charge;
+}
+
 SAPACORE::Output::Output(int index, bool enabled, float decay)
 {
 	__index = index;
 	__charge = 0;
 	__enabled = enabled;
 	__resistance = decay;
-	__bias = 1;
+	__threshold = .9;
 	__max = 1;
 	__min = 0;
 }
@@ -82,8 +94,8 @@ SAPACORE::Input::Input(int index, bool enabled, float decay)
 	__charge = 0;
 	__enabled = enabled;
 	__resistance = decay;
-	__bias = 1;
-	__max = 1;
+	__threshold = 1;
+	__max = 100;
 	__min = 0;
 }
 
@@ -186,7 +198,7 @@ SAPACORE::SapaNetwork::SapaNetwork(
 	__ionStates = new IonState*[__numIonStates ];
 	for (size_t i = 0; i < __numIonStates; ++i) {
 		const auto& [idx, nap, nac, kp, kc, cap, cac, clp, clc] = ions[i];
-		if (idx >= __numIonStates) { throw SapaException("Ion definition index out of range"); }
+		if ((size_t)idx >= __numIonStates) { throw SapaException("Ion definition index out of range"); }
 		__ionStates[idx] = new IonState(nap, nac, kp, kc, cap, cac, clp, clc);
 	}
 
@@ -290,12 +302,21 @@ void SAPACORE::QCell::PruneConnection(QCell* sender)
 
 std::tuple<bool, UINT32> SAPACORE::QCell::GetSignal()
 {
-	return std::tuple<bool, UINT32>(__charge>=__bias, __transmitter);
+	return std::tuple<bool, UINT32>(__charge>=__threshold, __transmitter);
+}
+
+float SAPACORE::QCell::GetCharge()
+{
+	return __charge;
 }
 
 SAPACORE::SapaDiagnostic::SapaDiagnostic(SapaNetwork& network)
 {
 	__network = &network;
+	
+	auto baseDir = GetEXEPath();
+	__diagDir = baseDir + L"/Data";
+	__snapSlice = 0;
 }
 
 #define CB(x)(x?'+':'-')
@@ -333,7 +354,65 @@ void SAPACORE::SapaDiagnostic::PrintActivity()
 	printf("\r\n__________________________\r\n");
 }
 
-float SAPACORE::Dendrite::GetCharge()
+SAPICORE_API void SAPACORE::SapaDiagnostic::Snapshot()
 {
-	return weight*get<0>(sender->GetSignal());
+	std::vector<float> data;
+	static unsigned sliceStep = 0;
+
+	if (++sliceStep%(__snapSlice+1) != 0) { return; }
+	
+	for (size_t i = 0; i < __network->__numInputs; ++i) {
+		data.push_back(__network->__inputs[i]->GetCharge());
+	}
+
+	for (size_t i = 0; i < __network->__numOutputs; ++i) {
+		data.push_back(__network->__outputs[i]->GetCharge());
+	}
+
+	for (size_t i = 0; i < __network->__numNeurons; ++i) {
+		data.push_back(__network->__neurons[i]->GetCharge());
+	}
+
+	__snapVals.push_back(data);
+}
+
+SAPICORE_API std::string SAPACORE::SapaDiagnostic::GetCSV()
+{
+	std::string ret;
+	for (size_t i = 0; i < __network->__numInputs; ++i) {
+		ret += std::format("I{},", i);
+	}
+	for (size_t i = 0; i < __network->__numOutputs; ++i) {
+		ret += std::format("O{},", i);
+	}
+	for (size_t i = 0; i < __network->__numNeurons; ++i) {
+		ret += std::format("N{},", i);
+	}
+	ret.pop_back();
+	ret += "\r\n";
+	for (auto& line : __snapVals) {
+		for (float val : line) {
+			ret += std::format("{},", val);
+		}
+		ret.pop_back();
+		ret += "\r\n";
+	}
+	ret += "\r\n";
+	return ret;
+}
+
+SAPICORE_API void SAPACORE::SapaDiagnostic::SaveCSV()
+{
+	SaveCSV(__diagDir+L"/run_data.csv");
+}
+
+SAPICORE_API void SAPACORE::SapaDiagnostic::SaveCSV(String path)
+{
+	AssurePath(path);
+	SaveFile(path, GetCSV());
+}
+
+SAPICORE_API void SAPACORE::SapaDiagnostic::SetSnapSlice(unsigned size)
+{
+	__snapSlice = size;
 }

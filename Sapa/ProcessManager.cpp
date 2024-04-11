@@ -8,7 +8,7 @@ void SAPA::NetworkProcessManager::__controlFnc()
 	int i = 0;
 
 	auto startTime = time(0);
-	auto endTime = startTime + (60 * 1);
+	auto endTime = startTime + (20 * 1);
 
 	while (__running) {
 		//Input feed
@@ -25,6 +25,8 @@ void SAPA::NetworkProcessManager::__controlFnc()
 		__neurons->DevPrint();
 		++i;
 
+		if (__diagnostic != nullptr) { __diagnostic->Snapshot(); }
+
 		//printf("________________________________________\r\n");
 		if (time(0)>=endTime) { Stop(); }
 	}
@@ -39,6 +41,14 @@ SAPA::NetworkProcessManager::NetworkProcessManager(
 	__iAdapter = adapter.GetInputAdapter();
 	__oAdapter = adapter.GetOutputAdapter();
 	__running = false;
+	__diagnostic = nullptr;
+}
+
+SAPA::NetworkProcessManager::NetworkProcessManager(
+	SAPACORE::SapaNetwork& network, SAPACORE::NetworkIOAdapter& adapter, 
+	SAPACORE::SapaDiagnostic& diagnostic): NetworkProcessManager(network, adapter)
+{
+	__diagnostic = &diagnostic;
 }
 
 SAPICORE_API void SAPA::NetworkProcessManager::Start()

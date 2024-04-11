@@ -78,7 +78,7 @@ $@"#PROJECT={Project.ProjectName}
         private string Compose(CircuitModel circuit)
         {
             Dictionary<Guid, int> idxDict = [];
-            string ret = "NETWORK\n";
+            string ret = "$NETWORK\n";
 
             foreach (var ddr in Dendrites)
             {
@@ -92,7 +92,7 @@ $@"#PROJECT={Project.ProjectName}
 
         private string ComposeCircuits()
         {
-            string ret = $"TABLE:CIRCUIT\n";
+            string ret = $"$TABLE:CIRCUIT\n";
 
             for(var i = 0; i < Circuits.Count; ++i)
             {
@@ -148,7 +148,7 @@ $@"#PROJECT={Project.ProjectName}
                 
                 data.RecalculateIonicState(circuit.Ions);
                 //Index, Name, charge, threshold, resistance, resting potential, transmitters, refactory
-                ret += $"{idx},{iid},{ciid},{data.Name},0,{data.Threshold},{data.Resistance},{data.RestingPotential},{ntb},False\n";
+                ret += $"{idx},{iid},{ciid},{data.Name},{data.RestingPotential},{data.Threshold},{data.Resistance},{data.RestingPotential},{ntb},False\n";
             }
 
             return ret;

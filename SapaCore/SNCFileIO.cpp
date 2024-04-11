@@ -34,7 +34,7 @@ SAPACORE::File::NetworkSetupDetails SAPACORE::File::Load(std::string path)
 				if (terms[1] == "INPUTS") { mode = RM_INPUTS; continue; }
 				else if (terms[1] == "OUTPUTS") { mode = RM_OUTPUTS; continue; }
 				else if (terms[1] == "NEURONS") { mode = RM_NEURONS; continue; }
-				else if (terms[1] == "CIRCUIT") { mode = RM_NETWORK; continue; }
+				else if (terms[1] == "CIRCUIT") { mode = RM_CIRCUIT; continue; }
 				else if (terms[1] == "IONS") { mode = RM_IONS; continue; }
 			}
 		}
@@ -62,8 +62,8 @@ SAPACORE::File::NetworkSetupDetails SAPACORE::File::Load(std::string path)
 			case RM_NEURONS: {
 				if (terms.size() != 10) { throw SapaException(std::format("Invalid input definition: line {}", lineno)); }
 				int idx = stoi(terms[0]);
-				int ionInter = stof(terms[1]);
-				int ionIntra = stof(terms[2]);
+				int ionInter = stoi(terms[1]);
+				int ionIntra = stoi(terms[2]);
 				std::string name = terms[3];
 				float charge = stof(terms[4]);
 				float thresh = stof(terms[5]);
@@ -78,7 +78,7 @@ SAPACORE::File::NetworkSetupDetails SAPACORE::File::Load(std::string path)
 			break;
 			case RM_CIRCUIT: {
 				int idx = stoi(terms[0]);
-				int ionIdx = stof(terms[1]);
+				int ionIdx = stoi(terms[1]);
 				std::string name = terms[2];
 				ret.CircuitParam.push_back(CircuitDef{ idx, ionIdx, name });
 				}

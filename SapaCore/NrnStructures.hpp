@@ -3,9 +3,10 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <Bits.h>
 
 #include "commondef.hpp"
-#include <Bits.h>
+#include "OS.hpp"
 
 namespace SAPACORE {
 
@@ -47,7 +48,7 @@ namespace SAPACORE {
 	class QCell {
 	protected:
 		float __charge;
-		float __bias;
+		float __threshold;
 		float __resistance;
 		int __index;
 		UINT64 __transCode;
@@ -60,6 +61,7 @@ namespace SAPACORE {
 		virtual void AddConnection(QCell* sender, float weight);
 		virtual void PruneConnection(QCell* sender);
 		virtual std::tuple<bool, UINT32> GetSignal();//TODO- Apply transmitter effects
+		virtual float GetCharge();
 	
 		friend class SapaDiagnostic;
 	};
@@ -101,6 +103,7 @@ namespace SAPACORE {
 	public:
 		void UpdateLocalState();
 		void UpdateStimuliState();
+		virtual float GetCharge();
 	};
 
 	class Input: public IOCell {
@@ -151,10 +154,20 @@ namespace SAPACORE {
 		friend class SapaDiagnostic;
 	};
 
+	//TODO Refactor out
 	class SapaDiagnostic {
 		SapaNetwork* __network;
+		std::vector<std::vector<float>> __snapVals;
+		String __diagDir;
+		unsigned __snapSlice;
 	public:
 		SAPICORE_API SapaDiagnostic(SapaNetwork& network);
 		SAPICORE_API void PrintActivity();
+		SAPICORE_API void Snapshot();
+		SAPICORE_API std::string GetCSV();
+		SAPICORE_API void SaveCSV();
+		SAPICORE_API void SaveCSV(String path);
+
+		SAPICORE_API void SetSnapSlice(unsigned size);
 	};
 }
