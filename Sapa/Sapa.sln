@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SapaCore", "..\SapaCore\Sap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDesigner", "..\CircuitDesigner\CircuitDesigner.csproj", "{25075527-74CB-4287-B896-AE57522FAE63}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "SapaTinker", "..\SapaTinker\SapaTinker.pyproj", "{DFBFFFA5-CDCC-45F5-98FC-E712FA9D5EFF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,12 @@ Global
 		{25075527-74CB-4287-B896-AE57522FAE63}.Release|x64.Build.0 = Release|Any CPU
 		{25075527-74CB-4287-B896-AE57522FAE63}.Release|x86.ActiveCfg = Release|Any CPU
 		{25075527-74CB-4287-B896-AE57522FAE63}.Release|x86.Build.0 = Release|Any CPU
+		{DFBFFFA5-CDCC-45F5-98FC-E712FA9D5EFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFBFFFA5-CDCC-45F5-98FC-E712FA9D5EFF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DFBFFFA5-CDCC-45F5-98FC-E712FA9D5EFF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DFBFFFA5-CDCC-45F5-98FC-E712FA9D5EFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFBFFFA5-CDCC-45F5-98FC-E712FA9D5EFF}.Release|x64.ActiveCfg = Release|Any CPU
+		{DFBFFFA5-CDCC-45F5-98FC-E712FA9D5EFF}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

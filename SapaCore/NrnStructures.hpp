@@ -16,10 +16,26 @@ namespace SAPACORE {
 
 	typedef std::tuple<int, std::string, bool, float> InputDef;
 	typedef std::tuple<int, std::string, bool, float> OutputDef;
-	typedef std::tuple<int, int, int, std::string, float, float, float, float, UINT64, bool> NeuronDef;
-	typedef std::tuple<int, int, std::string>CircuitDef;
+	typedef std::tuple<int, int, float, float, float, float, UINT64, UINT64> NeuronDef;
+	typedef std::tuple<int, std::string, float, float, float, float, float, float, float, float>CircuitDef;
 	typedef std::tuple<int, int, float, int, float, int, float, int, float> IonDef;
 	typedef std::tuple<int, float, int> NetworkDef;
+
+	struct CircuitConfig {
+		const char* CircName;
+		const float C_RST_M, C_RST_H, C_RST_N;
+		const float C_REST, C_Vm;
+		const float ENa, EK, EL;
+
+		SAPICORE_API CircuitConfig(
+			const char* name,
+			float rstm,
+			float rsth, float rstn,
+			float rest, float vm,
+			float ena, float ek, float el);
+
+		SAPICORE_API CircuitConfig();
+	};
 
 	struct IonState {
 		int NaParts;
@@ -47,13 +63,16 @@ namespace SAPACORE {
 
 	class QCell {
 	protected:
-		float __charge;
+		//float __charge;
 		float __threshold;
-		float __resistance;
+		//float __resistance;
+		float __charge;//mV
+		float __extCharge;//mV
 		int __index;
 		UINT64 __transCode;
 		UINT32 __transmitter;
 		std::vector<Dendrite> __dendrites;
+		CircuitConfig* __circuitCfg;
 		friend class SapaNetwork;
 	public:
 		virtual void UpdateLocalState() = 0;
@@ -67,14 +86,27 @@ namespace SAPACORE {
 	};
 	
 	class Neuron: public QCell {
+		float __rate_n;//Na+
+		float __rate_h;//Na-
+		float __rate_m;//K+
+
+		float __Cm;//uF/cm^2
+		float __GNa, __GK, __GL;//mS/cm^2
+
 		bool __refactory;
-		float __hCharge;
-		float __resting;
+		float __transmit;
 		IonState* __intercell;
 		IonState* __intracell;
+
+		float calc_dndt(float v, float n);
+		float calc_dhdt(float v, float h);
+		float calc_dmdt(float v, float m);
+
 	public:
-		Neuron(int index, float charge, float thresh, float resitance, 
-			float resting, UINT64 transcode, bool refactory, IonState* inter, IonState*intra);
+		Neuron(int index, float cm,
+			float gna, float gk, float gl,
+			IonState* inter, IonState*intra,
+			CircuitConfig*ccfg);
 		void UpdateLocalState();
 		void UpdateStimuliState();
 		std::tuple<bool, UINT32> GetSignal();
@@ -108,7 +140,7 @@ namespace SAPACORE {
 
 	class Input: public IOCell {
 	public:
-		Input(int index, bool enabled, float decay);
+		Input(int index, bool enabled);
 		void Excite(float value);
 		void AddConnection(QCell* sender, float weight);
 		void PruneConnection(QCell* sender);
@@ -116,7 +148,7 @@ namespace SAPACORE {
 
 	class Output: public IOCell {
 	public:
-		Output(int index, bool enabled, float decay);
+		Output(int index, bool enabled);
 		float Retreive();
 	};
 
@@ -127,6 +159,7 @@ namespace SAPACORE {
 		Output** __outputs; size_t __numOutputs; std::tuple<int, int> __outIdxRng;
 		Neuron** __neurons; size_t __numNeurons; std::tuple<int, int> __netIdxRng;
 		IonState** __ionStates; size_t __numIonStates;
+		CircuitConfig** __circuitConfigs; size_t __numCircConfigs;
 
 		Neuron* __findNeuronByIdx(int idx);
 		Input* __findInputByIdx(int idx);

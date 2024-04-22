@@ -3,44 +3,92 @@
 #include <Bits.h>
 #include <format>
 #include <iostream>
+#include <math.h>
 
 #include "NrnStructures.hpp"
 #include "Error.hpp"
 #include "SNCFileIO.h"
 #include "FileUtil.h"
 
-SAPACORE::Neuron::Neuron(int index, float charge, float thresh, float resistance,
-	float resting, UINT64 transcode, bool refactory,
-	IonState* interIons, IonState* intraIons)
+float SAPACORE::Neuron::calc_dndt(float v, float n)
+{
+	return (
+		(((0.01f*(v+55.0f))/(1.0f- (float)exp((-(v+50.0f)/10.0f))))*(1-n)) -
+		((.125f*exp((-(v+60.0f))/80.0f))*n)
+		);
+}
+
+float SAPACORE::Neuron::calc_dhdt(float v, float h)
+{
+	return (
+		((0.07f*exp(-5.0f*(v+60)))*(1-h)) -
+		((1.0f/(1.0f+ (float)exp(-.1*(v+30))))*h)
+		);
+}
+
+float SAPACORE::Neuron::calc_dmdt(float v, float m)
+{
+	return (
+		((.1f*(v+35.0f)/(1-(float)exp((-(v+35.0f))/10.0f)*(1-m)))) -
+		((4.0f*exp(-0.0556f*(v+60.0f)))*m)
+		);
+}
+
+SAPACORE::Neuron::Neuron(int index,
+	float cm, float gna, float gk, float gl,
+	IonState* interIons, IonState* intraIons,
+	CircuitConfig*cfg)
 {
 	__index = index;
-	__charge = charge;
-	__threshold = thresh;
-	__resistance = resistance;
-	__resting = resting;
-	__transCode = transcode;
-	__refactory = refactory;
-	__hCharge = __refactory ? -thresh : 0;
+	__rate_n = 0.40f;
+	__rate_h = 0.90f;
+	__rate_m = 0.05f;
+	__Cm = cm;
+	__GNa = gna;
+	__GK = gk;
+	__GL = gl;
+	__extCharge = 0.0f;
+	__refactory = false;
 	__intercell = interIons;
 	__intracell = intraIons;
+	__circuitCfg = cfg;
 }
 
 void SAPACORE::Neuron::UpdateLocalState()
 {
-	__refactory = __charge >= __threshold;
-	if (__refactory) {
-		__charge -= (__charge-__resting)/2;
-	}
-	else {
-		__charge *= 0.8f;
-	}
+	const float DT = 0.4f;
+
+	if (__refactory) { __extCharge = 0; }
+
+	float dn = calc_dndt(__charge, __rate_n);
+	float dh = calc_dhdt(__charge, __rate_h);
+	float dm = calc_dmdt(__charge, __rate_m);
+
+	float gNa = __GNa * pow(__rate_m, 3) * __rate_h;
+	float gK = __GK * pow(__rate_m, 4);
+	float gl = __GL;
+
+	float INa = __GNa * (__charge - __circuitCfg->ENa);
+	float Ik = __GK * (__charge - __circuitCfg->EK);
+	float Il = __GL * (__charge - __circuitCfg->EL);
+
+	float dv = ((1 / __Cm) * (__extCharge - (INa + Ik + Il))) * DT;
+
+	__rate_n += dn;
+	__rate_h += dh;
+	__rate_m += dm;
+	__charge += dv;
+
+	__refactory = (!__refactory && __charge >= __threshold);
+
+	if (__refactory && __charge < __threshold){}
 }
 
 void SAPACORE::Neuron::UpdateStimuliState()
 {
 	for (size_t i = 0; i < __dendrites.size() && !__refactory; ++i) {
 		//TODO Resolve transmitter effect
-		__charge += __dendrites[i].GetCharge();
+		__extCharge += __dendrites[i].GetCharge();
 	}
 }
 
@@ -56,7 +104,7 @@ float SAPACORE::Dendrite::GetCharge()
 
 void SAPACORE::IOCell::UpdateLocalState()
 {
-	__charge *= __resistance;
+	
 }
 
 void SAPACORE::IOCell::UpdateStimuliState()
@@ -72,13 +120,12 @@ float SAPACORE::IOCell::GetCharge()
 	return __charge;
 }
 
-SAPACORE::Output::Output(int index, bool enabled, float decay)
+SAPACORE::Output::Output(int index, bool enabled)
 {
 	__index = index;
 	__charge = 0;
 	__enabled = enabled;
-	__resistance = decay;
-	__threshold = .9;
+	__threshold = .9f;
 	__max = 1;
 	__min = 0;
 }
@@ -88,12 +135,12 @@ float SAPACORE::Output::Retreive()
 	return this->__charge;
 }
 
-SAPACORE::Input::Input(int index, bool enabled, float decay)
+SAPACORE::Input::Input(int index, bool enabled)
 {
 	__index = index;
 	__charge = 0;
+	__extCharge = 0;
 	__enabled = enabled;
-	__resistance = decay;
 	__threshold = 1;
 	__max = 100;
 	__min = 0;
@@ -194,6 +241,15 @@ SAPACORE::SapaNetwork::SapaNetwork(
 	__numOutputs = outputs.size();
 	__numNeurons = neurons.size();
 	__numIonStates = ions.size();
+	__numCircConfigs = circuits.size();
+
+	__circuitConfigs = new CircuitConfig * [__numCircConfigs];
+	for (size_t i = 0; i < __numCircConfigs; ++i) {
+		const auto& [idx, name, rst_m, rst_h, rst_n,
+		rest, vm, ena, ek, el] = circuits[i];
+		if ((size_t)idx >= __numCircConfigs) { throw SapaException("Circuit definition index out of range"); }
+		__circuitConfigs[idx] = new CircuitConfig(name.c_str(), rst_m, rst_h, rst_n, rest, vm, ena, ek, el);
+	}
 
 	__ionStates = new IonState*[__numIonStates ];
 	for (size_t i = 0; i < __numIonStates; ++i) {
@@ -207,7 +263,7 @@ SAPACORE::SapaNetwork::SapaNetwork(
 	for(size_t i=0; i<__numInputs; ++i)
 	{
 		const auto& [idx, name, enabled, decay] = inputs[i];
-		__inputs[i] = new Input(idx, enabled, decay);
+		__inputs[i] = new Input(idx, enabled);
 	}
 	minIdx = __inputs[0]->__index;
 	maxIdx = __inputs[__numInputs - 1]->__index;
@@ -216,7 +272,7 @@ SAPACORE::SapaNetwork::SapaNetwork(
 	__outputs = new Output*[__numOutputs];
 	for (size_t i = 0; i < __numOutputs; ++i) {
 		const auto& [idx, name, enabled, decay] = outputs[i];
-		__outputs[i] = new Output(idx, enabled, decay);
+		__outputs[i] = new Output(idx, enabled);
 	}
 	minIdx = __outputs[0]->__index;
 	maxIdx = __outputs[__numOutputs - 1]->__index;
@@ -224,10 +280,11 @@ SAPACORE::SapaNetwork::SapaNetwork(
 
 	__neurons = new Neuron * [__numNeurons];
 	for (size_t i = 0; i < __numNeurons; ++i) {
-		const auto& [idx, ioni, ione, name, charge, bias, resistance, resting, transcode, refactory] = neurons[i];
+		const auto& [idx, ccidx, cm, gna, gk, gl, ioni, ione] = neurons[i];
 		IonState* inter = __ionStates[ioni];
 		IonState* intra = __ionStates[ione];
-		__neurons[i] = new Neuron(idx, charge, bias, resistance, resting, transcode, refactory, inter, intra);
+		CircuitConfig* cfg = __circuitConfigs[ccidx];
+		__neurons[i] = new Neuron(idx, cm, gna, gk, gl, inter, intra, cfg);
 	}
 	minIdx = __neurons[0]->__index;
 	maxIdx = __neurons[__numNeurons - 1]->__index;
@@ -416,3 +473,22 @@ SAPICORE_API void SAPACORE::SapaDiagnostic::SetSnapSlice(unsigned size)
 {
 	__snapSlice = size;
 }
+
+SAPICORE_API SAPACORE::CircuitConfig::CircuitConfig(
+	const char* name,
+	float rstm, float rsth, float rstn,
+	float rest, float vm, 
+	float ena, float ek, float el):
+	C_RST_M(rstm), C_RST_H(rsth), C_RST_N(rstn),
+	C_REST(rest), C_Vm(vm),
+	ENa(ena), EK(ek), EL(el){
+		CircName = name;
+	}
+
+SAPICORE_API SAPACORE::CircuitConfig::CircuitConfig() :CircuitConfig(
+	"Default",
+	0.05f, 0.90f, 0.40f,
+	-65.0f, -70.0f, 
+	55.17f, -72.14f, -49.42f 
+)
+{}

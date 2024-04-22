@@ -60,27 +60,33 @@ SAPACORE::File::NetworkSetupDetails SAPACORE::File::Load(std::string path)
 			}
 			break;
 			case RM_NEURONS: {
-				if (terms.size() != 10) { throw SapaException(std::format("Invalid input definition: line {}", lineno)); }
+				if (terms.size() != 8) { throw SapaException(std::format("Invalid input definition: line {}", lineno)); }
 				int idx = stoi(terms[0]);
-				int ionInter = stoi(terms[1]);
-				int ionIntra = stoi(terms[2]);
-				std::string name = terms[3];
-				float charge = stof(terms[4]);
-				float thresh = stof(terms[5]);
-				float resistance = stof(terms[6]);
-				float resting = stof(terms[7]);
-				char* ss;
-				UINT64 transcode = strtoul(terms[8].c_str(), &ss, 10);
-				bool refactory = terms[9] == "True";
-				NeuronDef value = { idx, ionInter, ionIntra, name, charge, thresh, resistance, resting, transcode, refactory };
-				ret.NeuronParam.push_back(value);
+				int ccidx = stoi(terms[1]);
+				float cm = stof(terms[2]);
+				float gna = stof(terms[3]);
+				float gk = stof(terms[4]);
+				float gl = stof(terms[5]);
+				int ioni = stoi(terms[6]);
+				int ione = stoi(terms[7]);
+
+				NeuronDef value = { idx, ccidx, cm, gna, gk, gl, ioni, ione };
 			}
 			break;
 			case RM_CIRCUIT: {
+				if (terms.size() != 10) { throw SapaException(std::format("Invalid ion definition: line {}", lineno)); }
 				int idx = stoi(terms[0]);
-				int ionIdx = stoi(terms[1]);
-				std::string name = terms[2];
-				ret.CircuitParam.push_back(CircuitDef{ idx, ionIdx, name });
+				std::string name = terms[1];
+				float rst_m = stof(terms[2]);
+				float rst_h = stof(terms[3]);
+				float rst_n = stof(terms[4]);
+				float rest = stof(terms[5]);
+				float vm = stof(terms[6]);
+				float ena = stof(terms[7]);
+				float ek = stof(terms[8]);
+				float el = stof(terms[9]);
+
+				ret.CircuitParam.push_back(CircuitDef{ idx, name, rst_m, rst_h, rst_n, rest, vm, ena, ek, el });
 				}
 				break;
 			case RM_IONS: {
