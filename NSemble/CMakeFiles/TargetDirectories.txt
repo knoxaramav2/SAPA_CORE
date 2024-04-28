@@ -1,0 +1,12 @@
+/cygdrive/g/Dev/SapaCore/NSemble/CMakeFiles/edit_cache.dir
+/cygdrive/g/Dev/SapaCore/NSemble/CMakeFiles/rebuild_cache.dir
+/cygdrive/g/Dev/SapaCore/NSemble/nlib/CMakeFiles/edit_cache.dir
+/cygdrive/g/Dev/SapaCore/NSemble/nlib/CMakeFiles/rebuild_cache.dir
+/cygdrive/g/Dev/SapaCore/NSemble/nlib/src/CMakeFiles/nlib.dir
+/cygdrive/g/Dev/SapaCore/NSemble/nlib/src/CMakeFiles/edit_cache.dir
+/cygdrive/g/Dev/SapaCore/NSemble/nlib/src/CMakeFiles/rebuild_cache.dir
+/cygdrive/g/Dev/SapaCore/NSemble/compiler/CMakeFiles/edit_cache.dir
+/cygdrive/g/Dev/SapaCore/NSemble/compiler/CMakeFiles/rebuild_cache.dir
+/cygdrive/g/Dev/SapaCore/NSemble/compiler/src/CMakeFiles/nsc.dir
+/cygdrive/g/Dev/SapaCore/NSemble/compiler/src/CMakeFiles/edit_cache.dir
+/cygdrive/g/Dev/SapaCore/NSemble/compiler/src/CMakeFiles/rebuild_cache.dir

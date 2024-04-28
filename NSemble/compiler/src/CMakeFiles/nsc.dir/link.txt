@@ -1,0 +1,1 @@
+/usr/bin/c++.exe -Wl,--enable-auto-import CMakeFiles/nsc.dir/main.cpp.o -o ../../bin/nsc.exe -Wl,--out-implib,../../lib/libnsc.dll.a -Wl,--major-image-version,0,--minor-image-version,0   -L/cygdrive/g/Dev/SapaCore/NSemble/nlib/src  ../../nlib/src/libnlib.a 

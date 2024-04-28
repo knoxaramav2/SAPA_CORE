@@ -1,0 +1,2 @@
+/usr/bin/ar.exe qc libnlib.a CMakeFiles/nlib.dir/nlib.cpp.o
+/usr/bin/ranlib.exe libnlib.a
