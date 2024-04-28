@@ -67,6 +67,7 @@ class Neuron:
         self.dv = dv
         self.t = max(self.m-self.h, 0)
 
+        #Not used in simulation level
         if (not self.refact and self.v >= self.thresh):
             self.refact = True
             self.p += 1
