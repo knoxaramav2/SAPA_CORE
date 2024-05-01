@@ -13,7 +13,7 @@ C_REST = -55.0#mV
 C_Vm = -70.0#mV
 
 #Precalculated reversal potentials
-C_Cm = 0.01#.0.1#uF/cm^2
+C_Cm = 0.01#uF/cm^2
 C_ENa = 55.17#mV
 C_Ek = -72.14#mV
 C_El = -49.42#mV

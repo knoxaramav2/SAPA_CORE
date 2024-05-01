@@ -45,3 +45,8 @@ std::string StringUtils::strip(std::string& value, const char* removals=" \t\r\n
 
 	return ret;
 }
+
+bool StringUtils::isEmpty(std::string value)
+{
+	return (value.find_first_not_of(" \t\r\n") == std::string::npos);
+}

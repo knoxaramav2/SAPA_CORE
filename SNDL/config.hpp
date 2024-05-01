@@ -4,14 +4,17 @@
 #include <vector>
 #include <filesystem>
 
+#include "ChemDefs.h"
+
 namespace Config {
 
-	class GlobalConfig {
+	class GlobalConfig {		
 		GlobalConfig();
 
 		std::filesystem::path __baseDir;
 		std::filesystem::path __srcFile;
 		std::filesystem::path __target;
+		
 
 		bool ParseDD(std::string& com, std::string& val);
 		bool ParseSD(std::string& com);

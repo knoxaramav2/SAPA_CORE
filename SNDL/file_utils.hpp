@@ -22,6 +22,7 @@ namespace FileUtils {
 	std::filesystem::path joinPaths(std::filesystem::path path1, std::string path2);
 	std::filesystem::path parentDir(std::string path);
 	std::filesystem::path parentDir(const char* path);
+	bool readFile(std::filesystem::path path, std::vector<std::string>& lines);
 }
 
 

@@ -33,6 +33,21 @@
     <ClCompile Include="config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="chemDefs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="symbolTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sndl_parser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sndl_lexer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sndl_compiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.hpp">
@@ -54,6 +69,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="string_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="chemDefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symbolTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sndl_lexer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sndl_parser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sndl_compiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -163,3 +163,17 @@ std::filesystem::path FileUtils::parentDir(const char* path)
 {
 	return std::filesystem::path{ path }.parent_path();
 }
+
+bool FileUtils::readFile(std::filesystem::path path, std::vector<std::string>& lines)
+{
+	std::fstream fs;
+	fs.open(path, std::fstream::in);
+	if (fs.bad()) { return false; }
+	else {
+		std::string line;
+		while (getline(fs, line)) { lines.push_back(line); }
+		fs.close();
+	}
+	
+	return true;
+}

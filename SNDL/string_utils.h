@@ -8,6 +8,7 @@ namespace StringUtils {
 
 	std::vector<std::string> split(std::string& value, const char* delim);
 	std::string strip(std::string& value, const char* removals);
+	bool isEmpty(std::string value);
 }
 
 
