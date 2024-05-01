@@ -15,6 +15,13 @@ namespace FileUtils {
 	void makeFile(std::string path);
 	void makeDir(const char* path);
 	void makeDir(std::string path);
+	bool fileExists(std::string path);
+	std::filesystem::path normalizePathStr(std::string path, std::string defPath);
+	std::filesystem::path normalizePathStr(std::filesystem::path path, std::filesystem::path defPath);
+	std::filesystem::path joinPaths(std::string path1, std::string path2);
+	std::filesystem::path joinPaths(std::filesystem::path path1, std::string path2);
+	std::filesystem::path parentDir(std::string path);
+	std::filesystem::path parentDir(const char* path);
 }
 
 

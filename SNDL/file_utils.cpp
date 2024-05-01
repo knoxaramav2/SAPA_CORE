@@ -6,12 +6,12 @@
 std::map<std::string, std::vector<std::string>> __pathdict;
 
 void normalize(std::string& raw) {
-	toLower(raw);
+	StringUtils::toLower(raw);
 }
 
 std::string normalize(std::filesystem::path& raw) {
 	std::string ret{raw.generic_string()};
-	toLower(ret);
+	StringUtils::toLower(ret);
 	return ret;
 }
 
@@ -121,4 +121,45 @@ void FileUtils::makeDir(const char* path)
 void FileUtils::makeDir(std::string path)
 {
 	std::filesystem::create_directories(path);
+}
+
+bool FileUtils::fileExists(std::string path)
+{
+	return std::fstream(path).good();
+}
+
+std::filesystem::path FileUtils::normalizePathStr(std::string path, std::string defPath)
+{
+	return FileUtils::normalizePathStr(std::filesystem::path{path}, std::filesystem::path{ defPath });
+}
+
+std::filesystem::path FileUtils::normalizePathStr(std::filesystem::path path, std::filesystem::path defPath)
+{
+	if (path.is_relative()){
+		return defPath / path;
+	}
+
+	return path;
+}
+
+std::filesystem::path FileUtils::joinPaths(std::string path1, std::string path2)
+{
+	std::filesystem::path p1{ path1 };
+	std::filesystem::path p2{ path2 };
+	return (p1 / p2);
+}
+
+std::filesystem::path FileUtils::joinPaths(std::filesystem::path path1, std::string path2)
+{
+	return path1 / std::filesystem::path{path2};
+}
+
+std::filesystem::path FileUtils::parentDir(std::string path)
+{
+	return std::filesystem::path{ path }.parent_path();
+}
+
+std::filesystem::path FileUtils::parentDir(const char* path)
+{
+	return std::filesystem::path{ path }.parent_path();
 }

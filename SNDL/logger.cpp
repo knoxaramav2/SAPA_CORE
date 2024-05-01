@@ -12,7 +12,7 @@
 #include "file_utils.hpp"
 
 const char* LogTypeStr[] = { "WRN", "ERR", "INFO" };
-const char* LogPath = nullptr;
+char* LogPath = nullptr;
 
 const int MAX_STACK_SIZE = 50;
 
@@ -22,18 +22,19 @@ inline static void InitLogPath() {
 		std::time_t t = std::time(nullptr);
 		std::tm tm;
 		localtime_s(&tm, &t);
-
-		ss << std::put_time(&tm, "%g") << ".log";
+		std::string str{ ss.str() };
+		LogPath = new char[str.length()];
+		memcpy(LogPath, str.c_str(), str.length()+1);
 		FileUtils::makeFile(ss.str());
 	}
 }
 
-void Log(LogType type, const char* msg, bool print)
+void Logger::Log(Logger::LogType type, const char* msg, bool print)
 {
-	Log(type, std::string(msg), print);
+	Logger::Log(type, std::string(msg), print);
 }
 
-void Log(LogType type, std::string msg, bool print)
+void Logger::Log(Logger::LogType type, std::string msg, bool print)
 {
 	InitLogPath();
 	std::string nstr = std::format("{}:: {}", LogTypeStr[type], msg);
@@ -45,7 +46,7 @@ void Log(LogType type, std::string msg, bool print)
 	if (FileUtils::vwriteFile(LogPath, nstr) >= MAX_STACK_SIZE) { FlushLog(); }
 }
 
-void FlushLog()
+void Logger::FlushLog()
 {
 	InitLogPath();
 	FileUtils::vflush(LogPath);

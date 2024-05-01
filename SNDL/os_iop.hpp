@@ -1,8 +1,5 @@
 #pragma once
+#include <string>
+#include <filesystem>
 
-#ifdef _WIN32
-
-#else
-
-
-#endif
+std::filesystem::path GetExecPath();
