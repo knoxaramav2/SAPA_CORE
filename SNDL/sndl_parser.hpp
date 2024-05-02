@@ -1,9 +1,20 @@
 #pragma once
-namespace SNDL_COMPILER {
+#include "symbolTable.hpp"
+#include "sndl_lexer.hpp"
+
+namespace SNDL {
+
+	class ParseTree {
+
+	};
+
 	class SndlParser {
 
+		SymbolTable* __symTable;
+		AST* __ast;
+
 	public:
-		SndlParser();
+		SndlParser(SymbolTable* symTable, TokenPage* page);
 
 	};
 }

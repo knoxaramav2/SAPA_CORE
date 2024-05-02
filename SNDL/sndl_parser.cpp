@@ -1,5 +1,7 @@
 #include "sndl_parser.hpp"
 
-SNDL_COMPILER::SndlParser::SndlParser()
+SNDL::SndlParser::SndlParser(SymbolTable* symTable, TokenPage* page)
 {
+	__symTable = symTable;
+	__tPage = page;
 }

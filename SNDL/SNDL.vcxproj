@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClCompile Include="config.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="projectUtils.cpp" />
     <ClCompile Include="sndl_compiler.cpp" />
     <ClCompile Include="sndl_lexer.cpp" />
     <ClCompile Include="sndl_parser.cpp" />
@@ -145,6 +146,7 @@
   <ItemGroup>
     <ClInclude Include="config.hpp" />
     <ClInclude Include="error.hpp" />
+    <ClInclude Include="projectUtils.hpp" />
     <ClInclude Include="sndl_compiler.hpp" />
     <ClInclude Include="sndl_lexer.hpp" />
     <ClInclude Include="sndl_parser.hpp" />

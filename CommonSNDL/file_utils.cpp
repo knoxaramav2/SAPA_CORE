@@ -19,12 +19,13 @@ std::string normalize(std::filesystem::path& raw) {
 
 void FileUtils::writeToFile(std::filesystem::path dir, std::string& file, std::vector<std::string>& data, bool overwrite=false)
 {
+	assurePath(dir);
 	dir /= file;
 	std::string key = normalize(dir);
 
-	int options = overwrite ? std::fstream::out | std::fstream::app : std::fstream::out | std::fstream::trunc;
+	int options = overwrite ? std::fstream::out | std::fstream::trunc : std::fstream::out | std::fstream::app;
 	std::fstream ffile;
-	ffile.open(key, options, options);
+	ffile.open(key, options);
 
 	for (auto& v : data) {
 		ffile << v << std::endl;
@@ -78,10 +79,11 @@ void FileUtils::vflush(const char* path)
 {
 	std::string key{ path };
 	normalize(key);
+	assurePath(key);
 
 	auto& data = __pathdict[key];
 
-	std::fstream ffile;
+	std::fstream ffile;;
 	ffile.open(key, std::fstream::out | std::fstream::app);
 
 	for (auto& v : data) {
@@ -92,12 +94,12 @@ void FileUtils::vflush(const char* path)
 	ffile.close();
 }
 
-void FileUtils::makeFile(const char* path)
+bool FileUtils::makeFile(const char* path)
 {
-	FileUtils::makeFile(std::string{path});
+	return FileUtils::makeFile(std::string{path});
 }
 
-void FileUtils::makeFile(std::string path)
+bool FileUtils::makeFile(std::string path)
 {
 	std::size_t lastIdx = path.find_last_of("/\\");
 	if (lastIdx != std::string::npos) {
@@ -107,12 +109,18 @@ void FileUtils::makeFile(std::string path)
 
 	std::fstream ffile;
 	ffile.open(path, std::fstream::out);
+
 	if (!ffile) {
 		ffile.open(path, std::fstream::out | std::fstream::trunc);
 		ffile << "";
 	}
-
+	else {
+		return false;
+	}
+	
 	ffile.close();
+
+	return true;
 }
 
 void FileUtils::makeDir(const char* path)
@@ -128,6 +136,15 @@ void FileUtils::makeDir(std::string path)
 bool FileUtils::fileExists(std::string path)
 {
 	return std::fstream(path).good();
+}
+
+bool FileUtils::assurePath(std::filesystem::path path)
+{
+	if (!path.extension().empty()) {
+		path = path.parent_path();
+	}
+
+	return std::filesystem::create_directories(path);
 }
 
 std::filesystem::path FileUtils::normalizePathStr(std::string path, std::string defPath)

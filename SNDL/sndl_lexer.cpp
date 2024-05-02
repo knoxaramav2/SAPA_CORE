@@ -1,5 +1,6 @@
 #include "sndl_lexer.hpp"
 
-SNDL_COMPILER::SndlLexer::SndlLexer()
+SNDL::SndlLexer::SndlLexer(SymbolTable* symTable)
 {
+	__symTable = symTable;
 }

@@ -34,7 +34,14 @@ bool GlobalConfig::ParseDD(std::string& com, std::string& val)
 
 bool GlobalConfig::ParseSD(std::string& com)
 {
-	
+	if (com == "snc") { __utils |= SaveSNC; }
+	else if (com == "nobuild") { __utils |= NoBuild; }
+	else if (com == "create") { __utils |= CreateProject; }
+	else {
+		Logger::Log(Logger::LogType::ERR, std::format("Unknown command: {}", com), true);
+		return false;
+	}
+
 	return true;
 }
 
@@ -83,17 +90,35 @@ bool Config::GlobalConfig::Validate()
 {
 	bool succ = true;
 	
-	if (!std::filesystem::exists(__srcFile)) {
+	if (!Config::GlobalConfig::CheckOptions(Config::CreateProject) && !std::filesystem::exists(__srcFile)) {
 		Logger::Log(Logger::ERR, std::format("Source file not found: {}", __srcFile.string()), true);
 		succ = false;
 	}
 
-	if (!std::filesystem::exists(__target)) {
+	if (__target.empty()) {
+		if (!SaveSNC) {
+			Logger::Log(Logger::INFO, std::format("No output defined. Performing analysis anyway."), true);
+		}
+		else {
+			__utils |= NoBuild;
+		}
+		
+	} else if (!std::filesystem::exists(__target)) {
 		Logger::Log(Logger::ERR, std::format("Target generator not found: {}", __target.string()), true);
 		succ = false;
 	}
 
 	return succ;
+}
+
+bool Config::GlobalConfig::UtilRequested()
+{
+	return !__utils;
+}
+
+bool Config::GlobalConfig::CheckOptions(CliOptions option)
+{
+	return __utils & option;
 }
 
 std::filesystem::path Config::GlobalConfig::GetSourcePath() { return __srcFile; }

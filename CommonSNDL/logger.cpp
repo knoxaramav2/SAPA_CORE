@@ -24,6 +24,7 @@ inline static void InitLogPath() {
 		std::time_t t = std::time(nullptr);
 		std::tm tm;
 		localtime_s(&tm, &t);
+		ss << "logs/" << std::put_time(&tm, "%m_%d_%y") << ".log";
 		std::string str{ ss.str() };
 		LogPath = new char[str.length()];
 		memcpy(LogPath, str.c_str(), str.length()+1);

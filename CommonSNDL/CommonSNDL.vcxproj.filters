@@ -54,6 +54,9 @@
     <ClInclude Include="os_iop.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="tokenPage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CommonSNDL.cpp">
@@ -84,6 +87,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="os_iop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tokenPage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
