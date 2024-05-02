@@ -1,6 +1,6 @@
 #include "config.hpp"
 #include "logger.hpp"
-#include "string_utils.h"
+#include "string_utils.hpp"
 #include "os_iop.hpp"
 
 #include <iostream>
@@ -95,3 +95,8 @@ bool Config::GlobalConfig::Validate()
 
 	return succ;
 }
+
+std::filesystem::path Config::GlobalConfig::GetSourcePath() { return __srcFile; }
+
+
+

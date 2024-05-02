@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -131,17 +131,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="chemDefs.cpp" />
     <ClCompile Include="config.cpp" />
-    <ClCompile Include="file_utils.cpp" />
-    <ClCompile Include="logger.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="os_iop.cpp" />
     <ClCompile Include="sndl_compiler.cpp" />
     <ClCompile Include="sndl_lexer.cpp" />
     <ClCompile Include="sndl_parser.cpp" />
-    <ClCompile Include="string_utils.cpp" />
-    <ClCompile Include="symbolTable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonSNDL\CommonSNDL.vcxproj">
@@ -149,18 +143,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="chemDefs.h" />
     <ClInclude Include="config.hpp" />
     <ClInclude Include="error.hpp" />
-    <ClInclude Include="file_utils.hpp" />
-    <ClInclude Include="logger.hpp" />
-    <ClInclude Include="os_iop.hpp" />
-    <ClInclude Include="sndl_compiler.h" />
+    <ClInclude Include="sndl_compiler.hpp" />
     <ClInclude Include="sndl_lexer.hpp" />
     <ClInclude Include="sndl_parser.hpp" />
-    <ClInclude Include="string_utils.h" />
-    <ClInclude Include="symbolTable.h" />
-    <ClInclude Include="utils.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

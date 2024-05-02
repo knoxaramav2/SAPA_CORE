@@ -1,3 +1,5 @@
+#include "pch.h"
+
 #include "logger.hpp"
 #include "file_utils.hpp"
 

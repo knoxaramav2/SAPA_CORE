@@ -4,7 +4,7 @@
 #include <vector>
 #include <filesystem>
 
-#include "ChemDefs.h"
+#include "chemDefs.hpp"
 
 namespace Config {
 
@@ -23,6 +23,8 @@ namespace Config {
 		static GlobalConfig* GetInst();
 		bool ProcessCli(int argc, char** argv);
 		bool Validate();
+
+		std::filesystem::path GetSourcePath();
 	};
 }
 

@@ -1,5 +1,7 @@
-#include "sndl_compiler.h"
+#include "sndl_compiler.hpp"
 
-SNDL_COMPILER::SndlCompiler::SndlCompiler()
+SNDL::SndlCompiler::SndlCompiler()
 {
 }
+
+
