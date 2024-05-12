@@ -37,7 +37,7 @@ namespace SNDL {
 	public:
 
 		SndlLexer(SymbolTable* symTable);
-		void BuildAst(SrcPage page);
+		void BuildAst(TokenPage* page);
 
 	};
 }

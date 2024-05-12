@@ -10,9 +10,9 @@ class Neuron:
     name  : str
     v: float = C_Vm
     
-    n:float = C_RST_N
-    h:float = C_RST_H
-    m:float = C_RST_M
+    n:float = C_RST_N #K activation
+    h:float = C_RST_H #Na deactivation
+    m:float = C_RST_M #Na activation
     #i:float = C_RST_I
     t:float = 0.0
     dv:float = 0.0

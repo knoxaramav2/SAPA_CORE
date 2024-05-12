@@ -24,6 +24,9 @@ bool ProjectUtils::CreateDefaultProject(std::filesystem::path path)
 		"outputs(10)\r\n"
 		"#Define structure profiles\n\n"
 		"#Design code\n"
+		"#Attach each input to each of neurons 0 - 9\n"
+		"$input[1...10] => $neuron[1...10]\n"
+		"$neuron[1...10] -> $neuron[11] -> $outputs[1...10]\n"
 		;
 
 	std::vector<std::string> vdat{ data };

@@ -6,9 +6,9 @@ SNDL::SndlCompiler::SndlCompiler():
 	__cfg = Config::GlobalConfig::GetInst();
 }
 
-void SNDL::SndlCompiler::BuildAST()
+void SNDL::SndlCompiler::BuildAST(std::filesystem::path srcPath)
 {
-	__lexer.BuildAst();
+	__lexer.BuildAst(page);
 }
 
 void SNDL::SndlCompiler::BuildToSNC()

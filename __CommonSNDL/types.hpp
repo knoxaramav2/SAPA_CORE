@@ -6,7 +6,7 @@
 
 namespace SNDL {
 	enum ValType {
-		INT, FLOAT, CHAR, STRING
+		INT, FLOAT, CHAR, STRING,
 	};
 
 	enum TempType {

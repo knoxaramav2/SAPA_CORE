@@ -14,7 +14,8 @@ namespace SNDL {
 		AST* __ast;
 
 	public:
-		SndlParser(SymbolTable* symTable, TokenPage* page);
+		SndlParser(SymbolTable* symTable);
+		void Parse(TokenPage* page);
 
 	};
 }

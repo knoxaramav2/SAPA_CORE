@@ -3,27 +3,38 @@
 #include "config.hpp"
 #include "string_utils.hpp"
 #include "projectUtils.hpp"
+#include "sndl_precomp.h"
 
 #include <iostream>
 
-static void compile(Config::GlobalConfig* cfg) {
+static bool compile(Config::GlobalConfig* cfg) {
 	if (cfg->CheckOptions(Config::CliOptions::NoBuild)) { return; }
 
 	Config::GlobalConfig* cfg = Config::GlobalConfig::GetInst();
 	SNDL::SndlCompiler compiler;
+	
 	std::filesystem::path srcPath = cfg->GetSourcePath();
 	std::string ext = srcPath.extension().string();
 	StringUtils::toLower(ext);
 
-	if (ext == ".snc") {
-
-	}
-	else if (ext == ".sndl") {
-
-	}
-	else {
+	if (ext != ".sndl" && ext != ".snc") {
 		Logger::Log(Logger::ERR, "Unrecognized input. Must specify .sndl or .snc file type.", true);
+		return false;
 	}
+
+	if (ext == ".sndl") {
+		SNDL::SndlPrecompiler precomp;
+	}
+
+	if (ext == ".snc") {
+		SNDL::SncPrecompiler precomp;
+	}
+
+	if (!cfg->CheckOptions(Config::CliOptions::NoBuild)) {
+		compiler.buildTarget("");
+	}
+
+	return true;
 }
 
 static void execPrecompCommands(Config::GlobalConfig* cfg) {

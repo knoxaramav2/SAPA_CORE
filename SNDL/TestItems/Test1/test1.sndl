@@ -1,0 +1,19 @@
+#Test 1 (Config stage)
+
+#Initialize current system
+$use std
+ns("root")
+inputs(10)
+outputs(10)
+
+#Define structure profiles
+specify neuron as nrn
+
+#Design code
+
+#Attach each input to each of neurons 0 - 9
+
+
+
+
+

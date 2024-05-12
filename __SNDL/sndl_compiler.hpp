@@ -27,13 +27,14 @@ namespace SNDL {
 		SndlCompiler();
 
 		//SNDL STAGE
-		void BuildAST();
+		void BuildAST(std::filesystem::path srcPath);
 		void BuildToSNC();
 		
 		//SNC STAGE
-		
 		std::string BuildAsSNC();
 
 
+		//TARGET STAGE
+		void buildTarget(std::string target);
 	};
 }
