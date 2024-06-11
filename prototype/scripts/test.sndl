@@ -1,0 +1,5 @@
+ns("root")
+inputs(10)
+outputs(10)
+
+neuron{x:0...9} -> neuron{y:10...29}
